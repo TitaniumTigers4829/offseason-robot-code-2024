@@ -24,7 +24,7 @@ import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.commands.drive.DriveCommandBase;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.subsystems.swerve.old.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class FollowPathAndShoot extends DriveCommandBase {

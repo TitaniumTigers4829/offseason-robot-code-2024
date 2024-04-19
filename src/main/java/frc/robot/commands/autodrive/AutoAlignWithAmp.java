@@ -11,7 +11,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.drive.DriveCommandBase;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.subsystems.swerve.old.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class AutoAlignWithAmp extends DriveCommandBase {

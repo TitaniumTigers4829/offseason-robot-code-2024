@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.commands.drive.DriveCommandBase;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.subsystems.swerve.old.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class AutoBuilderDriveToPos extends DriveCommandBase {

@@ -6,7 +6,7 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.subsystems.swerve.old.DriveSubsystem;
 
 public class SimplyTaxi extends Command {
   private final DriveSubsystem driveSubsystem;

@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,7 +7,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.drive.Drive;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.subsystems.swerve.old.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class FlywheelSpinUpAuto extends Command {
