@@ -12,6 +12,7 @@ public interface GyroIO {
         public double pitch = 0;
         public double roll = 0;
         public double yawVelocity = 0.0; //degrees per second
+        public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
         public double[] accel = new double[] {0, 0, 0};
     }
 

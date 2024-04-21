@@ -22,6 +22,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.extras.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,20 +32,11 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(25.0);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
-  private static final double DRIVE_BASE_RADIUS =
-      Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
-
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
-  private final SysIdRoutine sysId;
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
@@ -52,7 +46,7 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition()
       };
   private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+      new SwerveDrivePoseEstimator(DriveConstants.DRIVE_KINEMATICS, rawGyroRotation, lastModulePositions, new Pose2d());
 
   public Drive(
       GyroIO gyroIO,
@@ -73,10 +67,9 @@ public class Drive extends SubsystemBase {
     AutoBuilder.configureHolonomic(
         this::getPose,
         this::setPose,
-        () -> kinematics.toChassisSpeeds(getModuleStates()),
+        () -> DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
-        new HolonomicPathFollowerConfig(
-            MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+        TrajectoryConstants.CONFIG,
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
@@ -91,23 +84,6 @@ public class Drive extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
-
-    // Configure SysId
-    sysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (voltage) -> {
-                  for (int i = 0; i < 4; i++) {
-                    modules[i].runCharacterization(voltage.in(Volts));
-                  }
-                },
-                null,
-                this));
   }
 
   public void periodic() {
@@ -119,7 +95,7 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
-      module.periodic();
+      module.periodicFunction();
     }
 
     // Stop moving when disabled
@@ -135,36 +111,36 @@ public class Drive extends SubsystemBase {
     }
 
     // Update odometry
-    double[] sampleTimestamps =
-        modules[0].getOdometryTimestamps(); // All signals are sampled together
-    int sampleCount = sampleTimestamps.length;
-    for (int i = 0; i < sampleCount; i++) {
-      // Read wheel positions and deltas from each module
-      SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
-      SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
-      for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-        modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
-        moduleDeltas[moduleIndex] =
-            new SwerveModulePosition(
-                modulePositions[moduleIndex].distanceMeters
-                    - lastModulePositions[moduleIndex].distanceMeters,
-                modulePositions[moduleIndex].angle);
-        lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
-      }
+    // double[] sampleTimestamps =
+    //     modules[0].getOdometryTimestamps(); // All signals are sampled together
+    // int sampleCount = sampleTimestamps.length;
+    // for (int i = 0; i < sampleCount; i++) {
+    //   // Read wheel positions and deltas from each module
+    //   SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+    //   SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+    //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+    //     modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
+    //     moduleDeltas[moduleIndex] =
+    //         new SwerveModulePosition(
+    //             modulePositions[moduleIndex].distanceMeters
+    //                 - lastModulePositions[moduleIndex].distanceMeters,
+    //             modulePositions[moduleIndex].angle);
+    //     lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+    //   }
 
-      // Update gyro angle
-      if (gyroInputs.connected) {
-        // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
-      } else {
-        // Use the angle delta from the kinematics and module deltas
-        Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-      }
+    //   // Update gyro angle
+    //   if (gyroInputs.connected) {
+    //     // Use the real gyro angle
+    //     rawGyroRotation = gyroInputs.odometryYawPositions[i];
+    //   } else {
+    //     // Use the angle delta from the kinematics and module deltas
+    //     Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(moduleDeltas);
+    //     rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+    //   }
 
-      // Apply update
-      poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-    }
+    //   // Apply update
+    //   poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+    // }
   }
 
   /**
@@ -175,14 +151,14 @@ public class Drive extends SubsystemBase {
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, MAX_LINEAR_SPEED);
+    SwerveModuleState[] setpointStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
     // Send setpoints to modules
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       // The module returns the optimized state, useful for logging
-      optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
+      // optimizedSetpointStates[i] = modules[i].getPosition(setpointStates[i]);
     }
 
     // Log setpoint states
@@ -202,20 +178,10 @@ public class Drive extends SubsystemBase {
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
     for (int i = 0; i < 4; i++) {
-      headings[i] = getModuleTranslations()[i].getAngle();
+      headings[i] = DriveConstants.MODULE_TRANSLATIONS[i].getAngle();
     }
-    kinematics.resetHeadings(headings);
+    DriveConstants.DRIVE_KINEMATICS.resetHeadings(headings);
     stop();
-  }
-
-  /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
-  }
-
-  /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
   }
 
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
@@ -223,7 +189,7 @@ public class Drive extends SubsystemBase {
   private SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
-      states[i] = modules[i].getState();
+      // states[i] = modules[i].getState();
     }
     return states;
   }
@@ -232,7 +198,7 @@ public class Drive extends SubsystemBase {
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
-      states[i] = modules[i].getPosition();
+      // states[i] = modules[i].getPosition();
     }
     return states;
   }
@@ -263,23 +229,4 @@ public class Drive extends SubsystemBase {
     poseEstimator.addVisionMeasurement(visionPose, timestamp);
   }
 
-  /** Returns the maximum linear speed in meters per sec. */
-  public double getMaxLinearSpeedMetersPerSec() {
-    return MAX_LINEAR_SPEED;
-  }
-
-  /** Returns the maximum angular speed in radians per sec. */
-  public double getMaxAngularSpeedRadPerSec() {
-    return MAX_ANGULAR_SPEED;
-  }
-
-  /** Returns an array of module translations. */
-  public static Translation2d[] getModuleTranslations() {
-    return new Translation2d[] {
-      new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-      new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
-      new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-      new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
-    };
-  }
 }
