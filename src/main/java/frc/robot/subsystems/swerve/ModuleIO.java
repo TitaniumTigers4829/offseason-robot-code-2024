@@ -1,6 +1,8 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
@@ -13,6 +15,7 @@ public interface ModuleIO {
     public double drivePositionMeters = 0.0;
     public double drivePositionRads = 0.0;
     public double driveVelocityMetersPerSec = 0.0;
+    public SwerveModulePosition[] odometryDrivePositions = new SwerveModulePosition[] {};
 
     public Rotation2d turnAbsolutePosition = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;

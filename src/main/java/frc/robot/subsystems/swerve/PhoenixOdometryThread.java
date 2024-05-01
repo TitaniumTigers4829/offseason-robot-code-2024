@@ -70,16 +70,6 @@ public class PhoenixOdometryThread extends Thread {
     return queue;
   }
 
-  public Queue<Double> makeTimestampQueue() {
-    Queue<Double> queue = new ArrayBlockingQueue<>(20);
-    Drive.odometryLock.lock();
-    try {
-      timestampQueues.add(queue);
-    } finally {
-      Drive.odometryLock.unlock();
-    }
-    return queue;
-  }
 
   @Override
   public void run() {

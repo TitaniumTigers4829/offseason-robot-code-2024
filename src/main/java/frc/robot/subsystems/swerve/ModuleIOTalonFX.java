@@ -13,10 +13,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.math.estimator.KalmanFilterLatencyCompensator;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -42,7 +40,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   private final TalonFXConfiguration turnConfig = new TalonFXConfiguration();
 
-  private final Queue<Double> timestampQueue;
+  // private final Queue<Double> timestampQueue;
 
   private final StatusSignal<Double> drivePosition;
   private final Queue<Double> drivePositionQueue;
@@ -65,6 +63,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     SensorDirectionValue encoderReversed,
     InvertedValue turnReversed,
     InvertedValue driveReversed) {
+
+      // timestampQueue = new Queue<Double>() {};
       
     driveTalon = new TalonFX(driveMotorChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
     turnTalon = new TalonFX(turnEncoderChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
@@ -84,7 +84,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     encoderConfig.MagnetSensor.MagnetOffset = -angleZero;
     cancoder.getConfigurator().apply(encoderConfig);
 
-    timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
+    // timestampQueue = PhoenixOdometryThread.getInstance().;
 
     drivePosition = driveTalon.getPosition();
     drivePositionQueue =
@@ -138,13 +138,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
     inputs.turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
 
-    inputs.odometryTimestamps =
-        timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+    // inputs.odometryTimestamps =
+    //     timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryDrivePositionsRad =
         drivePositionQueue.stream()
             .mapToDouble((Double value) -> Units.rotationsToRadians(value) / ModuleConstants.DRIVE_GEAR_RATIO)
             .toArray();
-    timestampQueue.clear();
+    // timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
   }

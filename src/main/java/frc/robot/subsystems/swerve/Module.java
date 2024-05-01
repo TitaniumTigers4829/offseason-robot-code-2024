@@ -1,18 +1,9 @@
-// Copyright (c) 2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
-
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.ModuleConstants;
-import frc.robot.extras.Alert;
 import frc.robot.extras.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.Logger;
@@ -144,7 +135,7 @@ public class Module {
     return inputs.odometryTimestamps;
   }
 
-  public double[] getOdometryPositions() {
-    return inputs.odometryDrivePositionsMeters;
+  public SwerveModulePosition[] getOdometryPositions() {
+    return inputs.odometryDrivePositions;
   }
 }
