@@ -48,7 +48,6 @@ public class GyroIOPigeon2 implements GyroIO {
         signals[0] = yawSignal;
         signals[1] = angularVelocitySignal;
     }
-
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = true;
