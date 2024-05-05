@@ -127,12 +127,12 @@ public class Module {
     return inputs.driveVelocityRadsPerSec;
   }
 
-  public void periodicFunction(){
-
-  }
-
   public double[] getOdometryTimestamps() {
     return inputs.odometryTimestamps;
+  }
+
+  public void setDesiredState(SwerveModuleState desiredState) {
+    io.setDesiredState(desiredState);
   }
 
   public SwerveModulePosition[] getOdometryPositions() {

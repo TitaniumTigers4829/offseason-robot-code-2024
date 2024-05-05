@@ -5,7 +5,9 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,6 +16,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -55,6 +58,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> turnCurrent;
 
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0);
+  private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0).withUpdateFreqHz(0);
+  private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0).withSlot(0).withUpdateFreqHz(0);
 
   public ModuleIOTalonFX(int driveMotorChannel,
     int turnMotorChannel,
@@ -203,4 +208,31 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalon.setControl(neutralControl);
     turnTalon.setControl(neutralControl);
   }
+
+  public double getTurnRadians() {
+    turnAbsolutePosition.refresh();
+    return Rotation2d.fromRotations(turnAbsolutePosition.getValue()).getRadians();
+  }
+
+  @Override
+  public void setDesiredState(SwerveModuleState desiredState) {
+    double turnRadians = getTurnRadians();
+ 
+    // Optimize the reference state to avoid spinning further than 90 degrees
+    SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(desiredState, new Rotation2d(turnRadians));
+
+    if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
+      driveTalon.set(0);
+      turnTalon.set(0);
+      return;
+    }
+
+    // Converts meters per second to rotations per second
+    double desiredDriveRPS = optimizedDesiredState.speedMetersPerSecond 
+     * ModuleConstants.DRIVE_GEAR_RATIO / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
+     
+    driveTalon.setControl(velocityControl.withVelocity(desiredDriveRPS));
+    turnTalon.setControl(positionControl.withPosition(optimizedDesiredState.angle.getRotations()));
+  }
+
 }
