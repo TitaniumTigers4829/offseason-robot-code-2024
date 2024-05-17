@@ -42,8 +42,9 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
+
   private SwerveDrivePoseEstimator odometry =
-      new SwerveDrivePoseEstimator(DriveConstants.DRIVE_KINEMATICS, rawGyroRotation, lastModulePositions, new Pose2d());
+      new SwerveDrivePoseEstimator(DriveConstants.DRIVE_KINEMATICS, getGyroRotation2d(), lastModulePositions, new Pose2d());
 
   public Drive(
       GyroIO gyroIO,
@@ -139,7 +140,7 @@ public class Drive extends SubsystemBase {
       }
 
       // Apply update
-      odometry.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      odometry.updateWithTime(sampleTimestamps[i], getGyroRotation2d(), modulePositions);
     }
   }
 
@@ -174,7 +175,8 @@ public class Drive extends SubsystemBase {
       ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
       : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
-   for (int i = 0; i < 4; i++) {
+
+    for (int i = 0; i < 4; i++) {
       modules[i].setDesiredState(swerveModuleStates[i]);
     }
   }
@@ -193,6 +195,7 @@ public class Drive extends SubsystemBase {
   public Rotation2d getOdometryAllianceRelativeRotation2d() {
     return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())); 
   }
+
   /**
    * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
    * return to their normal orientations the next time a nonzero velocity is requested.
@@ -238,7 +241,7 @@ public class Drive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    odometry.resetPosition(getGyroRotation2d(), getModulePositions(), pose);
   }
 
   /**
@@ -252,14 +255,14 @@ public class Drive extends SubsystemBase {
   }
 
   public SwerveModulePosition[] getModulePositions() {
-SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
+    SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
       swerveModulePositions[i] = modules[i].getPosition();
     }
     return swerveModulePositions;
   }
 
-    public void setPoseEstimatorVisionConfidence(double xStandardDeviation, double yStandardDeviation,
+  public void setPoseEstimatorVisionConfidence(double xStandardDeviation, double yStandardDeviation,
     double thetaStandardDeviation) {
     odometry.setVisionMeasurementStdDevs(VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
   }
