@@ -18,16 +18,16 @@ import frc.robot.Constants.LEDConstants.LEDProcess;
 import frc.robot.extras.SmarterDashboardRegistry;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
-import frc.robot.subsystems.vision.VisionSubsystem;
+// import frc.robot.subsystems.vision.Vision;
 
 public class RobotContainer {
 
-  private final VisionSubsystem visionSubsystem;
+  // private final Vision visionSubsystem;
 
   
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
-    visionSubsystem = new VisionSubsystem();
+    // visionSubsystem = new Vision();
     
 
   }
@@ -73,7 +73,6 @@ public class RobotContainer {
   public void teleopInit() {
     configureButtonBindings();
     SmarterDashboardRegistry.initialize();
-    visionSubsystem.setTeleopStatus(false);
   }
 
   // public void intakeCallback(boolean hasNote) {

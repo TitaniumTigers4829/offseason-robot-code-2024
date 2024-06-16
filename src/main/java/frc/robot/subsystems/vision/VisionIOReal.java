@@ -9,7 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 
-public class VisionIOLimelight implements VisionIO {
+public class VisionIOReal implements VisionIO {
     private final NetworkTableEntry botposeEntry;
     private final NetworkTableEntry validEntry;
     private final NetworkTableEntry txEntry;
@@ -40,7 +40,7 @@ public class VisionIOLimelight implements VisionIO {
 
     private double[] botpose = new double[6];
 
-    public VisionIOLimelight(String limelightName) {
+    public VisionIOReal(String limelightName) {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
         // Getting data from Network Tables
@@ -64,7 +64,7 @@ public class VisionIOLimelight implements VisionIO {
             double timeStamp = Timer.getFPGATimestamp() - pipelineLatencies;
 
             // Updating all inputs with values from LL.
-            synchronized (VisionIOLimelight.this) {
+            synchronized (VisionIOReal.this) {
                 this.lastTimeStamp = timeStamp;
                 hasTargets = validEntry.getDouble(0.0) == 1.0;
                 yawRadians = -Units.degreesToRadians(txEntry.getDouble(0.0));

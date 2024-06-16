@@ -25,7 +25,4 @@ public interface GyroIO {
 
     public default void addOffset(Rotation2d offset) {}
 
-    public default BaseStatusSignal[] getSignals() {
-        return new BaseStatusSignal[0];
-     }
 }
