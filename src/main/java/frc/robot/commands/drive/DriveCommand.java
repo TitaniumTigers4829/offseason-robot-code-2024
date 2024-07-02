@@ -4,11 +4,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.swerve.Drive;
-import frc.robot.subsystems.vision.VisionSubsystem;
+// import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class DriveCommand extends DriveCommandBase {
+public class DriveCommand extends Command {
 
   private final Drive driveSubsystem;
 
@@ -16,9 +17,6 @@ public class DriveCommand extends DriveCommandBase {
   private final BooleanSupplier isFieldRelative, isHighRotation;
   private double angularSpeed;
 
-  private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.Y_RATE_LIMIT);
-  private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.X_RATE_LIMIT);
-  private SlewRateLimiter rotLimiter = new SlewRateLimiter(DriveConstants.ROT_RATE_LIMIT);
   
   /**
    * The command for driving the robot using joystick inputs.
@@ -31,10 +29,10 @@ public class DriveCommand extends DriveCommandBase {
    * field relative
    * @param isHighRotation The boolean supplier for if the robot should drive with a higher rotation
    */
-  public DriveCommand(Drive driveSubsystem, VisionSubsystem visionSubsystem, DoubleSupplier leftJoystickY, DoubleSupplier leftJoystickX, DoubleSupplier rightJoystickX, BooleanSupplier isFieldRelative, BooleanSupplier isHighRotation) {
-    super(driveSubsystem, visionSubsystem);
+  public DriveCommand(Drive driveSubsystem,  DoubleSupplier leftJoystickY, DoubleSupplier leftJoystickX, DoubleSupplier rightJoystickX, BooleanSupplier isFieldRelative, BooleanSupplier isHighRotation) {
+    // super(driveSubsystem, visionSubsystem);
     this.driveSubsystem = driveSubsystem;
-    addRequirements(driveSubsystem, visionSubsystem);
+    addRequirements(driveSubsystem);
     this.leftJoystickY = leftJoystickY;
     this.leftJoystickX = leftJoystickX;
     this.rightJoystickX = rightJoystickX;
@@ -56,9 +54,9 @@ public class DriveCommand extends DriveCommandBase {
     }
     
     driveSubsystem.drive(
-      yLimiter.calculate(leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND),
-      xLimiter.calculate(leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND),
-      rotLimiter.calculate(rightJoystickX.getAsDouble() * angularSpeed),
+      leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
+      leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
+      rightJoystickX.getAsDouble() * angularSpeed,
       isFieldRelative.getAsBoolean()
     );
 

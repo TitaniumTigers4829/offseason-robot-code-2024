@@ -14,10 +14,35 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.extras.Alert;
+import frc.robot.extras.Alert.AlertType;
 
 
 public final class Constants {
   public static final class HardwareConstants {
+
+  // public static RobotType getRobot() {
+  //   if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
+  //     new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
+  //         .set(true);
+  //     robotType = RobotType.COMPBOT;
+  //   }
+  //   return robotType;
+  // }
+  public static final Mode currentMode = Mode.SIM;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
     public static final double TIMEOUT_S = 0.05;
 
     public static final double SIGNAL_FREQUENCY = 250;

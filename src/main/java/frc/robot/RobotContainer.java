@@ -15,19 +15,27 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.LEDConstants.LEDProcess;
+import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.swerve.Drive;
+import frc.robot.subsystems.swerve.GyroIO;
+import frc.robot.subsystems.swerve.GyroIONavX;
+import frc.robot.subsystems.swerve.ModuleIOSim;
 
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
+  private final Drive driveSubsystem;
+  private final XboxController driverController = new XboxController(0);
 
   
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
+    driveSubsystem = new Drive(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
     
 
   }
@@ -86,15 +94,15 @@ public class RobotContainer {
   // }
 
   private void configureButtonBindings() {
-    // DoubleSupplier driverLeftStickX = driverController::getLeftX;
-    // DoubleSupplier driverLeftStickY = driverController::getLeftY;
-    // DoubleSupplier driverRightStickX = driverController::getRightX;
-    // DoubleSupplier driverLeftStick[] = new DoubleSupplier[]{()->modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0], ()->modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]};
+    DoubleSupplier driverLeftStickX = driverController::getLeftX;
+    DoubleSupplier driverLeftStickY = driverController::getLeftY;
+    DoubleSupplier driverRightStickX = driverController::getRightX;
+    DoubleSupplier driverLeftStick[] = new DoubleSupplier[]{()->modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0], ()->modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]};
 
-    // Trigger driverRightBumper = new Trigger(driverController::getRightBumper);
-    // Trigger driverRightDirectionPad = new Trigger(()->driverController.getPOV() == 90);
-    // Trigger driverDownDirectionPad = new Trigger(()->driverController.getPOV() == 180);
-    // Trigger driverLeftDirectionPad = new Trigger(()->driverController.getPOV() == 270);
+    Trigger driverRightBumper = new Trigger(driverController::getRightBumper);
+    Trigger driverRightDirectionPad = new Trigger(()->driverController.getPOV() == 90);
+    Trigger driverDownDirectionPad = new Trigger(()->driverController.getPOV() == 180);
+    Trigger driverLeftDirectionPad = new Trigger(()->driverController.getPOV() == 270);
 
     // // autodrive
     // Trigger driverAButton = new Trigger(driverController::getAButton);
@@ -118,7 +126,7 @@ public class RobotContainer {
     // Trigger operatorLeftDirectionPad = new Trigger(()->operatorController.getPOV() == 270);
     // Trigger operatorDownDirectionPad = new Trigger(()->operatorController.getPOV() == 180);
     // Trigger driverLeftTrigger = new Trigger(()->driverController.getLeftTriggerAxis() > 0.2);
-    // Trigger driverLeftBumper = new Trigger(driverController::getLeftBumper);
+    Trigger driverLeftBumper = new Trigger(driverController::getLeftBumper);
     // Trigger driverBButton = new Trigger(driverController::getBButton);
     // Trigger driverYButton = new Trigger(driverController::getYButton);
     // DoubleSupplier operatorLeftStickY = operatorController::getLeftY;
@@ -127,15 +135,15 @@ public class RobotContainer {
 
     // // driving
 
-    // Command driveCommand = new Drive(driveSubsystem, visionSubsystem,
-    //   driverLeftStick[1],
-    //   driverLeftStick[0],
-    //   () -> modifyAxisCubed(driverRightStickX),
-    //   () -> !driverRightBumper.getAsBoolean(),
-    //   () -> driverLeftBumper.getAsBoolean()
-    // );
+    Command driveCommand = new DriveCommand(driveSubsystem,
+      driverLeftStick[1],
+      driverLeftStick[0],
+      () -> modifyAxisCubed(driverRightStickX),
+      () -> !driverRightBumper.getAsBoolean(),
+      () -> driverLeftBumper.getAsBoolean()
+    );
 
-    // driveSubsystem.setDefaultCommand(driveCommand);
+    driveSubsystem.setDefaultCommand(driveCommand);
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem, visionSubsystem));
 
     // driverLeftTrigger.whileTrue(new TowerIntake(intakeSubsystem, pivotSubsystem, shooterSubsystem, false, ledSubsystem, this::intakeCallback));

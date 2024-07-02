@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.3.2"
     id "com.peterabeles.gversion" version "1.10"
-    id "com.diffplug.spotless" version "6.25.0"
+    // id "com.diffplug.spotless" version "6.25.0"
     id "io.freefair.lombok" version "8.4"
     id "com.google.protobuf" version "0.9.4"
 }
@@ -107,12 +107,12 @@ task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
 }
 compileJava.finalizedBy checkAkitInstall
 
-// Generate drive trajectories when building
-task(generateDriveTrajectories, dependsOn: "classes", type: JavaExec) {
-    mainClass = "org.littletonrobotics.frc2024.subsystems.drive.trajectory.GenerateTrajectories"
-    classpath = sourceSets.main.runtimeClasspath
-}
-compileJava.finalizedBy generateDriveTrajectories
+// // Generate drive trajectories when building
+// task(generateDriveTrajectories, dependsOn: "classes", type: JavaExec) {
+//     mainClass = "org.littletonrobotics.frc2024.subsystems.drive.trajectory.GenerateTrajectories"
+//     classpath = sourceSets.main.runtimeClasspath
+// }
+// compileJava.finalizedBy generateDriveTrajectories
 
 // Check robot type when deploying
 task(checkRobot, dependsOn: "classes", type: JavaExec) {
@@ -229,52 +229,52 @@ tasks.withType(JavaCompile) {
 project.compileJava.dependsOn(createVersionFile)
 gversion {
     srcDir       = "src/main/java/"
-    classPackage = "org.littletonrobotics.frc2024"
+    classPackage = "frc.robot"
     className    = "BuildConstants"
     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
     timeZone     = "America/New_York"
     indent       = "  "
 }
 
-// Spotless formatting
-project.compileJava.dependsOn(spotlessApply)
-spotless {
-    java {
-        target fileTree(".") {
-            include "src/**/*.java"
-            exclude "**/build/**", "**/build-*/**", "src/main/java/org/littletonrobotics/frc2024/BuildConstants.java"
-        }
-        toggleOffOn()
-        googleJavaFormat()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-        licenseHeader("// Copyright (c) 2024 FRC 6328\n// http://github.com/Mechanical-Advantage\n//\n// Use of this source code is governed by an MIT-style\n// license that can be found in the LICENSE file at\n// the root directory of this project.\n\n")
-    }
-    groovyGradle {
-        target fileTree(".") {
-            include "**/*.gradle"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        greclipse()
-        indentWithSpaces(4)
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    json {
-        target fileTree(".") {
-            include "**/*.json"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        gson().indentWithSpaces(2)
-    }
-    format "misc", {
-        target fileTree(".") {
-            include "**/*.md", "**/.gitignore"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        trimTrailingWhitespace()
-        indentWithSpaces(2)
-        endWithNewline()
-    }
-}
+// // Spotless formatting
+// project.compileJava.dependsOn(spotlessApply)
+// spotless {
+//     java {
+//         target fileTree(".") {
+//             include "src/**/*.java"
+//             exclude "**/build/**", "**/build-*/**", "src/main/java/org/littletonrobotics/frc2024/BuildConstants.java"
+//         }
+//         toggleOffOn()
+//         googleJavaFormat()
+//         removeUnusedImports()
+//         trimTrailingWhitespace()
+//         endWithNewline()
+//         licenseHeader("// Copyright (c) 2024 FRC 6328\n// http://github.com/Mechanical-Advantage\n//\n// Use of this source code is governed by an MIT-style\n// license that can be found in the LICENSE file at\n// the root directory of this project.\n\n")
+//     }
+//     groovyGradle {
+//         target fileTree(".") {
+//             include "**/*.gradle"
+//             exclude "**/build/**", "**/build-*/**"
+//         }
+//         greclipse()
+//         indentWithSpaces(4)
+//         trimTrailingWhitespace()
+//         endWithNewline()
+//     }
+//     json {
+//         target fileTree(".") {
+//             include "**/*.json"
+//             exclude "**/build/**", "**/build-*/**"
+//         }
+//         gson().indentWithSpaces(2)
+//     }
+//     format "misc", {
+//         target fileTree(".") {
+//             include "**/*.md", "**/.gitignore"
+//             exclude "**/build/**", "**/build-*/**"
+//         }
+//         trimTrailingWhitespace()
+//         indentWithSpaces(2)
+//         endWithNewline()
+//     }
+// }
