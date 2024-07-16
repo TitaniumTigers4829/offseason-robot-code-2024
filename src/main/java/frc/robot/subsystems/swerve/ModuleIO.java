@@ -53,4 +53,10 @@ public interface ModuleIO {
   public default void stop() {}
 
   public default void setDesiredState(SwerveModuleState desiredState) {}
+
+  public default void runDriveVelocitySetpoint(double feedback, double feedforward){}
+
+  public default void runTurnPositionSetpoint(double angleRads) {}
+
+
 }

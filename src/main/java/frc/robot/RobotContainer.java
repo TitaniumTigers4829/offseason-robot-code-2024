@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.PivotConstants;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIONavX;
 import frc.robot.subsystems.swerve.ModuleIOSim;
+import frc.robot.subsystems.swerve.ModuleIOTalonFX;
 
 public class RobotContainer {
 
@@ -35,7 +37,28 @@ public class RobotContainer {
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    driveSubsystem = new Drive(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
+    //fl fr bl br
+    driveSubsystem = new Drive(new GyroIONavX() {}, 
+    new ModuleIOTalonFX(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_ID, 
+    DriveConstants.FRONT_LEFT_TURN_MOTOR_ID, 
+    DriveConstants.FRONT_LEFT_CANCODER_ID, 
+    DriveConstants.FRONT_LEFT_ZERO_ANGLE, DriveConstants.FRONT_LEFT_CANCODER_REVERSED,
+     DriveConstants.FRONT_LEFT_TURN_MOTOR_REVERSED, DriveConstants.FRONT_LEFT_DRIVE_ENCODER_REVERSED), 
+     new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT_DRIVE_MOTOR_ID, 
+    DriveConstants.FRONT_RIGHT_TURN_MOTOR_ID, 
+    DriveConstants.FRONT_RIGHT_CANCODER_ID, 
+    DriveConstants.FRONT_RIGHT_ZERO_ANGLE, DriveConstants.FRONT_RIGHT_CANCODER_REVERSED,
+     DriveConstants.FRONT_RIGHT_TURN_MOTOR_REVERSED, DriveConstants.FRONT_RIGHT_DRIVE_ENCODER_REVERSED), 
+     new ModuleIOTalonFX(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_ID, 
+    DriveConstants.REAR_LEFT_TURN_MOTOR_ID, 
+    DriveConstants.REAR_LEFT_CANCODER_ID, 
+    DriveConstants.REAR_LEFT_ZERO_ANGLE, DriveConstants.REAR_LEFT_CANCODER_REVERSED,
+     DriveConstants.REAR_LEFT_TURN_MOTOR_REVERSED, DriveConstants.REAR_LEFT_DRIVE_ENCODER_REVERSED), 
+     new ModuleIOTalonFX(DriveConstants.REAR_RIGHT_DRIVE_MOTOR_ID, 
+    DriveConstants.REAR_RIGHT_TURN_MOTOR_ID, 
+    DriveConstants.REAR_RIGHT_CANCODER_ID, 
+    DriveConstants.REAR_RIGHT_ZERO_ANGLE, DriveConstants.REAR_RIGHT_CANCODER_REVERSED,
+     DriveConstants.REAR_RIGHT_TURN_MOTOR_REVERSED, DriveConstants.REAR_RIGHT_DRIVE_ENCODER_REVERSED));
     
 
   }
