@@ -95,6 +95,8 @@ import com.ctre.phoenix6.controls.compound.Diff_VoltageOut_Position;
 import com.ctre.phoenix6.controls.compound.Diff_VoltageOut_Velocity;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
 /** TalonFX */
@@ -561,6 +563,22 @@ public class LoggedTalonFX extends LoggableHardware {
 
     m_talon.getConfigurator().apply(m_motionMagicExpo);
   }
+
+  public void setNeutralMode(NeutralModeValue neutralMode) {
+    factoryDefaultConfig();
+    TalonFXConfiguration neutralConfig = m_TalonFXConfiguration;
+    neutralConfig.MotorOutput.NeutralMode = neutralMode;
+    applyConfigs(neutralConfig);
+  }
+
+  public void setInvert(InvertedValue invertDirection) {
+    factoryDefaultConfig();
+    TalonFXConfiguration invertConfig = m_TalonFXConfiguration;
+    invertConfig.MotorOutput.Inverted = invertDirection;
+    applyConfigs(invertConfig);
+  }
+
+
 
    /**
     * 

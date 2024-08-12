@@ -98,8 +98,8 @@ public class SwerveModule {
     turnMotor.initializeFeedbackSensor(turnEncoder, FeedbackSensor.REMOTE);
     turnMotor.initializeTalonPID(ModuleConstants.TURN_P, ModuleConstants.TURN_I, ModuleConstants.TURN_D);
     turnMotor.initializeMotionMagic(ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND, ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
-    turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    turnConfig.MotorOutput.Inverted = turnReversed;
+    turnMotor.setNeutralMode(NeutralModeValue.Brake);
+    turnMotor.setInvert(turnReversed);
     turnConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
