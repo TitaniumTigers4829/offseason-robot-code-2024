@@ -4,8 +4,10 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -173,8 +175,8 @@ public class SwerveModule {
         SwerveModuleState.optimize(desiredState, new Rotation2d(turnRadians));
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
-      driveMotor.set(0);
-      turnMotor.set(0);
+      driveMotor.setControl(new DutyCycleOut(0));
+      turnMotor.setControl(new DutyCycleOut(0));
       return;
     }
 
