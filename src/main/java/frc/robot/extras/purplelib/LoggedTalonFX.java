@@ -11,8 +11,10 @@ import frc.robot.extras.purplelib.TalonFXInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
@@ -96,30 +98,12 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
 /** TalonFX */
 public class LoggedTalonFX extends LoggableHardware {
-  /** TalonFX ID */
-  public static class ID {
-    public final String name;
-    public final PhoenixCANBus bus;
-    public final int deviceID;
-
-    /**
-     * TalonFX ID
-     * @param name Device name for logging
-     * @param bus CAN bus
-     * @param deviceID CAN ID
-     */
-    public ID(String name, PhoenixCANBus bus, int deviceID) {
-      this.name = name;
-      this.bus = bus;
-      this.deviceID = deviceID;
-    }
-  }
 
   /**
    * TalonFX sensor inputs
    */
   @AutoLog
-  public static class TalonFXInputs {
+  class TalonFXInputs {
     public double selectedSensorPosition = 0.0;
     public double selectedSensorVelocity = 0.0;
   }
@@ -129,13 +113,12 @@ public class LoggedTalonFX extends LoggableHardware {
   private static final String CURRENT_LOG_ENTRY = "/Current";
 
   private TalonFX m_talon;
-
-  private ID m_id;
   private TalonFXInputsAutoLogged m_inputs;
+  private String m_motorName;
 
   private TalonFXConfiguration m_TalonFXConfiguration;
   private TalonPIDConfig m_TalonPIDConfig;
-  
+
   //Feedback sensor types
   private enum FeedbackSensor {FUSED, REMOTE, SYNC}
 
@@ -143,15 +126,16 @@ public class LoggedTalonFX extends LoggableHardware {
    * Create a TalonFX object with built-in logging
    * @param id TalonFX ID
    */
-  public LoggedTalonFX(ID id) {
-    this.m_id = id;
-    this.m_talon = new TalonFX(id.deviceID, id.bus.name);
+  public LoggedTalonFX(int deviceID, String busName, String motorName) {
+    this.m_talon = new TalonFX(deviceID, busName);
     this.m_inputs = new TalonFXInputsAutoLogged();
+    this.m_motorName = motorName;
 
 
     // Disable motor safety
     m_talon.setSafetyEnabled(false);
 
+    PurpleManager.add(this);
 
     periodic();
   }
@@ -171,8 +155,8 @@ public class LoggedTalonFX extends LoggableHardware {
              }
     else if (mode instanceof VelocityDutyCycle || mode instanceof VelocityVoltage ||
              mode instanceof VelocityTorqueCurrentFOC)
-    Logger.recordOutput(m_id.name + VALUE_LOG_ENTRY, value);
-    Logger.recordOutput(m_id.name + MODE_LOG_ENTRY, mode.toString());
+    Logger.recordOutput(m_motorName + VALUE_LOG_ENTRY, value);
+    Logger.recordOutput(m_motorName + MODE_LOG_ENTRY, mode.toString());
   }
 
  // positiondutycycle
@@ -196,8 +180,9 @@ public class LoggedTalonFX extends LoggableHardware {
    *
    * @return Position of selected sensor (in raw sensor units).
    */
-  private double getSelectedSensorPosition() {
-    return m_talon.getPosition().getValue();
+  public StatusSignal<Double> getSelectedSensorPosition() {
+    m_talon.getPosition().refresh();
+    return m_talon.getPosition();
   }
 
   /**
@@ -206,19 +191,20 @@ public class LoggedTalonFX extends LoggableHardware {
    * @return selected sensor (in raw sensor units) per 100ms.
    * See Phoenix-Documentation for how to interpret.
    */
-  private double getSelectedSensorVelocity() {
-    return m_talon.getVelocity().getValue();
+  public StatusSignal<Double> getSelectedSensorVelocity() {
+    m_talon.getVelocity().refresh();
+    return m_talon.getVelocity();
   }
  
   private void updateInputs() {
-    m_inputs.selectedSensorPosition = getSelectedSensorPosition();
-    m_inputs.selectedSensorVelocity = getSelectedSensorVelocity();
+    m_inputs.selectedSensorPosition = getSelectedSensorPosition().getValue();
+    m_inputs.selectedSensorVelocity = getSelectedSensorVelocity().getValue();
   }
 
   @Override
   protected void periodic() {
     updateInputs();
-    Logger.processInputs(m_id.name, m_inputs);
+    Logger.processInputs(m_motorName, m_inputs);
   }
 
   /**
@@ -230,12 +216,12 @@ public class LoggedTalonFX extends LoggableHardware {
     return m_inputs;
   }
 
-  /**
-   * Get device ID
-   * @return Device ID
-   */
-  public ID getID() {
-    return m_id;
+  public void setPosition(double position) {
+    m_talon.setPosition(position);
+  }
+
+  public void optimizeBusUtilization(double hz) {
+    m_talon.optimizeBusUtilization(hz);
   }
 
   
@@ -380,6 +366,20 @@ public class LoggedTalonFX extends LoggableHardware {
   }
 
   /**
+   * Applies the contents of the specified config to the device.
+   * <p>
+   * This will wait up to {@link #DefaultTimeoutSeconds}.
+   * <p>
+   * Call to apply the selected configs.
+   *
+   * @param configs Configs to apply against.
+   * @return StatusCode of the set command
+   */
+  public StatusCode applyConfigs(TalonFXConfiguration configs, double timeoutSeconds) {
+     return m_talon.getConfigurator().apply(configs, timeoutSeconds);
+  }
+
+  /**
    * Initialize stator current limits
    * @param statorCurrentLimit 
    * The amount of current allowed in the motor (motoring and regen
@@ -495,10 +495,10 @@ public class LoggedTalonFX extends LoggableHardware {
   public void initializeRemoteLimitSwitches(LoggedCANCoder cancoder, boolean forward, boolean reverse) {
    HardwareLimitSwitchConfigs limitConfigs = m_TalonFXConfiguration.HardwareLimitSwitch;
    if (forward) {
-    limitConfigs.ForwardLimitRemoteSensorID = cancoder.getID().deviceID;  
+    limitConfigs.ForwardLimitRemoteSensorID = cancoder.getDeviceID();  
    }
    if (reverse) {
-    limitConfigs.ReverseLimitRemoteSensorID = cancoder.getID().deviceID;
+    limitConfigs.ReverseLimitRemoteSensorID = cancoder.getDeviceID();
    }
    m_talon.getConfigurator().apply(limitConfigs);
   }
@@ -547,13 +547,13 @@ public class LoggedTalonFX extends LoggableHardware {
 
     switch (sensor) {
       case REMOTE:
-       config.FeedbackRemoteSensorID = cancoder.getID().deviceID;
+       config.FeedbackRemoteSensorID = cancoder.getDeviceID();
        config.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
       case FUSED:
-       config.FeedbackRemoteSensorID = cancoder.getID().deviceID;
+       config.FeedbackRemoteSensorID = cancoder.getDeviceID();
        config.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
       case SYNC:
-       config.FeedbackRemoteSensorID = cancoder.getID().deviceID;
+       config.FeedbackRemoteSensorID = cancoder.getDeviceID();
        config.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
       }
       m_talon.getConfigurator().apply(config);
