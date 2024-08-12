@@ -22,6 +22,7 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.extras.purplelib.LoggedCANCoder;
 import frc.robot.extras.purplelib.LoggedTalonFX;
+import frc.robot.extras.purplelib.LoggedTalonFX.FeedbackSensor;
 
 public class SwerveModule {
 
@@ -93,21 +94,16 @@ public class SwerveModule {
     driveMotor.applyConfigs(driveConfig, HardwareConstants.TIMEOUT_S);
 
     TalonFXConfiguration turnConfig = new TalonFXConfiguration();
-    turnConfig.Slot0.kP = ModuleConstants.TURN_P;
-    turnConfig.Slot0.kI = ModuleConstants.TURN_I;
-    turnConfig.Slot0.kD = ModuleConstants.TURN_D;
-    turnConfig.Feedback.FeedbackRemoteSensorID = turnEncoder.getDeviceID();
-    turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+
+    turnMotor.initializeFeedbackSensor(turnEncoder, FeedbackSensor.REMOTE);
+    turnMotor.initializeTalonPID(ModuleConstants.TURN_P, ModuleConstants.TURN_I, ModuleConstants.TURN_D);
+    turnMotor.initializeMotionMagic(ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND, ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.MotorOutput.Inverted = turnReversed;
     turnConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
-    turnConfig.MotionMagic.MotionMagicCruiseVelocity =
-        ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND;
-    turnConfig.MotionMagic.MotionMagicAcceleration =
-        ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    turnConfig.CurrentLimits.SupplyCurrentLimit = 20;
-    turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    turnMotor.initializeSupplyCurrentLimits(20, true, HardwareConstants.TIMEOUT_S);
     turnMotor.applyConfigs(turnConfig, HardwareConstants.TIMEOUT_S);
 
     turnEncoderPos = turnEncoder.getAbsolutePosition();

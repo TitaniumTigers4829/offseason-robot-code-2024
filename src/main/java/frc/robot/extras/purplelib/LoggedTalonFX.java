@@ -94,6 +94,7 @@ import com.ctre.phoenix6.controls.compound.Diff_VelocityVoltage_Velocity;
 import com.ctre.phoenix6.controls.compound.Diff_VoltageOut_Position;
 import com.ctre.phoenix6.controls.compound.Diff_VoltageOut_Velocity;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 
 
 /** TalonFX */
@@ -117,10 +118,9 @@ public class LoggedTalonFX extends LoggableHardware {
   private String m_motorName;
 
   private TalonFXConfiguration m_TalonFXConfiguration;
-  private TalonPIDConfig m_TalonPIDConfig;
 
   //Feedback sensor types
-  private enum FeedbackSensor {FUSED, REMOTE, SYNC}
+  public enum FeedbackSensor {FUSED, REMOTE, SYNC}
 
   /**
    * Create a TalonFX object with built-in logging
@@ -224,145 +224,8 @@ public class LoggedTalonFX extends LoggableHardware {
     m_talon.optimizeBusUtilization(hz);
   }
 
-  
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(VoltageConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(TorqueCurrentConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(OpenLoopRampsConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(ClosedLoopGeneralConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(DifferentialConstantsConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  } 
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(DifferentialSensorsConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(CustomParamsConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(AudioConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
-  /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(ClosedLoopRampsConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
-  }
-
- /**
-   * Applies the contents of the specified config to the device.
-   * <p>
-   * This will wait up to {@link #DefaultTimeoutSeconds}.
-   * <p>
-   * Call to apply the selected configs.
-   *
-   * @param configs Configs to apply against.
-   * @return StatusCode of the set command
-   */
-  public StatusCode applyConfigs(SoftwareLimitSwitchConfigs configs) {
-     return m_talon.getConfigurator().apply(configs);
+  public void factoryDefaultConfig() {
+    m_TalonFXConfiguration = new TalonFXConfiguration();
   }
 
   /**
@@ -379,6 +242,10 @@ public class LoggedTalonFX extends LoggableHardware {
      return m_talon.getConfigurator().apply(configs, timeoutSeconds);
   }
 
+  public StatusCode applyConfigs(TalonFXConfiguration configs) {
+    return applyConfigs(configs);
+  }
+
   /**
    * Initialize stator current limits
    * @param statorCurrentLimit 
@@ -393,12 +260,13 @@ public class LoggedTalonFX extends LoggableHardware {
    *   <li> <b>Units:</b> A
    *   </ul>
    */
-  public void initializeStatorCurrentLimits(double statorCurrentLimit) {
-    CurrentLimitsConfigs limitConfigs = m_TalonFXConfiguration.CurrentLimits;
-      limitConfigs.StatorCurrentLimit = statorCurrentLimit;
-      limitConfigs.StatorCurrentLimitEnable = true;
+  public void initializeStatorCurrentLimits(double statorCurrentLimit, boolean statorCurrentEnable, double timeoutSeconds) {
+    factoryDefaultConfig();
+    TalonFXConfiguration statorConfigs = m_TalonFXConfiguration;
+      statorConfigs.CurrentLimits.StatorCurrentLimit = statorCurrentLimit;
+      statorConfigs.CurrentLimits.StatorCurrentLimitEnable = statorCurrentEnable;
 
-    m_talon.getConfigurator().apply(limitConfigs);
+    applyConfigs(statorConfigs, timeoutSeconds);
   }
 
   /**
@@ -417,12 +285,13 @@ public class LoggedTalonFX extends LoggableHardware {
    *   <li> <b>Units:</b> A
    *   </ul>
    */
-  public void initializeSupplyCurrentLimits(double supplyCurrentLimit) {
-    CurrentLimitsConfigs limitConfigs = m_TalonFXConfiguration.CurrentLimits;
-      limitConfigs.SupplyCurrentLimit = supplyCurrentLimit;
-      limitConfigs.SupplyCurrentLimitEnable = true;
+  public void initializeSupplyCurrentLimits(double supplyCurrentLimit, boolean supplyCurrentEnable, double timeoutSeconds) {
+    factoryDefaultConfig();
+    TalonFXConfiguration supplyConfigs = m_TalonFXConfiguration;
+      supplyConfigs.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
+      supplyConfigs.CurrentLimits.SupplyCurrentLimitEnable = supplyCurrentEnable;
 
-    m_talon.getConfigurator().apply(limitConfigs);
+   applyConfigs(supplyConfigs, timeoutSeconds);
   }
 
   /**
@@ -540,6 +409,7 @@ public class LoggedTalonFX extends LoggableHardware {
    * @param sensor Enum to choose which type of CANCoder
    */
   public void initializeFeedbackSensor(LoggedCANCoder cancoder, FeedbackSensor sensor) {
+    factoryDefaultConfig();
     FeedbackConfigs config = m_TalonFXConfiguration.Feedback;
 
     //Automatically configure feedback sensor to built in rotor sensor
@@ -563,37 +433,17 @@ public class LoggedTalonFX extends LoggableHardware {
    * Initialize Talon PID Configuration and Motion Magic
    * @param pidconfig PID Config to use
    */
-  private void initializeTalonPID(TalonPIDConfig pidconfig) {
-    //Initialize PID configs
-    m_TalonPIDConfig = pidconfig;
-
-    Slot0Configs slot0Configs = m_TalonFXConfiguration.Slot0;
+  public void initializeTalonPID(double kP, double kI, double kD) {
+    factoryDefaultConfig();
+    TalonFXConfiguration slot0Configs = m_TalonFXConfiguration;
 
     //Configure PID Values
-      slot0Configs.kP = m_TalonPIDConfig.getkP();
-      slot0Configs.kI = m_TalonPIDConfig.getkI();
-      slot0Configs.kD = m_TalonPIDConfig.getkD();
-      slot0Configs.kS = m_TalonPIDConfig.getkS();
-      slot0Configs.kV = m_TalonPIDConfig.getkV();
-      slot0Configs.kG = m_TalonPIDConfig.getkG();
-      slot0Configs.kA = m_TalonPIDConfig.getkA();
-
-    /**
-     * Gravity Feedforward Type
-     * <p>
-     * This determines the type of the gravity feedforward. Choose
-     * Elevator_Static for systems where the gravity feedforward is
-     * constant, such as an elevator. The gravity feedforward output will
-     * always have the same sign. Choose Arm_Cosine for systems where the
-     * gravity feedforward is dependent on the angular position of the
-     * mechanism, such as an arm. The gravity feedforward output will vary
-     * depending on the mechanism angular position. Note that the sensor
-     * offset and ratios must be configured so that the sensor reports a
-     * position of 0 when the mechanism is horizonal (parallel to the
-     * ground), and the reported sensor position is 1:1 with the
-     * mechanism.
-     */
-   slot0Configs.GravityType = pidconfig.getGravityType();
+      slot0Configs.Slot0.kP = kP;
+      slot0Configs.Slot0.kI = kI;
+      slot0Configs.Slot0.kD = kD;
+      // slot0Configs.kS = kS;
+      // slot0Configs.kV = kV;
+      // slot0Configs.kA = kA;
 
      /**
      * Static Feedforward Sign during position closed loop
@@ -609,12 +459,33 @@ public class LoggedTalonFX extends LoggableHardware {
      * dither when closed loop error is near zero.
      * 
      */
-  slot0Configs.StaticFeedforwardSign = pidconfig.getStaticFeedForward();
+  // slot0Configs.StaticFeedforwardSign = pidconfig.getStaticFeedForward();
 
+    applyConfigs(slot0Configs);
+    
+   }
+
+   public void initializeTalonFeedForward(double kS, double kV, double kA, double kG, GravityTypeValue gravityType) {
+    factoryDefaultConfig();
+    Slot0Configs slot0Configs = m_TalonFXConfiguration.Slot0;
+    slot0Configs.kS = kS;
+    slot0Configs.kV = kV;
+    slot0Configs.kA = kA;
+    slot0Configs.kG = kG;
+    slot0Configs.GravityType = gravityType;
     m_talon.getConfigurator().apply(slot0Configs);
+   }
+
+   /**
+    * initizalizes Motion magic profile
+    * @param velocity velocity constraint of the profile in units of rotations per second
+    * @param acceleration acceleration constraint of the profile in units of rotations per second per second
+    * @param jerk jerk constraint of the profile in units of rotations per second per second per second
+    */
+  public void initializeMotionMagic(double velocity, double acceleration, double jerk) {
+    factoryDefaultConfig();
     //Configure MotionMagic
     MotionMagicConfigs m_motionMagic = m_TalonFXConfiguration.MotionMagic;
-    if (m_TalonPIDConfig.getMotionMagic()) {
      /**
      * This is the maximum velocity Motion Magic based control modes are
      * allowed to use.  Motion Magic Velocity control modes do not use
@@ -629,8 +500,7 @@ public class LoggedTalonFX extends LoggableHardware {
      *   <li> <b>Units:</b> rps
      *   </ul>
      */
-     m_motionMagic.MotionMagicCruiseVelocity = m_TalonPIDConfig.getVelocityRPS();
-     
+     m_motionMagic.MotionMagicCruiseVelocity = velocity;
      /**
      * This is the target acceleration Motion Magic based control modes
      * are allowed to use.  Motion Magic Expo control modes do not use
@@ -643,7 +513,7 @@ public class LoggedTalonFX extends LoggableHardware {
      *   <li> <b>Units:</b> rot per sec^2
      *   </ul>
      */
-     m_motionMagic.MotionMagicAcceleration = m_TalonPIDConfig.getAccelerationRPS();
+     m_motionMagic.MotionMagicAcceleration = acceleration;
      
      /**
      * This is the target jerk (acceleration derivative) Motion Magic
@@ -659,11 +529,38 @@ public class LoggedTalonFX extends LoggableHardware {
      *   <li> <b>Units:</b> rot per sec^2
      *   </ul>
      */
-     m_motionMagic.MotionMagicJerk = m_TalonPIDConfig.getMotionMagicJerk();
+     m_motionMagic.MotionMagicJerk = jerk;
 
      m_talon.getConfigurator().apply(m_motionMagic);
-    }
-   }
+  }
+
+  /**
+    * initizalizes Motion magic profile
+    * @param velocity velocity constraint of the profile in units of rotations per second
+    * @param acceleration acceleration constraint of the profile in units of rotations per second per second
+    */
+  public void initializeMotionMagic(double velocity, double acceleration) {
+    initializeMotionMagic(velocity, acceleration, 0);
+  }
+
+    /**
+    * initizalizes Motion magic profile
+    * @param velocity velocity constraint of the profile in units of rotations per second
+    */
+  public void initializeMotionMagic(double velocity) {
+    initializeMotionMagic(velocity, 0, 0);
+  }
+
+  public void initializeMotionMagicExpo(double expokV, double expokA) {
+    factoryDefaultConfig();
+    MotionMagicConfigs m_motionMagicExpo = m_TalonFXConfiguration.MotionMagic;
+
+    m_motionMagicExpo.MotionMagicExpo_kV = expokV;
+
+    m_motionMagicExpo.MotionMagicExpo_kA = expokA;
+
+    m_talon.getConfigurator().apply(m_motionMagicExpo);
+  }
 
    /**
     * 
