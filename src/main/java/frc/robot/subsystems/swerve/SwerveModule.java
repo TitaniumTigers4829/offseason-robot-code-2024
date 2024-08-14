@@ -38,6 +38,7 @@ public class SwerveModule {
 
   private final MotionMagicVoltage mmPositionRequest;
   private final VelocityVoltage velocityRequest;
+  private final DutyCycleOut setterRequest;
 
   private String name;
 
@@ -70,6 +71,7 @@ public class SwerveModule {
 
     mmPositionRequest = new MotionMagicVoltage(0);
     velocityRequest = new VelocityVoltage(0);
+    setterRequest = new DutyCycleOut(0);
 
     CANcoderConfiguration turnEncoderConfig = new CANcoderConfiguration();
     turnEncoderConfig.MagnetSensor.MagnetOffset = -angleZero;
@@ -97,15 +99,16 @@ public class SwerveModule {
 
     TalonFXConfiguration turnConfig = new TalonFXConfiguration();
 
-    turnMotor.initializeFeedbackSensor(turnEncoder, FeedbackSensor.REMOTE);
-    turnMotor.initializeTalonPID(ModuleConstants.TURN_P, ModuleConstants.TURN_I, ModuleConstants.TURN_D);
-    turnMotor.initializeMotionMagic(ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND, ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
-    turnMotor.setNeutralMode(NeutralModeValue.Brake);
-    turnMotor.setInvert(turnReversed);
+    turnMotor.setMotorConfigTimeout(HardwareConstants.TIMEOUT_S);
+    turnMotor.initializeFeedbackSensor(turnConfig, turnEncoder, FeedbackSensor.REMOTE);
+    turnMotor.initializeTalonPID(turnConfig, ModuleConstants.TURN_P, ModuleConstants.TURN_I, ModuleConstants.TURN_D);
+    turnMotor.initializeMotionMagic(turnConfig, ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND, ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
+    turnMotor.setNeutralMode(turnConfig, NeutralModeValue.Brake);
+    turnMotor.setInvert(turnConfig, turnReversed);
     turnConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
-    turnMotor.initializeSupplyCurrentLimits(20, true, HardwareConstants.TIMEOUT_S);
+    turnMotor.initializeSupplyCurrentLimits(turnConfig, 20, true);
     turnMotor.applyConfigs(turnConfig, HardwareConstants.TIMEOUT_S);
 
     turnEncoderPos = turnEncoder.getAbsolutePosition();
@@ -130,8 +133,7 @@ public class SwerveModule {
    * @return the absolute position of the CANCoder
    */
   public double getModuleHeading() {
-    turnEncoderPos.refresh();
-    return turnEncoderPos.getValue();
+    return turnEncoderPos.refresh().getValue();
   }
 
   /**
@@ -175,8 +177,8 @@ public class SwerveModule {
         SwerveModuleState.optimize(desiredState, new Rotation2d(turnRadians));
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
-      driveMotor.setControl(new DutyCycleOut(0));
-      turnMotor.setControl(new DutyCycleOut(0));
+      driveMotor.setControl(setterRequest.withOutput(0));
+      turnMotor.setControl(setterRequest.withOutput(0));
       return;
     }
 
@@ -197,8 +199,7 @@ public class SwerveModule {
    * @return current CANCoder position in radians
    */
   public double getTurnRadians() {
-    turnEncoderPos.refresh();
-    return Rotation2d.fromRotations(turnEncoderPos.getValue()).getRadians();
+    return Rotation2d.fromRotations(getModuleHeading()).getRadians();
   }
 
   /**

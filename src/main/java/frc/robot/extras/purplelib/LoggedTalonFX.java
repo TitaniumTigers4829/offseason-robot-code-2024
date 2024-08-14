@@ -98,6 +98,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 
 /** TalonFX */
@@ -107,7 +108,7 @@ public class LoggedTalonFX extends LoggableHardware {
    * TalonFX sensor inputs
    */
   @AutoLog
-  class TalonFXInputs {
+  public static class TalonFXInputs {
     public double selectedSensorPosition = 0.0;
     public double selectedSensorVelocity = 0.0;
   }
@@ -119,6 +120,7 @@ public class LoggedTalonFX extends LoggableHardware {
   private TalonFX m_talon;
   private TalonFXInputsAutoLogged m_inputs;
   private String m_motorName;
+  private double m_timeoutSeconds;
 
   private TalonFXConfiguration m_TalonFXConfiguration;
 
@@ -133,13 +135,27 @@ public class LoggedTalonFX extends LoggableHardware {
     this.m_talon = new TalonFX(deviceID, busName);
     this.m_inputs = new TalonFXInputsAutoLogged();
     this.m_motorName = motorName;
-
-
-    // Disable motor safety
-    m_talon.setSafetyEnabled(false);
+    this.m_timeoutSeconds = 0.050;
 
     PurpleManager.add(this);
 
+    updateInputs();
+    periodic();
+  }
+
+  /**
+   * Create a TalonFX object with built-in logging
+   * @param id TalonFX ID
+   */
+  public LoggedTalonFX(int deviceID, String busName, String motorName, double timeoutSeconds) {
+    this.m_talon = new TalonFX(deviceID, busName);
+    this.m_inputs = new TalonFXInputsAutoLogged();
+    this.m_motorName = motorName;
+    this.m_timeoutSeconds = timeoutSeconds;
+
+    PurpleManager.add(this);
+
+    updateInputs();
     periodic();
   }
 
@@ -159,8 +175,7 @@ public class LoggedTalonFX extends LoggableHardware {
    * @return Position of selected sensor (in raw sensor units).
    */
   public StatusSignal<Double> getSelectedSensorPosition() {
-    m_talon.getPosition().refresh();
-    return m_talon.getPosition();
+    return m_talon.getPosition().refresh();
   }
 
   /**
@@ -170,13 +185,14 @@ public class LoggedTalonFX extends LoggableHardware {
    * See Phoenix-Documentation for how to interpret.
    */
   public StatusSignal<Double> getSelectedSensorVelocity() {
-    m_talon.getVelocity().refresh();
-    return m_talon.getVelocity();
+    return m_talon.getVelocity().refresh();
   }
  
   private void updateInputs() {
+    synchronized (m_inputs) {
     m_inputs.selectedSensorPosition = getSelectedSensorPosition().getValue();
     m_inputs.selectedSensorVelocity = getSelectedSensorVelocity().getValue();
+    }
   }
 
   @Override
@@ -195,6 +211,7 @@ public class LoggedTalonFX extends LoggableHardware {
   }
 
   public void setPosition(double position) {
+    Logger.recordOutput(m_motorName + position + "",  position);
     m_talon.setPosition(position);
   }
 
@@ -221,7 +238,27 @@ public class LoggedTalonFX extends LoggableHardware {
   }
 
   public StatusCode applyConfigs(TalonFXConfiguration configs) {
-    return applyConfigs(configs);
+    return applyConfigs(configs, 0.050);
+  }
+
+  /**
+   * refreshs the configs
+   * @param configs the configs to refresh
+   */
+  public StatusCode refreshConfigs(TalonFXConfiguration configs, double timeoutSeconds) {
+    return m_talon.getConfigurator().apply(configs, timeoutSeconds);
+  }
+
+  public StatusCode refreshConfigs(TalonFXConfiguration configs) {
+    return refreshConfigs(configs, 0.050);
+  }
+
+  public void setMotorConfigTimeout(double timeoutSeconds) {
+    m_timeoutSeconds = timeoutSeconds;
+  }
+
+  public double getMotorConfigTimeout() {
+    return m_timeoutSeconds;
   }
 
   /**
@@ -238,13 +275,12 @@ public class LoggedTalonFX extends LoggableHardware {
    *   <li> <b>Units:</b> A
    *   </ul>
    */
-  public void initializeStatorCurrentLimits(double statorCurrentLimit, boolean statorCurrentEnable, double timeoutSeconds) {
-    factoryDefaultConfig();
-    TalonFXConfiguration statorConfigs = m_TalonFXConfiguration;
-      statorConfigs.CurrentLimits.StatorCurrentLimit = statorCurrentLimit;
-      statorConfigs.CurrentLimits.StatorCurrentLimitEnable = statorCurrentEnable;
+  public void initializeStatorCurrentLimits(TalonFXConfiguration config, double statorCurrentLimit, boolean statorCurrentEnable) {
+    refreshConfigs(config, getMotorConfigTimeout());
+      config.CurrentLimits.StatorCurrentLimit = statorCurrentLimit;
+      config.CurrentLimits.StatorCurrentLimitEnable = statorCurrentEnable;
 
-    applyConfigs(statorConfigs, timeoutSeconds);
+    applyConfigs(config, getMotorConfigTimeout());
   }
 
   /**
@@ -263,13 +299,12 @@ public class LoggedTalonFX extends LoggableHardware {
    *   <li> <b>Units:</b> A
    *   </ul>
    */
-  public void initializeSupplyCurrentLimits(double supplyCurrentLimit, boolean supplyCurrentEnable, double timeoutSeconds) {
-    factoryDefaultConfig();
-    TalonFXConfiguration supplyConfigs = m_TalonFXConfiguration;
-      supplyConfigs.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
-      supplyConfigs.CurrentLimits.SupplyCurrentLimitEnable = supplyCurrentEnable;
+  public void initializeSupplyCurrentLimits(TalonFXConfiguration config, double supplyCurrentLimit, boolean supplyCurrentEnable) {
+    refreshConfigs(config, getMotorConfigTimeout());
+      config.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
+      config.CurrentLimits.SupplyCurrentLimitEnable = supplyCurrentEnable;
 
-   applyConfigs(supplyConfigs, timeoutSeconds);
+   applyConfigs(config, getMotorConfigTimeout());
   }
 
   /**
@@ -287,11 +322,11 @@ public class LoggedTalonFX extends LoggableHardware {
    *   <li> <b>Units:</b> A
    *   </ul>
    */
-  public void initializeSupplyCurrentThreshold(double supplyCurrentThreshold) {
-    CurrentLimitsConfigs limitConfigs = m_TalonFXConfiguration.CurrentLimits;
-      limitConfigs.SupplyCurrentThreshold = supplyCurrentThreshold;
+  public void initializeSupplyCurrentThreshold(TalonFXConfiguration config, double supplyCurrentThreshold) {
+    refreshConfigs(config, getMotorConfigTimeout());
+      config.CurrentLimits.SupplyCurrentThreshold = supplyCurrentThreshold;
 
-     m_talon.getConfigurator().apply(limitConfigs);
+    applyConfigs(config, getMotorConfigTimeout());
   }
 
   /**
@@ -308,11 +343,11 @@ public class LoggedTalonFX extends LoggableHardware {
    *   <li> <b>Units:</b> sec
    *   </ul>
    */
-  public void initializeSupplyTimeThreshold(double supplyTimeThreshold) {
-    CurrentLimitsConfigs limitConfigs = m_TalonFXConfiguration.CurrentLimits;
-    limitConfigs.SupplyTimeThreshold = supplyTimeThreshold;
+  public void initializeSupplyTimeThreshold(TalonFXConfiguration config, double supplyTimeThreshold) {
+    refreshConfigs(config, getMotorConfigTimeout());
+    config.CurrentLimits.SupplyTimeThreshold = supplyTimeThreshold;
    
-    m_talon.getConfigurator().apply(limitConfigs);
+    applyConfigs(config, getMotorConfigTimeout());
   }
 
   /**
@@ -320,15 +355,15 @@ public class LoggedTalonFX extends LoggableHardware {
    * @param forward Boolean to choose whether to init forward limit switch
    * @param reverse Boolean to choose whether to init reverse limit switch
    */
-  public void initializeRemoteLimitSwitches(boolean forward, boolean reverse) {
-   HardwareLimitSwitchConfigs limitConfigs = m_TalonFXConfiguration.HardwareLimitSwitch;
+  public void initializeRemoteLimitSwitches(TalonFXConfiguration config, boolean forward, boolean reverse) {
+   refreshConfigs(config, getMotorConfigTimeout());
    if (forward) {
-     limitConfigs.ForwardLimitRemoteSensorID = m_talon.getDeviceID();
+     config.HardwareLimitSwitch.ForwardLimitRemoteSensorID = m_talon.getDeviceID();
    }
    if (reverse) {
-     limitConfigs.ReverseLimitRemoteSensorID = m_talon.getDeviceID();
+     config.HardwareLimitSwitch.ReverseLimitRemoteSensorID = m_talon.getDeviceID();
    }
-   m_talon.getConfigurator().apply(limitConfigs);
+   applyConfigs(config, getMotorConfigTimeout());
   }
   
   /**
@@ -339,15 +374,15 @@ public class LoggedTalonFX extends LoggableHardware {
    * @param forward Boolean to choose whether to init forward limit switch
    * @param reverse Boolean to choose whether to init reverse limit switch
    */
-  public void initializeRemoteLimitSwitches(LoggedCANCoder cancoder, boolean forward, boolean reverse) {
-   HardwareLimitSwitchConfigs limitConfigs = m_TalonFXConfiguration.HardwareLimitSwitch;
+  public void initializeRemoteLimitSwitches(TalonFXConfiguration config, LoggedCANCoder cancoder, boolean forward, boolean reverse) {
+   refreshConfigs(config, getMotorConfigTimeout());
    if (forward) {
-    limitConfigs.ForwardLimitRemoteSensorID = cancoder.getDeviceID();  
+    config.HardwareLimitSwitch.ForwardLimitRemoteSensorID = cancoder.getDeviceID();  
    }
    if (reverse) {
-    limitConfigs.ReverseLimitRemoteSensorID = cancoder.getDeviceID();
+    config.HardwareLimitSwitch.ReverseLimitRemoteSensorID = cancoder.getDeviceID();
    }
-   m_talon.getConfigurator().apply(limitConfigs);
+   applyConfigs(config, getMotorConfigTimeout());
   }
 
   /**
@@ -386,42 +421,32 @@ public class LoggedTalonFX extends LoggableHardware {
    * @param cancoder CANCoder object to use for feedback
    * @param sensor Enum to choose which type of CANCoder
    */
-  public void initializeFeedbackSensor(LoggedCANCoder cancoder, FeedbackSensor sensor) {
-    factoryDefaultConfig();
-    FeedbackConfigs config = m_TalonFXConfiguration.Feedback;
+  public void initializeFeedbackSensor(TalonFXConfiguration config, LoggedCANCoder cancoder, FeedbackSensor sensor) {
+    refreshConfigs(config, getMotorConfigTimeout());
 
     //Automatically configure feedback sensor to built in rotor sensor
-    config.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     switch (sensor) {
       case REMOTE:
-       config.FeedbackRemoteSensorID = cancoder.getDeviceID();
-       config.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+       config.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+       config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
       case FUSED:
-       config.FeedbackRemoteSensorID = cancoder.getDeviceID();
-       config.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+       config.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+       config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
       case SYNC:
-       config.FeedbackRemoteSensorID = cancoder.getDeviceID();
-       config.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
+       config.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+       config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
       }
-      m_talon.getConfigurator().apply(config);
+      applyConfigs(config, getMotorConfigTimeout());
     }
 
   /**
    * Initialize Talon PID Configuration and Motion Magic
    * @param pidconfig PID Config to use
    */
-  public void initializeTalonPID(double kP, double kI, double kD) {
-    factoryDefaultConfig();
-    TalonFXConfiguration slot0Configs = m_TalonFXConfiguration;
-
-    //Configure PID Values
-      slot0Configs.Slot0.kP = kP;
-      slot0Configs.Slot0.kI = kI;
-      slot0Configs.Slot0.kD = kD;
-      // slot0Configs.kS = kS;
-      // slot0Configs.kV = kV;
-      // slot0Configs.kA = kA;
+  public void initializeStaticFeedforwardSign(TalonFXConfiguration config, StaticFeedforwardSignValue staticFFSignValue) {
+    refreshConfigs(config, getMotorConfigTimeout());
 
      /**
      * Static Feedforward Sign during position closed loop
@@ -437,21 +462,40 @@ public class LoggedTalonFX extends LoggableHardware {
      * dither when closed loop error is near zero.
      * 
      */
-  // slot0Configs.StaticFeedforwardSign = pidconfig.getStaticFeedForward();
+    config.Slot0.StaticFeedforwardSign = staticFFSignValue;
 
-    applyConfigs(slot0Configs);
+    applyConfigs(config, getMotorConfigTimeout());
+   }
+
+   /**
+   * Initialize Talon PID Configuration and Motion Magic
+   * @param pidconfig PID Config to use
+   */
+  public void initializeTalonPID(TalonFXConfiguration config, double kP, double kI, double kD) {
+    refreshConfigs(config, getMotorConfigTimeout());
+
+    //Configure PID Values
+      config.Slot0.kP = kP;
+      config.Slot0.kI = kI;
+      config.Slot0.kD = kD;
+
+    applyConfigs(config, getMotorConfigTimeout());
     
    }
 
-   public void initializeTalonFeedForward(double kS, double kV, double kA, double kG, GravityTypeValue gravityType) {
-    factoryDefaultConfig();
-    Slot0Configs slot0Configs = m_TalonFXConfiguration.Slot0;
-    slot0Configs.kS = kS;
-    slot0Configs.kV = kV;
-    slot0Configs.kA = kA;
-    slot0Configs.kG = kG;
-    slot0Configs.GravityType = gravityType;
-    m_talon.getConfigurator().apply(slot0Configs);
+   public void initializeFeedforward(TalonFXConfiguration config, double kS, double kV, double kA) {
+    refreshConfigs(config, getMotorConfigTimeout());
+    config.Slot0.kS = kS;
+    config.Slot0.kV = kV;
+    config.Slot0.kA = kA;
+    applyConfigs(config, getMotorConfigTimeout());
+   }
+
+   public void initializeGravityFeedforward(TalonFXConfiguration config, double kG, GravityTypeValue gravityType) {
+    refreshConfigs(config, getMotorConfigTimeout());
+    config.Slot0.kG = kG;
+    config.Slot0.GravityType = gravityType;
+    applyConfigs(config, getMotorConfigTimeout());
    }
 
    /**
@@ -460,159 +504,63 @@ public class LoggedTalonFX extends LoggableHardware {
     * @param acceleration acceleration constraint of the profile in units of rotations per second per second
     * @param jerk jerk constraint of the profile in units of rotations per second per second per second
     */
-  public void initializeMotionMagic(double velocity, double acceleration, double jerk) {
-    factoryDefaultConfig();
-    //Configure MotionMagic
-    MotionMagicConfigs m_motionMagic = m_TalonFXConfiguration.MotionMagic;
-     /**
-     * This is the maximum velocity Motion Magic based control modes are
-     * allowed to use.  Motion Magic Velocity control modes do not use
-     * this config.  When using Motion Magic Expo control modes, setting
-     * this to 0 will allow the profile to run to the max possible
-     * velocity based on Expo_kV.
-     * 
-     *   <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 9999
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rps
-     *   </ul>
-     */
-     m_motionMagic.MotionMagicCruiseVelocity = velocity;
-     /**
-     * This is the target acceleration Motion Magic based control modes
-     * are allowed to use.  Motion Magic Expo control modes do not use
-     * this config.
-     * 
-     *   <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 9999
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rot per sec^2
-     *   </ul>
-     */
-     m_motionMagic.MotionMagicAcceleration = acceleration;
-     
-     /**
-     * This is the target jerk (acceleration derivative) Motion Magic
-     * based control modes are allowed to use.  Motion Magic Expo control
-     * modes do not use this config.  This allows Motion Magic support of
-     * S-Curves.  If this is set to zero, then Motion Magic will not
-     * apply a Jerk limit.
-     * 
-     *   <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 9999
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rot per sec^2
-     *   </ul>
-     */
-     m_motionMagic.MotionMagicJerk = jerk;
+  public void initializeMotionMagic(TalonFXConfiguration config, double velocity, double acceleration, double jerk) {
 
-     m_talon.getConfigurator().apply(m_motionMagic);
+    refreshConfigs(config, getMotorConfigTimeout());
+
+     config.MotionMagic.MotionMagicCruiseVelocity = velocity;
+     
+     config.MotionMagic.MotionMagicAcceleration = acceleration;
+     
+     config.MotionMagic.MotionMagicJerk = jerk;
+
+     applyConfigs(config, getMotorConfigTimeout());
   }
 
-  /**
+     /**
     * initizalizes Motion magic profile
     * @param velocity velocity constraint of the profile in units of rotations per second
     * @param acceleration acceleration constraint of the profile in units of rotations per second per second
     */
-  public void initializeMotionMagic(double velocity, double acceleration) {
-    initializeMotionMagic(velocity, acceleration, 0);
+  public void initializeMotionMagic(TalonFXConfiguration config, double velocity, double acceleration) {
+    initializeMotionMagic(config, velocity, acceleration);
   }
 
-    /**
-    * initizalizes Motion magic profile
-    * @param velocity velocity constraint of the profile in units of rotations per second
-    */
-  public void initializeMotionMagic(double velocity) {
-    initializeMotionMagic(velocity, 0, 0);
+  public void initializeMotionMagicExpo(TalonFXConfiguration config, double expokV, double expokA) {
+    refreshConfigs(config, getMotorConfigTimeout());
+
+    config.MotionMagic.MotionMagicExpo_kV = expokV;
+
+    config.MotionMagic.MotionMagicExpo_kA = expokA;
+
+    applyConfigs(config, getMotorConfigTimeout());
   }
 
-  public void initializeMotionMagicExpo(double expokV, double expokA) {
-    factoryDefaultConfig();
-    MotionMagicConfigs m_motionMagicExpo = m_TalonFXConfiguration.MotionMagic;
-
-    m_motionMagicExpo.MotionMagicExpo_kV = expokV;
-
-    m_motionMagicExpo.MotionMagicExpo_kA = expokA;
-
-    m_talon.getConfigurator().apply(m_motionMagicExpo);
+  public void setNeutralMode(TalonFXConfiguration config, NeutralModeValue neutralMode) {
+    refreshConfigs(config, getMotorConfigTimeout());
+    config.MotorOutput.NeutralMode = neutralMode;
+    applyConfigs(config, getMotorConfigTimeout());
   }
 
-  public void setNeutralMode(NeutralModeValue neutralMode) {
-    factoryDefaultConfig();
-    TalonFXConfiguration neutralConfig = m_TalonFXConfiguration;
-    neutralConfig.MotorOutput.NeutralMode = neutralMode;
-    applyConfigs(neutralConfig);
+  public void setInvert(TalonFXConfiguration config, InvertedValue invertDirection) {
+    refreshConfigs(config, getMotorConfigTimeout());
+    config.MotorOutput.Inverted = invertDirection;
+    applyConfigs(config, getMotorConfigTimeout());
   }
 
-  public void setInvert(InvertedValue invertDirection) {
-    factoryDefaultConfig();
-    TalonFXConfiguration invertConfig = m_TalonFXConfiguration;
-    invertConfig.MotorOutput.Inverted = invertDirection;
-    applyConfigs(invertConfig);
-  }
+   /**
+     * Control motor with generic control request object.
+     * <p>
+     * User must make sure the specified object is castable to a valid control request,
+     * otherwise this function will fail at run-time and return the NotSupported StatusCode
+     *
+     * @param request                Control object to request of the device
+     * @return Status Code of the request, 0 is OK
+     */
+    public StatusCode setControl(ControlRequest request) {
+      return m_talon.setControl(request);
+    }
 
-  /**
-   * Request PID to target position with duty cycle feedforward.
-   * <p>
-   * This control mode will set the motor's position setpoint to the
-   * position specified by the user. In addition, it will apply an
-   * additional duty cycle as an arbitrary feedforward value.
-   *   <ul>
-   *   <li> <b>PositionDutyCycle Parameters:</b> 
-   *    <ul>
-   *    <li> <b>Position:</b> Position to drive toward in rotations.
-   *    <li> <b>Velocity:</b> Velocity to drive toward in rotations per second. This
-   *                       is typically used for motion profiles generated by the
-   *                       robot program.
-   *    <li> <b>EnableFOC:</b> Set to true to use FOC commutation (requires Phoenix
-   *                        Pro), which increases peak power by ~15%. Set to false
-   *                        to use trapezoidal commutation.  FOC improves motor
-   *                        performance by leveraging torque (current) control. 
-   *                        However, this may be inconvenient for applications
-   *                        that require specifying duty cycle or voltage. 
-   *                        CTR-Electronics has developed a hybrid method that
-   *                        combines the performances gains of FOC while still
-   *                        allowing applications to provide duty cycle or voltage
-   *                        demand.  This not to be confused with simple
-   *                        sinusoidal control or phase voltage control which
-   *                        lacks the performance gains.
-   *    <li> <b>FeedForward:</b> Feedforward to apply in fractional units between -1
-   *                          and +1.
-   *    <li> <b>Slot:</b> Select which gains are applied by selecting the slot.  Use
-   *                   the configuration api to set the gain values for the
-   *                   selected slot before enabling this feature. Slot must be
-   *                   within [0,2].
-   *    <li> <b>OverrideBrakeDurNeutral:</b> Set to true to static-brake the rotor
-   *                                      when output is zero (or within
-   *                                      deadband).  Set to false to use the
-   *                                      NeutralMode configuration setting
-   *                                      (default). This flag exists to provide
-   *                                      the fundamental behavior of this control
-   *                                      when output is zero, which is to provide
-   *                                      0V to the motor.
-   *    <li> <b>LimitForwardMotion:</b> Set to true to force forward limiting.  This
-   *                                 allows users to use other limit switch
-   *                                 sensors connected to robot controller.  This
-   *                                 also allows use of active sensors that
-   *                                 require external power.
-   *    <li> <b>LimitReverseMotion:</b> Set to true to force reverse limiting.  This
-   *                                 allows users to use other limit switch
-   *                                 sensors connected to robot controller.  This
-   *                                 also allows use of active sensors that
-   *                                 require external power.
-   *    </ul>
-   *   </ul>
-   *
-   * @param request                Control object to request of the device
-   * @return Code response of the request
-   */
-  public StatusCode setControl(ControlRequest request)
-  {
-    return m_talon.setControl(request);
-  }
 
   public StatusCode setControl(VelocityVoltage request) {
     logOutputs(request, request.Velocity);
@@ -643,7 +591,6 @@ public class LoggedTalonFX extends LoggableHardware {
     logOutputs(request, request.Output);
     return setControl(request);
   }
-
 
   /**
   * Closes the TalonFX motor controller
