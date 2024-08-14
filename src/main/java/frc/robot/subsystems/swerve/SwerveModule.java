@@ -176,6 +176,7 @@ public class SwerveModule {
     SwerveModuleState optimizedDesiredState =
         SwerveModuleState.optimize(desiredState, new Rotation2d(turnRadians));
 
+    // TODO: make better way to stop motor eventually...
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       driveMotor.setControl(setterRequest.withOutput(0));
       turnMotor.setControl(setterRequest.withOutput(0));

@@ -11,6 +11,7 @@ import frc.robot.extras.purplelib.TalonFXInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
+import frc.robot.extras.TalonUtil;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.StatusCode;
@@ -211,7 +212,7 @@ public class LoggedTalonFX extends LoggableHardware {
   }
 
   public void setPosition(double position) {
-    Logger.recordOutput(m_motorName + position + "",  position);
+    Logger.recordOutput(m_motorName + " motor w/ position of " + position,  position);
     m_talon.setPosition(position);
   }
 
@@ -233,20 +234,20 @@ public class LoggedTalonFX extends LoggableHardware {
    * @param configs Configs to apply against.
    * @return StatusCode of the set command
    */
-  public StatusCode applyConfigs(TalonFXConfiguration configs, double timeoutSeconds) {
-     return m_talon.getConfigurator().apply(configs, timeoutSeconds);
+  public void applyConfigs(TalonFXConfiguration configs, double timeoutSeconds) {
+      TalonUtil.applyAndCheckConfiguration(m_talon, configs, timeoutSeconds);
   }
 
-  public StatusCode applyConfigs(TalonFXConfiguration configs) {
-    return applyConfigs(configs, 0.050);
-  }
+  // public StatusCode applyConfigs(TalonFXConfiguration configs) {
+  //   return applyConfigs(configs, 0.050);
+  // }
 
   /**
    * refreshs the configs
    * @param configs the configs to refresh
    */
   public StatusCode refreshConfigs(TalonFXConfiguration configs, double timeoutSeconds) {
-    return m_talon.getConfigurator().apply(configs, timeoutSeconds);
+    return m_talon.getConfigurator().refresh(configs, timeoutSeconds);
   }
 
   public StatusCode refreshConfigs(TalonFXConfiguration configs) {
