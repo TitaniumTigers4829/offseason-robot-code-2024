@@ -1,10 +1,11 @@
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems.swerve.module;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.subsystems.swerve.module.ModuleIO.ModuleIOInputs;
 
 /**
  * Physics sim implementation of module IO.

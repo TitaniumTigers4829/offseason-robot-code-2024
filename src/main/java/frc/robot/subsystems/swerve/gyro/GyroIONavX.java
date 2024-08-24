@@ -1,8 +1,9 @@
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems.swerve.gyro;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.subsystems.swerve.gyro.GyroIO.GyroIOInputs;
 
 public class GyroIONavX implements GyroIO {
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);

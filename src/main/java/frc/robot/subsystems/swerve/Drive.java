@@ -21,6 +21,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.extras.LocalADStarAK;
+import frc.robot.subsystems.swerve.gyro.GyroIO;
+import frc.robot.subsystems.swerve.module.Module;
+import frc.robot.subsystems.swerve.module.ModuleIO;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
