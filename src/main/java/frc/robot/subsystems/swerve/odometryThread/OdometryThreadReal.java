@@ -51,8 +51,6 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
 
     private void refreshSignalsAndBlockThread() {
         switch (Constants.SwerveDriveChassisConfigs.SWERVE_DRIVE_TYPE) {
-            case REV ->
-                    MapleTimeUtils.delay(1.0 / Constants.SwerveDriveChassisConfigs.ODOMETRY_FREQUENCY);
             case CTRE_ON_RIO -> {
                 MapleTimeUtils.delay(1.0 / Constants.SwerveDriveChassisConfigs.ODOMETRY_FREQUENCY);
                 BaseStatusSignal.refreshAll();

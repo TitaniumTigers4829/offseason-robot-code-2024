@@ -2,11 +2,12 @@ package frc.robot.subsystems.swerve.gyro;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.swerve.gyro.GyroIO.GyroIOInputs;
 
 public class GyroIONavX implements GyroIO {
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final AHRS gyro = new AHRS(SPI.Port.kMXP, (byte) 250);
 
     public GyroIONavX() {
         reset();
@@ -15,7 +16,7 @@ public class GyroIONavX implements GyroIO {
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
-        inputs.yaw = gyro.getAngle();
+        inputs.yawPosition = gyro.getAngle();
         inputs.yawVelocity = gyro.getRate();
     }
 
