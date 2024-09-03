@@ -1,4 +1,4 @@
-package frc.robot.utils.CompetitionFieldUtils.Simulations;
+package frc.robot.subsystems.swerve.physicsSim;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,9 +9,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
 import frc.robot.constants.LogPaths;
-import frc.robot.subsystems.drive.IO.GyroIOSim;
-import frc.robot.subsystems.drive.IO.ModuleIOSim;
-import frc.robot.subsystems.drive.IO.OdometryThread;
+import frc.robot.subsystems.swerve.gyro.GyroIOSim;
+import frc.robot.subsystems.swerve.module.ModuleIOSim;
+import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.utils.CustomMaths.GeometryConvertor;
 import frc.robot.utils.MapleTimeUtils;
 import org.dyn4j.geometry.Vector2;
