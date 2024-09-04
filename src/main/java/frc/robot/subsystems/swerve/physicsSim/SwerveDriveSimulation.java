@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.constants.LogPaths;
 import frc.robot.subsystems.swerve.gyro.GyroIOSim;
 import frc.robot.subsystems.swerve.module.ModuleIOSim;
@@ -61,7 +62,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
             moduleSimulationSubTick(
                     getObjectOnFieldPose2d(),
                     modules[i],
-                    MODULE_TRANSLATIONS[i],
+                    DriveConstants.MODULE_TRANSLATIONS[i],
                     tickNum, tickSeconds
             );
 

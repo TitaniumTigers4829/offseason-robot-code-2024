@@ -1,9 +1,9 @@
-package frc.robot.utils.CompetitionFieldUtils.Simulations;
+package frc.robot.subsystems.swerve.physicsSim;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.constants.DriveTrainConstants;
-import frc.robot.utils.CompetitionFieldUtils.Objects.RobotOnFieldDisplay;
+import frc.robot.extras.simulation.fieldDisplay.RobotOnFieldDisplay;
 import frc.robot.utils.CustomMaths.GeometryConvertor;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.Force;
