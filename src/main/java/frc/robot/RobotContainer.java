@@ -21,9 +21,9 @@ import frc.robot.extras.SmarterDashboardRegistry;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.swerve.Drive;
-import frc.robot.subsystems.swerve.gyro.GyroIO;
-import frc.robot.subsystems.swerve.gyro.GyroIONavX;
-import frc.robot.subsystems.swerve.module.ModuleIOSim;
+import frc.robot.subsystems.swerve.gyroIO.GyroIO;
+import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 
 public class RobotContainer {
 

@@ -10,8 +10,9 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.constants.LogPaths;
-import frc.robot.subsystems.swerve.gyro.GyroIOSim;
-import frc.robot.subsystems.swerve.module.ModuleIOSim;
+import frc.robot.extras.GeomUtil;
+import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.utils.CustomMaths.GeometryConvertor;
 import frc.robot.utils.MapleTimeUtils;
@@ -87,7 +88,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
 
         /* simulate the propelling force of the module */
         final Rotation2d moduleWorldFacing = module.getSimulationSteerFacing().plus(robotWorldPose.getRotation());
-        final Vector2 moduleWorldPosition = GeometryConvertor.toDyn4jVector2(
+        final Vector2 moduleWorldPosition = GeomUtil.toDyn4jVector2(
                 robotWorldPose.getTranslation()
                         .plus(moduleTranslationOnRobot.rotateBy(robotWorldPose.getRotation()))
         );
@@ -147,7 +148,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
 
     private ChassisSpeeds getFreeSpeedsFieldRelative() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
-                DRIVE_KINEMATICS.toChassisSpeeds(
+                DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
                         Arrays.stream(modules)
                                 .map(ModuleIOSim::getSimulationSwerveState)
                                 .toArray(SwerveModuleState[]::new)),
@@ -157,7 +158,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
 
     private ChassisSpeeds getDesiredSpeedsFieldRelative() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
-                DRIVE_KINEMATICS.toChassisSpeeds(
+                DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
                         Arrays.stream(modules)
                                 .map(ModuleIOSim::getDesiredSwerveState)
                                 .toArray(SwerveModuleState[]::new)),

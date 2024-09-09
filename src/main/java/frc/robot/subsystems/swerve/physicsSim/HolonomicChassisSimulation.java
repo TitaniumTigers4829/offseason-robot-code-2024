@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.constants.DriveTrainConstants;
 import frc.robot.extras.simulation.fieldDisplay.RobotOnFieldDisplay;
-import frc.robot.utils.CustomMaths.GeometryConvertor;
+import frc.robot.extras.GeomUtil;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.Geometry;
@@ -39,7 +39,7 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
     }
 
     public void setSimulationWorldPose(Pose2d robotPose) {
-        super.transform.set(GeometryConvertor.toDyn4jTransform(robotPose));
+        super.transform.set(GeomUtil.toDyn4jTransform(robotPose));
         super.linearVelocity.set(0, 0);
     }
 
@@ -49,7 +49,7 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
      * this is different from runRawChassisSpeeds(), which applies forces on the chassis and accelerates smoothly according to physics
      * */
     protected void setRobotSpeeds(ChassisSpeeds givenSpeeds) {
-        super.setLinearVelocity(GeometryConvertor.toDyn4jLinearVelocity(givenSpeeds));
+        super.setLinearVelocity(GeomUtil.toDyn4jLinearVelocity(givenSpeeds));
         super.setAngularVelocity(givenSpeeds.omegaRadiansPerSecond);
     }
 
@@ -60,9 +60,9 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
     protected void simulateChassisBehaviorWithFieldRelativeSpeeds(ChassisSpeeds desiredChassisSpeedsFieldRelative) {
         super.setAtRest(false);
 
-        final Vector2 desiredLinearMotionPercent = GeometryConvertor
+        final Vector2 desiredLinearMotionPercent = GeomUtil
                 .toDyn4jLinearVelocity(desiredChassisSpeedsFieldRelative)
-                .multiply(1.0/ profile.robotMaxVelocity);
+                .multiply(1.0 / profile.robotMaxVelocity);
         simulateChassisTranslationalBehavior(Vector2.create(
                 constrainMagnitude(desiredLinearMotionPercent.getMagnitude(), 1),
                 desiredLinearMotionPercent.getDirection()
@@ -110,7 +110,7 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
 
     @Override
     public Pose2d getObjectOnFieldPose2d() {
-        return GeometryConvertor.toWpilibPose2d(getTransform());
+        return GeomUtil.toWpilibPose2d(getTransform());
     }
 
     public ChassisSpeeds getMeasuredChassisSpeedsRobotRelative() {
@@ -118,7 +118,7 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
     }
 
     public ChassisSpeeds getMeasuredChassisSpeedsFieldRelative() {
-        return GeometryConvertor.toWpilibChassisSpeeds(getLinearVelocity(), getAngularVelocity());
+        return GeomUtil.toWpilibChassisSpeeds(getLinearVelocity(), getAngularVelocity());
     }
 
     /**
