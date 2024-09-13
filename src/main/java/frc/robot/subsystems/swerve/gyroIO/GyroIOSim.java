@@ -3,19 +3,23 @@ package frc.robot.subsystems.swerve.gyroIO;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.utils.CustomMaths.MapleCommonMath;
-import frc.robot.utils.MapleTimeUtils;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.extras.CommonMath;
+import frc.robot.extras.TimeUtils;
+
+// import frc.robot.utils.CustomMaths.MapleCommonMath;
+// import frc.robot.utils.MapleTimeUtils;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 
-import static frc.robot.Constants.DriveTrainPhysicsSimulationConstants.*;
+import static frc.robot.Constants.DriveTrainConstants.*;
 
 public class GyroIOSim implements GyroIO {
     public final GyroPhysicsSimulationResults gyroPhysicsSimulationResults = new GyroPhysicsSimulationResults();
     public double previousAngularVelocityRadPerSec = gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec;
     public Rotation2d currentGyroDriftAmount = new Rotation2d();
-    public static final String GYRO_LOG_PATH = Constants.LogConfigs.PHYSICS_SIMULATION_PATH + "GyroSim/";
+    public static final String GYRO_LOG_PATH = Constants.LogPaths.PHYSICS_SIMULATION_PATH + "GyroSim/";
 
     @Override
     public void updateInputs(GyroIOInputs inputs) {
@@ -27,7 +31,7 @@ public class GyroIOSim implements GyroIO {
                 angularAccelerationMagnitudeRadPerSecSq * SKIDDING_AMOUNT_AT_THRESHOLD_RAD / GYRO_ANGULAR_ACCELERATION_THRESHOLD_SKIDDING_RAD_PER_SEC_SQ
                 : Math.abs(gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec) * GYRO_DRIFT_IN_1_TICK_Std_Dev_RAD / AVERAGE_VELOCITY_RAD_PER_SEC_DURING_TEST;
         currentGyroDriftAmount = currentGyroDriftAmount.rotateBy(
-                Rotation2d.fromRadians(MapleCommonMath.generateRandomNormal(0, currentTickDriftStdDevRad))
+                Rotation2d.fromRadians(CommonMath.generateRandomNormal(0, currentTickDriftStdDevRad))
         );
 
         inputs.connected = gyroPhysicsSimulationResults.hasReading;
@@ -36,14 +40,14 @@ public class GyroIOSim implements GyroIO {
                 .map((robotFacing) -> robotFacing.rotateBy(currentGyroDriftAmount))
                 .toArray(Rotation2d[]::new);
         inputs.yawPosition = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1];
-        inputs.yawVelocityRadPerSec = gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec;
+        inputs.yawVelocity = gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec;
 
         Logger.recordOutput(GYRO_LOG_PATH + "robot true yaw (deg)",
                 gyroPhysicsSimulationResults.odometryYawPositions[gyroPhysicsSimulationResults.odometryYawPositions.length-1].getDegrees()
         );
-        Logger.recordOutput(GYRO_LOG_PATH + "robot power for (Sec)", MapleTimeUtils.getLogTimeSeconds());
+        Logger.recordOutput(GYRO_LOG_PATH + "robot power for (Sec)", TimeUtils.getLogTimeSeconds());
         Logger.recordOutput(GYRO_LOG_PATH + "imu total drift (Deg)", currentGyroDriftAmount.getDegrees());
-        Logger.recordOutput(GYRO_LOG_PATH + "gyro reading yaw (Deg)", inputs.yawPosition.getDegrees());
+        Logger.recordOutput(GYRO_LOG_PATH + "gyro reading yaw (Deg)", inputs.yawPosition);
         Logger.recordOutput(GYRO_LOG_PATH + "angular velocity (Deg per Sec)", Math.toDegrees(previousAngularVelocityRadPerSec));
         Logger.recordOutput(GYRO_LOG_PATH + "gyro angular acc (Deg per Sec^2)", Math.toDegrees(angularAccelerationMagnitudeRadPerSecSq));
         Logger.recordOutput(GYRO_LOG_PATH + "new drift in current tick Std Dev (Deg)", Math.toDegrees(currentTickDriftStdDevRad));
@@ -61,7 +65,7 @@ public class GyroIOSim implements GyroIO {
         public boolean hasReading;
 
         public final Rotation2d[] odometryYawPositions =
-                new Rotation2d[SIM_ITERATIONS_PER_ROBOT_PERIOD];
+                new Rotation2d[DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD];
 
         public GyroPhysicsSimulationResults() {
             robotAngularVelocityRadPerSec = 0.0;

@@ -3,10 +3,12 @@ package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.IO.OdometryThread;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.extras.TimeUtils;
+import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread.OdometryDoubleInput;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread.OdometryThreadInputs;
-import frc.robot.utils.MapleTimeUtils;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -14,14 +16,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class OdometryThreadReal extends Thread implements OdometryThread {
+    private final SwerveDrive.DriveType driveType;
     private final OdometryDoubleInput[] odometryDoubleInputs;
     private final BaseStatusSignal[] statusSignals;
     private final Queue<Double> timeStampsQueue;
     private final Lock lock = new ReentrantLock();
-    public OdometryThreadReal(OdometryDoubleInput[] odometryDoubleInputs, BaseStatusSignal[] statusSignals) {
-        this.timeStampsQueue = new ArrayBlockingQueue<>(Constants.SwerveDriveChassisConfigs.ODOMETRY_CACHE_CAPACITY);
+    public OdometryThreadReal(SwerveDrive.DriveType driveType, OdometryDoubleInput[] odometryDoubleInputs, BaseStatusSignal[] statusSignals) {
+        this.timeStampsQueue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
         this.odometryDoubleInputs = odometryDoubleInputs;
         this.statusSignals = statusSignals;
+        this.driveType = driveType;
 
         setName("OdometryThread");
         setDaemon(true);
@@ -50,18 +54,18 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
     }
 
     private void refreshSignalsAndBlockThread() {
-        switch (Constants.SwerveDriveChassisConfigs.SWERVE_DRIVE_TYPE) {
+        switch (driveType) {
             case CTRE_ON_RIO -> {
-                MapleTimeUtils.delay(1.0 / Constants.SwerveDriveChassisConfigs.ODOMETRY_FREQUENCY);
+                TimeUtils.delay(1.0 / DriveTrainConstants.ODOMETRY_FREQUENCY);
                 BaseStatusSignal.refreshAll();
             }
             case CTRE_ON_CANIVORE ->
-                    BaseStatusSignal.waitForAll(Constants.SwerveDriveChassisConfigs.ODOMETRY_WAIT_TIMEOUT_SECONDS, statusSignals);
+                    BaseStatusSignal.waitForAll(DriveTrainConstants.ODOMETRY_WAIT_TIMEOUT_SECONDS, statusSignals);
         }
     }
 
     private double estimateAverageTimeStamps() {
-        double currentTime = MapleTimeUtils.getRealTimeSeconds(), totalLatency = 0;
+        double currentTime = TimeUtils.getRealTimeSeconds(), totalLatency = 0;
         for (BaseStatusSignal signal:statusSignals)
             totalLatency += signal.getTimestamp().getLatency();
 

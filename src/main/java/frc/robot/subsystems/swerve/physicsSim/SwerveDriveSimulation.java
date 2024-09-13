@@ -9,19 +9,19 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.constants.LogPaths;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.Constants.LogPaths;
 import frc.robot.extras.GeomUtil;
+import frc.robot.extras.TimeUtils;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
-import frc.robot.utils.CustomMaths.GeometryConvertor;
-import frc.robot.utils.MapleTimeUtils;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import static frc.robot.constants.DriveTrainConstants.*;
+import static frc.robot.Constants.DriveTrainConstants.*;
 
 /**
  * simulates the behavior of our robot
@@ -92,10 +92,10 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
                 robotWorldPose.getTranslation()
                         .plus(moduleTranslationOnRobot.rotateBy(robotWorldPose.getRotation()))
         );
-        double actualPropellingForceOnFloorNewtons = module.getSimulationTorque() / WHEEL_RADIUS_METERS;
-        final boolean skidding = Math.abs(actualPropellingForceOnFloorNewtons) > MAX_FRICTION_FORCE_PER_MODULE;
+        double actualPropellingForceOnFloorNewtons = module.getSimulationTorque() / DriveTrainConstants.WHEEL_RADIUS_METERS;
+        final boolean skidding = Math.abs(actualPropellingForceOnFloorNewtons) > DriveTrainConstants.MAX_FRICTION_FORCE_PER_MODULE;
         if (skidding)
-            actualPropellingForceOnFloorNewtons = Math.copySign(MAX_FRICTION_FORCE_PER_MODULE, actualPropellingForceOnFloorNewtons);
+            actualPropellingForceOnFloorNewtons = Math.copySign(DriveTrainConstants.MAX_FRICTION_FORCE_PER_MODULE, actualPropellingForceOnFloorNewtons);
         super.applyForce(
                 Vector2.create(actualPropellingForceOnFloorNewtons, moduleWorldFacing.getRadians()),
                 moduleWorldPosition
@@ -125,12 +125,12 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
         final Translation2d translationalSpeedsDifference = new Translation2d(speedsDifference.vxMetersPerSecond, speedsDifference.vyMetersPerSecond);
         final double forceMultiplier = Math.min(translationalSpeedsDifference.getNorm() * 3, 1);
         super.applyForce(Vector2.create(
-                forceMultiplier * MAX_FRICTION_ACCELERATION * ROBOT_MASS_KG,
+                forceMultiplier * DriveTrainConstants.MAX_FRICTION_ACCELERATION * DriveTrainConstants.ROBOT_MASS_KG,
                 translationalSpeedsDifference.getAngle().getRadians()
         ));
 
         if (Math.abs(getDesiredSpeedsFieldRelative().omegaRadiansPerSecond)
-                / CHASSIS_MAX_ANGULAR_VELOCITY_RAD_PER_SEC
+                / DriveTrainConstants.CHASSIS_MAX_ANGULAR_VELOCITY_RAD_PER_SEC
                 < 0.01)
             simulateChassisRotationalBehavior(0);
     }
@@ -180,10 +180,10 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
     public static final class OdometryThreadSim implements OdometryThread {
         @Override
         public void updateInputs(OdometryThreadInputs inputs) {
-            inputs.measurementTimeStamps = new double[SIMULATION_TICKS_IN_1_PERIOD];
-            final double robotStartingTimeStamps = MapleTimeUtils.getLogTimeSeconds(),
-                    iterationPeriodSeconds = Robot.defaultPeriodSecs/SIMULATION_TICKS_IN_1_PERIOD;
-            for (int i =0; i < SIMULATION_TICKS_IN_1_PERIOD; i++)
+            inputs.measurementTimeStamps = new double[DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD];
+            final double robotStartingTimeStamps = TimeUtils.getLogTimeSeconds(),
+                    iterationPeriodSeconds = Robot.defaultPeriodSecs / DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD;
+            for (int i =0; i < DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD; i++)
                 inputs.measurementTimeStamps[i] = robotStartingTimeStamps + i * iterationPeriodSeconds;
         }
     }

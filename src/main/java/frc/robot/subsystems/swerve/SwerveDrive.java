@@ -67,7 +67,7 @@ public class SwerveDrive extends VirtualSubsystem {
                 VecBuilder.fill(TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION, TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION, ROTATIONAL_STANDARD_ERROR_RADIANS_FOR_SINGLE_OBSERVATION)
         );
 
-        this.odometryThread = OdometryThread.createInstance(type);
+        this.odometryThread = OdometryThread.createInstance();
         this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
         this.odometryThread.start();
 
@@ -79,15 +79,15 @@ public class SwerveDrive extends VirtualSubsystem {
 
     
     public void periodic(double dt, boolean enabled) {
-        final double t0 = MapleTimeUtils.getRealTimeSeconds();
+        final double t0 = TimeUtils.getRealTimeSeconds();
         fetchOdometryInputs();
-        Logger.recordOutput("SystemPerformance/OdometryFetchingTimeMS", (MapleTimeUtils.getRealTimeSeconds() - t0)*1000);
+        Logger.recordOutput("SystemPerformance/OdometryFetchingTimeMS", (TimeUtils.getRealTimeSeconds() - t0)*1000);
         modulesPeriodic(dt, enabled);
 
         for (int timeStampIndex = 0; timeStampIndex < odometryThreadInputs.measurementTimeStamps.length; timeStampIndex++)
             feedSingleOdometryDataToPositionEstimator(timeStampIndex);
 
-        final double timeNotVisionResultSeconds = MapleTimeUtils.getLogTimeSeconds() - previousMeasurementTimeStamp;
+        final double timeNotVisionResultSeconds = TimeUtils.getLogTimeSeconds() - previousMeasurementTimeStamp;
         visionNoResultAlert.setText(String.format("AprilTag Vision No Result For %.2f (s)", timeNotVisionResultSeconds));
         visionNoResultAlert.setActivated(timeNotVisionResultSeconds > 4);
     }

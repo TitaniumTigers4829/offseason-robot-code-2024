@@ -1,8 +1,3 @@
-
-// Original Source:
-// https://github.com/Mechanical-Advantage/AdvantageKit/tree/main/example_projects/advanced_swerve_drive/src/main, Copyright 2021-2024 FRC 6328
-// Modified by 5516 Iron Maple https://github.com/Shenzhen-Robotics-Alliance/
-
 package frc.robot.subsystems.swerve.moduleIO;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -183,11 +178,9 @@ public class ModuleIOTalonFX implements ModuleIO {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-    double turnRadians = getTurnRadians();
-
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(desiredState, new Rotation2d(turnRadians));
+        SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(desiredState.angle.getRotations()));
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       driveMotor.set(0);

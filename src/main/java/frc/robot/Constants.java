@@ -14,13 +14,18 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.extras.Alert;
 import frc.robot.extras.Alert.AlertType;
 
 
 public final class Constants {
+
+  public class LogPaths {
+    public static final String SYSTEM_PERFORMANCE_PATH = "SystemPerformance/";
+    public static final String PHYSICS_SIMULATION_PATH = "MaplePhysicsSimulation/";
+    public static final String APRIL_TAGS_VISION_PATH = "Vision/AprilTags/";
+}
+
   public static final class HardwareConstants {
 
   // public static RobotType getRobot() {
@@ -52,8 +57,6 @@ public final class Constants {
     public static final String RIO_CAN_BUS_STRING = "rio";
 
     public static final double MIN_FALCON_DEADBAND = 0.0001;
-
-    public static final PneumaticsModuleType PNEUMATICS_MODULE_TYPE = PneumaticsModuleType.CTREPCM;
 
     public static final double DEADBAND_VALUE = 0.05;
 
