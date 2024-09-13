@@ -16,8 +16,10 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.extras.Alert;
+import frc.robot.extras.TimeUtils;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOInputsAutoLogged;
@@ -67,7 +69,7 @@ public class SwerveDrive extends VirtualSubsystem {
                 VecBuilder.fill(TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION, TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION, ROTATIONAL_STANDARD_ERROR_RADIANS_FOR_SINGLE_OBSERVATION)
         );
 
-        this.odometryThread = OdometryThread.createInstance();
+        this.odometryThread = OdometryThread.createInstance(type);
         this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
         this.odometryThread.start();
 
