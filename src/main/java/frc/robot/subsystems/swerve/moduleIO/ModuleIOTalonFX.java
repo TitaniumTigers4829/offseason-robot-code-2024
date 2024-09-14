@@ -180,7 +180,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(desiredState.angle.getRotations()));
+        SwerveModuleState.optimize(desiredState, desiredState.angle);
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       driveMotor.set(0);

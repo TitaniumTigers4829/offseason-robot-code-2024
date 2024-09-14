@@ -65,8 +65,8 @@ public class SwerveDrive extends VirtualSubsystem {
         lastModulePositions = new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
         this.odometry = new SwerveDrivePoseEstimator(
                 DriveConstants.DRIVE_KINEMATICS, rawGyroRotation, lastModulePositions, new Pose2d(),
-                VecBuilder.fill(ODOMETRY_TRANSLATIONAL_STANDARD_ERROR_METERS, ODOMETRY_TRANSLATIONAL_STANDARD_ERROR_METERS, GYRO_ROTATIONAL_STANDARD_ERROR_RADIANS),
-                VecBuilder.fill(TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION, TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION, ROTATIONAL_STANDARD_ERROR_RADIANS_FOR_SINGLE_OBSERVATION)
+                VecBuilder.fill(1,2,3), // TODO: add da constants
+                VecBuilder.fill(4,5,6) // TODO: add da constants
         );
 
         this.odometryThread = OdometryThread.createInstance(type);
@@ -224,7 +224,6 @@ public class SwerveDrive extends VirtualSubsystem {
     }
 
     @AutoLogOutput(key="Odometry/RobotPosition")
-    
     public Pose2d getPose() {
         return odometry.getEstimatedPosition();
     }

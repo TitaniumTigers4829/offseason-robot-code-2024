@@ -2,16 +2,15 @@ package frc.robot.subsystems.swerve.physicsSim;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.constants.DriveTrainConstants;
+import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.extras.simulation.fieldDisplay.RobotOnFieldDisplay;
+import frc.robot.extras.CommonMath;
 import frc.robot.extras.GeomUtil;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
-
-import static frc.robot.utils.CustomMaths.MapleCommonMath.constrainMagnitude;
 
 /**
  * simulates the physics behavior of holonomic chassis,
@@ -64,12 +63,12 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
                 .toDyn4jLinearVelocity(desiredChassisSpeedsFieldRelative)
                 .multiply(1.0 / profile.robotMaxVelocity);
         simulateChassisTranslationalBehavior(Vector2.create(
-                constrainMagnitude(desiredLinearMotionPercent.getMagnitude(), 1),
+                CommonMath.constrainMagnitude(desiredLinearMotionPercent.getMagnitude(), 1),
                 desiredLinearMotionPercent.getDirection()
         ));
 
         final double desiredRotationalMotionPercent = desiredChassisSpeedsFieldRelative.omegaRadiansPerSecond / profile.maxAngularVelocity;
-        simulateChassisRotationalBehavior(constrainMagnitude(desiredRotationalMotionPercent, 1));
+        simulateChassisRotationalBehavior(CommonMath.constrainMagnitude(desiredRotationalMotionPercent, 1));
     }
 
     protected void simulateChassisTranslationalBehavior(Vector2 desiredLinearMotionPercent) {

@@ -6,11 +6,13 @@ package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
@@ -69,30 +71,29 @@ public class SwerveModule extends VirtualSubsystem {
         }
     }
 
-    private void runSteerCloseLoop() {
-        turnCloseLoop.setSetpoint(setPoint.angle.getRadians());
-        io.setSteerPowerPercent(turnCloseLoop.calculate(getSteerFacing().getRadians()));
-    }
+  //   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
+  //     fieldRelative
+  //           ? ChassisSpeeds.fromFieldRelativeSpeeds(
+  //               xSpeed, ySpeed, rotationSpeed, 90)
+  //           : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed); //TODO: add setDesiredState()!!!
+    
 
-    private void runDriveControlLoop() {
-        final double adjustSpeedSetpointMetersPerSec = SwerveStateProjection.project(setPoint, getSteerFacing());
-        io.setDriveVoltage(
-                DRIVE_OPEN_LOOP.calculate(adjustSpeedSetpointMetersPerSec)
-                + driveCloseLoop.calculate(getDriveVelocityMetersPerSec(), adjustSpeedSetpointMetersPerSec)
-        );
-    }
+  //   setModuleStates();
+  // }
 
-    /**
-     * Runs the module with the specified setpoint state. Returns the optimized state.
-     */
-    public SwerveModuleState runSetPoint(SwerveModuleState state) {
-        this.setPoint = SwerveModuleState.optimize(state, getSteerFacing());
+   
+//TODO: REMOVE! (replace with drive(in SwerveDrive as well))
+    // /**
+    //  * Runs the module with the specified setpoint state. Returns the optimized state.
+    //  */
+    // public SwerveModuleState runSetPoint(SwerveModuleState state) {
+    //     this.setPoint = SwerveModuleState.optimize(state, getSteerFacing());
 
-        runDriveControlLoop();
-        runSteerCloseLoop();
+    //     runDriveControlLoop();
+    //     runSteerCloseLoop();
 
-        return this.setPoint;
-    }
+    //     return this.setPoint;
+    // }
 
     @Override
     public void onDisable() {
