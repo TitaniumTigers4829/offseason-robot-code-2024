@@ -10,7 +10,7 @@ public interface GyroIO {
     @AutoLog
     public static class GyroIOInputs {
         public boolean connected = false;
-        public double yawPosition = 0.0;
+        public Rotation2d yawPosition = new Rotation2d();
         public double pitch = 0.0;
         public double roll = 0.0;
         public Rotation2d[] odometryYawPositions = new Rotation2d[] {};

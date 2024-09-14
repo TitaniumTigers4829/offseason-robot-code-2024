@@ -39,7 +39,7 @@ public class GyroIOSim implements GyroIO {
                 Arrays.stream(gyroPhysicsSimulationResults.odometryYawPositions)
                 .map((robotFacing) -> robotFacing.rotateBy(currentGyroDriftAmount))
                 .toArray(Rotation2d[]::new);
-        inputs.yawPosition = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1]; //TODO: fix units
+        inputs.yawPosition = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1];//TODO: fix units
         inputs.yawVelocity = gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec;
 
         Logger.recordOutput(GYRO_LOG_PATH + "robot true yaw (deg)",
