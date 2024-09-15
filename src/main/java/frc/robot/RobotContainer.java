@@ -20,7 +20,7 @@ import frc.robot.extras.SmarterDashboardRegistry;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.swerve.Drive;
+import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
@@ -28,14 +28,14 @@ import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
-  private final Drive driveSubsystem;
+  private final SwerveDrive driveSubsystem;
   private final XboxController driverController = new XboxController(0);
 
   
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    driveSubsystem = new Drive(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
+    driveSubsystem = new SwerveDrive(SwerveDrive.DriveType.CTRE_ON_CANIVORE, new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
     
 
   }
@@ -135,15 +135,15 @@ public class RobotContainer {
 
     // // driving
 
-    Command driveCommand = new DriveCommand(driveSubsystem,
-      driverLeftStick[1],
-      driverLeftStick[0],
-      () -> modifyAxisCubed(driverRightStickX),
-      () -> !driverRightBumper.getAsBoolean(),
-      () -> driverLeftBumper.getAsBoolean()
-    );
+    // Command driveCommand = new DriveCommand(driveSubsystem,
+    //   driverLeftStick[1],
+    //   driverLeftStick[0],
+    //   () -> modifyAxisCubed(driverRightStickX),
+    //   () -> !driverRightBumper.getAsBoolean(),
+    //   () -> driverLeftBumper.getAsBoolean()
+    // );
 
-    driveSubsystem.setDefaultCommand(driveCommand);
+    // driveSubsystem.setDefaultCommand(driveCommand);
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem, visionSubsystem));
 
     // driverLeftTrigger.whileTrue(new TowerIntake(intakeSubsystem, pivotSubsystem, shooterSubsystem, false, ledSubsystem, this::intakeCallback));

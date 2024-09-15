@@ -6,12 +6,12 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.swerve.Drive;
+import frc.robot.subsystems.swerve.SwerveDrive;
 // import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class DriveCommand extends Command {
 
-  private final Drive driveSubsystem;
+  private final SwerveDrive driveSubsystem;
 
   private final DoubleSupplier leftJoystickY, leftJoystickX, rightJoystickX;
   private final BooleanSupplier isFieldRelative, isHighRotation;
@@ -29,7 +29,7 @@ public class DriveCommand extends Command {
    * field relative
    * @param isHighRotation The boolean supplier for if the robot should drive with a higher rotation
    */
-  public DriveCommand(Drive driveSubsystem,  DoubleSupplier leftJoystickY, DoubleSupplier leftJoystickX, DoubleSupplier rightJoystickX, BooleanSupplier isFieldRelative, BooleanSupplier isHighRotation) {
+  public DriveCommand(SwerveDrive driveSubsystem,  DoubleSupplier leftJoystickY, DoubleSupplier leftJoystickX, DoubleSupplier rightJoystickX, BooleanSupplier isFieldRelative, BooleanSupplier isHighRotation) {
     // super(driveSubsystem, visionSubsystem);
     this.driveSubsystem = driveSubsystem;
     addRequirements(driveSubsystem);
@@ -53,12 +53,12 @@ public class DriveCommand extends Command {
       angularSpeed = DriveConstants.LOW_ANGULAR_SPEED_RADIANS_PER_SECOND;
     }
     
-    driveSubsystem.drive(
-      leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
-      leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
-      rightJoystickX.getAsDouble() * angularSpeed,
-      isFieldRelative.getAsBoolean()
-    );
+    // driveSubsystem.drive(
+    //   leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
+    //   leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
+    //   rightJoystickX.getAsDouble() * angularSpeed,
+    //   isFieldRelative.getAsBoolean()
+    // );
 
     // Runs all the code from DriveCommandBase that estimates pose
     super.execute();
@@ -67,7 +67,7 @@ public class DriveCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     // When the command ends, it stops the robot
-    driveSubsystem.drive(0, 0, 0, true);
+    // driveSubsystem.drive(0, 0, 0, true);
   }
 
   @Override
