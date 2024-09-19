@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.extras.Alert;
+import frc.robot.extras.CANTHINGY.*;
 import frc.robot.extras.TimeUtils;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
@@ -33,12 +34,6 @@ import org.littletonrobotics.junction.Logger;
 import static frc.robot.Constants.DriveTrainConstants.*;
 
 public class SwerveDrive extends VirtualSubsystem {
-    public enum DriveType {
-        GENERIC,
-        CTRE_ON_RIO,
-        CTRE_ON_CANIVORE
-    }
-
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs;
     private final OdometryThreadInputsAutoLogged odometryThreadInputs;
@@ -50,7 +45,7 @@ public class SwerveDrive extends VirtualSubsystem {
 
     private final OdometryThread odometryThread;
     private final Alert gyroDisconnectedAlert = new Alert("Gyro Hardware Fault", Alert.AlertType.ERROR),  visionNoResultAlert = new Alert("Vision No Result", Alert.AlertType.INFO);
-    public SwerveDrive(DriveType type, GyroIO gyroIO, ModuleIO frontLeftModuleIO, ModuleIO frontRightModuleIO, ModuleIO backLeftModuleIO, ModuleIO backRightModuleIO) {
+    public SwerveDrive(GyroIO gyroIO, ModuleIO frontLeftModuleIO, ModuleIO frontRightModuleIO, ModuleIO backLeftModuleIO, ModuleIO backRightModuleIO) {
         super("Drive");
         this.gyroIO = gyroIO;
         this.gyroInputs = new GyroIOInputsAutoLogged();
@@ -69,7 +64,7 @@ public class SwerveDrive extends VirtualSubsystem {
                 VecBuilder.fill(4,5,6) // TODO: add da constants
         );
 
-        this.odometryThread = OdometryThread.createInstance(type);
+        this.odometryThread = OdometryThread.createInstance(DeviceCANBus.CANIVORE);
         this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
         this.odometryThread.start();
 
@@ -175,7 +170,7 @@ public class SwerveDrive extends VirtualSubsystem {
         // Send setpoints to modules
         SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++)
-            optimizedSetpointStates[i] = swerveModules[i].runSetPoint(setpointStates[i]);
+            // optimizedSetpointStates[i] = swerveModules[i].runSetPoint(setpointStates[i]);
 
         Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
         Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
@@ -228,7 +223,7 @@ public class SwerveDrive extends VirtualSubsystem {
         return odometry.getEstimatedPosition();
     }
     
-    public Rotation2d getRawGyroYaw() {return Rotation2d.fromDegrees(gyroInputs.yawPosition); }
+    public Rotation2d getRawGyroYaw() {return gyroInputs.yawPosition; }
 
     
     public void setPose(Pose2d pose) {

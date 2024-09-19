@@ -4,6 +4,7 @@ package frc.robot.subsystems.swerve.odometryThread;
 import com.ctre.phoenix6.BaseStatusSignal;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.extras.CANTHINGY.DeviceCANBus;
 import frc.robot.extras.TimeUtils;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
@@ -16,16 +17,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class OdometryThreadReal extends Thread implements OdometryThread {
-    private final SwerveDrive.DriveType driveType;
+    private final DeviceCANBus canBus;
     private final OdometryDoubleInput[] odometryDoubleInputs;
     private final BaseStatusSignal[] statusSignals;
     private final Queue<Double> timeStampsQueue;
     private final Lock lock = new ReentrantLock();
-    public OdometryThreadReal(SwerveDrive.DriveType driveType, OdometryDoubleInput[] odometryDoubleInputs, BaseStatusSignal[] statusSignals) {
+    public OdometryThreadReal(DeviceCANBus canBus, OdometryDoubleInput[] odometryDoubleInputs, BaseStatusSignal[] statusSignals) {
         this.timeStampsQueue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
+        this.canBus = canBus;
         this.odometryDoubleInputs = odometryDoubleInputs;
         this.statusSignals = statusSignals;
-        this.driveType = driveType;
 
         setName("OdometryThread");
         setDaemon(true);
@@ -54,12 +55,12 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
     }
 
     private void refreshSignalsAndBlockThread() {
-        switch (driveType) {
-            case CTRE_ON_RIO -> {
+        switch (canBus) {
+            case RIO -> {
                 TimeUtils.delay(1.0 / DriveTrainConstants.ODOMETRY_FREQUENCY);
                 BaseStatusSignal.refreshAll();
             }
-            case CTRE_ON_CANIVORE ->
+            case CANIVORE ->
                     BaseStatusSignal.waitForAll(DriveTrainConstants.ODOMETRY_WAIT_TIMEOUT_SECONDS, statusSignals);
         }
     }
