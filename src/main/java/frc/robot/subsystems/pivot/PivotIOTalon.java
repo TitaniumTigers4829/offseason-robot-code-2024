@@ -92,22 +92,33 @@ public class PivotIOTalon implements PivotIO {
 
     @Override
     public void updateInputs(PivotIOInputs inputs){
-
+        BaseStatusSignal.refreshAll(
+            leftPosition,
+            leftVelocity,
+            leftAppliedVolts,
+            leftSupplyCurrent,
+            leftTorqueCurrent,
+            leftTempCelsius,
+            rightPosition,
+            rightVelocity,
+            rightAppliedVolts,
+            rightSupplyCurrent,
+            rightTorqueCurrent,
+            rightTempCelsius);
     }
 
     @Override
     public void runVolts(double leftvolts){
-
+        leftMotor.setControl(new VoltageOut(leftvolts));    
     }
 
     @Override
     public void runVelocity(double leftRpm, double rightRpm, double leftFeedforward, double rightFeedforward){
-        
+        leftMotor.setControl(new VelocityVoltage(leftRpm));
     }
 
     @Override
     public void setPID(double kP, double kI, double kD){
-
     }
 
     @Override
