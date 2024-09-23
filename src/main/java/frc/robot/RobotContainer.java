@@ -36,7 +36,7 @@ public class RobotContainer {
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    driveSubsystem = new SwerveDrive(new GyroIONavX(), new ModuleIOTalonFX(0, 0, 0, 0, null, null, null, null), null, null, null)
+    driveSubsystem = new SwerveDrive(new GyroIONavX(), new ModuleIOTalonFX(0, 0, 0, 0, null, null, null, null), null, null, null);
 
   }
   
