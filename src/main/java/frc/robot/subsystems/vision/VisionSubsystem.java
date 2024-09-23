@@ -40,11 +40,16 @@ public class VisionSubsystem extends SubsystemBase {
     // checks to see if there are targets in the vicinity of the vision based on the current view
   }
   public Pose3d getPoseFromCamera() {
-    return PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), cameraToRobot);
+    if (canSeeAprilTags()) {
+        return PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), cameraToRobot);
+    }
+    return new Pose3d();
   }
   public double getDistanceFromClosestVisibleAprilTag() {
+    if (canSeeAprilTags()) {
     return PhotonUtils.calculateDistanceToTargetMeters(0, 0,0, Units.degreesToRadians(result.getBestTarget().getPitch()));
-
+    }
+    return Double.MAX_VALUE;
   }
   public boolean isConnected() {
     return camera.isConnected();
