@@ -98,6 +98,7 @@ public class SwerveDrive extends VirtualSubsystem {
         odometryThread.lockOdometry();
         odometryThread.updateInputs(odometryThreadInputs);
         Logger.processInputs("Drive/OdometryThread", odometryThreadInputs);
+    
 
         for (var module : swerveModules)
             module.updateOdometryInputs();
