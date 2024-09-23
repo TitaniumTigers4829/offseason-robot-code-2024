@@ -7,7 +7,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -158,6 +160,7 @@ public final class Constants {
 
   public static final class VisionConstants {
 
+    public static final int camIndex = 1;
     public static final double VISION_X_POS_TRUST = 0.5; // meters
     public static final double VISION_Y_POS_TRUST = 0.5; // meters
     public static final double VISION_ANGLE_TRUST = Units.degreesToRadians(50); // radians
@@ -291,6 +294,9 @@ public final class Constants {
       {201.44790649414062 ,  58.028751373291016 , Units.inchesToMeters(20), Units.inchesToMeters(53.5)},
       {209.90614318847656 ,  59.1672477722168 , Units.inchesToMeters(24), Units.inchesToMeters(53.5)},
   };
+    public static final String[] cameraIds = null;
+    public static final AprilTagFieldLayout aprilTagFieldLayout = null;
+    public static final Transform3d[] cameraPoses = null;
   
   }
 

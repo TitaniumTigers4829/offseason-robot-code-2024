@@ -1,39 +1,32 @@
 package frc.robot.subsystems.vision;
 
+import java.util.Optional;
+
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+import org.photonvision.EstimatedRobotPose;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+ 
 public interface VisionIO {
-    default void updateInputs(VisionIOInputs inputs) {}
-
-    default void setLeds(boolean on) {}
-
     @AutoLog
-    class VisionIOInputs {
-        /**
-         * Last timestamp of photo taken from LL
-         */
-        public double lastTimeStamp = 0.0;
-        /**
-         * True if limelight sees target in its frame
-         */
-        public boolean hasTargets = false;
-        /**
-         * Vertical angle from center of lens to target.
-         */
-        public double verticalAngleRadians = 0.0;
-        /**
-         * Horizontal angle from center of lens to target.
-         */
-        public double horizontalAngleRadians = 0.0;
-
-        /**
-         * Botpose taken from LL.
-         */
-        public double[] botpose = new double[6];
-
-        /**
-         * TagID of target fiducial marker.
-         */
-        public int tagId = -1;
+    public static class VisionIOInputs {
+        Pose3d[] pose = new Pose3d[] {};
+        double[] timestamp = new double[] {};
+        int[] tags = new int[] {};
+        boolean CamHastargets = false;
+        double Camyaw = 0;
     }
-}
+
+    public default void updateInputs(VisionIOInputs inputs) {}
+
+    public default void setReferencePose(Pose2d reference) {}
+
+    public default double getDistanceToTag(int tag) { 
+        return 0.0;
+    }
+} 
+

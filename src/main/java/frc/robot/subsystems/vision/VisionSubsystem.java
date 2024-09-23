@@ -7,6 +7,8 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagDetection;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,6 +18,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.extras.LimelightHelpers;
 
 public class VisionSubsystem extends SubsystemBase {
   /** Creates a new VisionSubsystem. */
@@ -31,8 +35,6 @@ public class VisionSubsystem extends SubsystemBase {
 
   public VisionSubsystem() {     
   }
-
-
   public boolean canSeeAprilTags() {
     return camera.getLatestResult().hasTargets();
     // checks to see if there are targets in the vicinity of the vision based on the current view
@@ -44,14 +46,14 @@ public class VisionSubsystem extends SubsystemBase {
     return PhotonUtils.calculateDistanceToTargetMeters(0, 0,0, Units.degreesToRadians(result.getBestTarget().getPitch()));
 
   }
-  public boolean isValidPoseEstitmate(Pose2d pose) {
-    return false;
+  public boolean isConnected() {
+    return camera.isConnected();
   }
-  public int getNumberOfAprilTags() {
-    return 0;
+  public List<Integer> getNumberOfAprilTags() {
+    return result.getMultiTagResult().fiducialIDsUsed;
   }
   public double getLatencyMiliseconds() {
-    return 0;
+    return result.getLatencyMillis() / 1000.0;
   }
   public void checkAndUpdatePose() {
     camera.getLatestResult();
