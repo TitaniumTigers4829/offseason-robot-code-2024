@@ -1,11 +1,15 @@
 package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.ParentDevice;
+
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.extras.CANTHINGY.DeviceCANBus;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadReal;
 import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;
@@ -21,6 +25,7 @@ public interface OdometryThread {
     final class OdometryDoubleInput {
         private final Supplier<Double> supplier;
         private final Queue<Double> queue;
+        
 
         public OdometryDoubleInput(HardwareConstants.Mode mode, Supplier<Double> signal) {
             this.supplier = signal;
@@ -45,10 +50,10 @@ public interface OdometryThread {
         return odometryDoubleInput.queue;
     }
 
-    static OdometryThread createInstance(SwerveDrive.DriveType type) {
+    static OdometryThread createInstance(DeviceCANBus canBus) {
         return switch (Robot.CURRENT_ROBOT_MODE) {
             case REAL -> new OdometryThreadReal(
-                    type,
+                    canBus,
                     registeredInputs.toArray(new OdometryDoubleInput[0]),
                     registeredStatusSignals.toArray(new BaseStatusSignal[0])
             );

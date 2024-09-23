@@ -24,6 +24,8 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.extras.CANTHINGY;
+import frc.robot.extras.CANTHINGY.DeviceCANBus;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 
 import java.util.Queue;
@@ -59,7 +61,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         this.name = name;
         driveMotor = new TalonFX(driveMotorChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
         turnMotor = new TalonFX(turnMotorChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
-        turnEncoder = new CANcoder(turnEncoderChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
+        turnEncoder = new CANcoder(turnEncoderChannel, DeviceCANBus.CANIVORE.name);
 
         voltageOut = new VoltageOut(0.0);
         percentOut = new DutyCycleOut(0.0);
