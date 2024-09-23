@@ -71,15 +71,10 @@ public class SwerveModule extends VirtualSubsystem {
         }
     }
 
-  //   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
-  //     fieldRelative
-  //           ? ChassisSpeeds.fromFieldRelativeSpeeds(
-  //               xSpeed, ySpeed, rotationSpeed, 90)
-  //           : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed); //TODO: add setDesiredState()!!!
-    
+    public void setDesiredState(SwerveModuleState desiredState) {
+        io.setDesiredState(desiredState);
+    }
 
-  //   setModuleStates();
-  // }
 
    
 //TODO: REMOVE! (replace with drive(in SwerveDrive as well))

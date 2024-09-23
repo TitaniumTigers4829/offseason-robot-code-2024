@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve.moduleIO;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -29,6 +30,8 @@ public interface ModuleIO {
     void updateInputs(ModuleIOInputs inputs);
 
     default void calibrate() {}
+
+    default void setDesiredState(SwerveModuleState desiredState) {}
 
     /**
      * Run the drive motor at the specified percent speed.

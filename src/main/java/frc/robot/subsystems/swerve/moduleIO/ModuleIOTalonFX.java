@@ -179,6 +179,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    *
    * @param desiredState Desired state with speed and angle.
    */
+  @Override
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
