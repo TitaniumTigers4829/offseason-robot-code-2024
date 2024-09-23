@@ -24,6 +24,7 @@ import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
 
 public class RobotContainer {
 
@@ -35,8 +36,7 @@ public class RobotContainer {
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    driveSubsystem = new SwerveDrive(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
-    
+    driveSubsystem = new SwerveDrive(new GyroIONavX(), new ModuleIOTalonFX(0, 0, 0, 0, null, null, null, null), null, null, null)
 
   }
   
