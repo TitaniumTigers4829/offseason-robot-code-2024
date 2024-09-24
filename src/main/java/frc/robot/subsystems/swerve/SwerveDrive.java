@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.CANTHINGY.*;
 import frc.robot.extras.TimeUtils;
@@ -28,10 +29,13 @@ import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
 
+import org.dyn4j.geometry.Rotation;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.Constants.DriveTrainConstants.*;
+
+import java.util.Optional;
 
 public class SwerveDrive extends VirtualSubsystem {
     private final GyroIO gyroIO;
@@ -42,6 +46,8 @@ public class SwerveDrive extends VirtualSubsystem {
     private Rotation2d rawGyroRotation;
     private final SwerveModulePosition[] lastModulePositions;
     private final SwerveDrivePoseEstimator odometry;
+    
+  private Optional<DriverStation.Alliance> alliance;
 
     private final OdometryThread odometryThread;
     private final Alert gyroDisconnectedAlert = new Alert("Gyro Hardware Fault", Alert.AlertType.ERROR),  visionNoResultAlert = new Alert("Vision No Result", Alert.AlertType.INFO);
@@ -89,10 +95,51 @@ public class SwerveDrive extends VirtualSubsystem {
         visionNoResultAlert.setActivated(timeNotVisionResultSeconds > 4);
     }
 
+     public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
+        SwerveModuleState[] swerveModuleStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+            fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, Rotation2d.fromDegrees(180))
+            : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
+          SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+
+          for (SwerveModuleState swerveModuleState : swerveModuleStates) {
+            setModuleStates(swerveModuleState);
+          }
+  } /**
+  * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
+  * perspective. This method is needed so that the drive command and poseEstimator don't fight each
+  * other. It uses odometry rotation.
+  */
+ public Rotation2d getOdometryAllianceRelativeRotation2d() {
+   return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset()));
+ }
+
+ /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
+ public double getAllianceAngleOffset() {
+
+    alliance = DriverStation.getAlliance();
+    double offset =
+        alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
+    return offset;
+  }
+
+    /**
+   * Sets the modules to the specified states.
+   *
+   * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
+   *     frontRight, backLeft, backRight (should be the same as the kinematics).
+   */
+  public void setModuleStates(SwerveModuleState desiredStates) {
+    for (SwerveModule module : swerveModules) {
+        module.setDesiredState(desiredStates);
+    }
+  }
+
     private void fetchOdometryInputs() {
         odometryThread.lockOdometry();
         odometryThread.updateInputs(odometryThreadInputs);
         Logger.processInputs("Drive/OdometryThread", odometryThreadInputs);
+    
 
         for (var module : swerveModules)
             module.updateOdometryInputs();

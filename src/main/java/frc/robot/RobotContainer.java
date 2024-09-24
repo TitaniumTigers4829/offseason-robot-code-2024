@@ -24,19 +24,19 @@ import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
 
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
-  // private final SwerveDrive driveSubsystem;
+  private final SwerveDrive driveSubsystem;
   private final XboxController driverController = new XboxController(0);
 
   
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    // driveSubsystem = new SwerveDrive(SwerveDrive.DriveType.CTRE_ON_CANIVORE, new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
-    
+    driveSubsystem = new SwerveDrive(new GyroIONavX(), new ModuleIOTalonFX(0, 0, 0, 0, null, null, null, null), null, null, null);
 
   }
   
