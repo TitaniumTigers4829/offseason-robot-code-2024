@@ -28,14 +28,14 @@ import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
-  private final SwerveDrive driveSubsystem;
+  // private final SwerveDrive driveSubsystem;
   private final XboxController driverController = new XboxController(0);
 
   
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    driveSubsystem = new SwerveDrive(SwerveDrive.DriveType.CTRE_ON_CANIVORE, new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
+    // driveSubsystem = new SwerveDrive(SwerveDrive.DriveType.CTRE_ON_CANIVORE, new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
     
 
   }
