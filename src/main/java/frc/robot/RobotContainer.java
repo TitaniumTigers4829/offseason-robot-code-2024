@@ -36,7 +36,12 @@ public class RobotContainer {
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
-    driveSubsystem = new SwerveDrive(new GyroIONavX(), new ModuleIOTalonFX(0, 0, 0, 0, null, null, null, null), null, null, null);
+    driveSubsystem = new SwerveDrive(
+      new GyroIONavX(), 
+      new ModuleIOTalonFX(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null), 
+      new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null), 
+      new ModuleIOTalonFX(DriveConstants.REAR_LEFT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null), 
+      new ModuleIOTalonFX(DriveConstants.REAR_RIGHT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null));
 
   }
   
