@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.extras.CANTHINGY;
@@ -31,7 +32,7 @@ import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import java.util.Queue;
 
 public class ModuleIOTalonFX implements ModuleIO {
-    private final String name;
+    // private final String name;
     private final TalonFX driveMotor;
     private final TalonFX turnMotor;
     private final CANcoder turnEncoder;
@@ -49,19 +50,11 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     private final BaseStatusSignal[] periodicallyRefreshedSignals;
 
-    public ModuleIOTalonFX(
-      int driveMotorChannel,
-      int turnMotorChannel,
-      int turnEncoderChannel,
-      double angleZero,
-      SensorDirectionValue encoderReversed,
-      InvertedValue turnReversed,
-      InvertedValue driveReversed,
-      String name) {
-        this.name = name;
-        driveMotor = new TalonFX(driveMotorChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
-        turnMotor = new TalonFX(turnMotorChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
-        turnEncoder = new CANcoder(turnEncoderChannel, DeviceCANBus.CANIVORE.name);
+    public ModuleIOTalonFX(ModuleConfig moduleConfig) {
+        // this.name = name;
+        driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), HardwareConstants.CANIVORE_CAN_BUS_STRING);
+        turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), HardwareConstants.CANIVORE_CAN_BUS_STRING);
+        turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.CANIVORE.name);
 
         voltageOut = new VoltageOut(0.0);
         percentOut = new DutyCycleOut(0.0);
@@ -69,8 +62,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         mmPositionRequest = new MotionMagicVoltage(0.0);
 
         CANcoderConfiguration turnEncoderConfig = new CANcoderConfiguration();
-        turnEncoderConfig.MagnetSensor.MagnetOffset = -angleZero;
-        turnEncoderConfig.MagnetSensor.SensorDirection = encoderReversed;
+        turnEncoderConfig.MagnetSensor.MagnetOffset = -moduleConfig.angleZero();
+        turnEncoderConfig.MagnetSensor.SensorDirection = moduleConfig.encoderReversed();
         turnEncoderConfig.MagnetSensor.AbsoluteSensorRange =
             AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         turnEncoder.getConfigurator().apply(turnEncoderConfig, HardwareConstants.TIMEOUT_S);
@@ -83,7 +76,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveConfig.Slot0.kV = ModuleConstants.DRIVE_V;
         driveConfig.Slot0.kA = ModuleConstants.DRIVE_A;
         driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        driveConfig.MotorOutput.Inverted = driveReversed;
+        driveConfig.MotorOutput.Inverted = moduleConfig.driveReversed();
         driveConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         driveConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.DRIVE_SUPPLY_LIMIT;
@@ -99,7 +92,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnConfig.Feedback.FeedbackRemoteSensorID = turnEncoder.getDeviceID();
         turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        turnConfig.MotorOutput.Inverted = turnReversed;
+        turnConfig.MotorOutput.Inverted = moduleConfig.turnReversed();
         turnConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
         turnConfig.MotionMagic.MotionMagicCruiseVelocity =
             ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND;

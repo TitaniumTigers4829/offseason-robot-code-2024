@@ -17,11 +17,13 @@ import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.LEDConstants.LEDProcess;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
+import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
@@ -39,10 +41,10 @@ public class RobotContainer {
     // visionSubsystem = new Vision();
     driveSubsystem = new SwerveDrive(
       new GyroIONavX(), 
-      new ModuleIOTalonFX(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null), 
-      new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null), 
-      new ModuleIOTalonFX(DriveConstants.REAR_LEFT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null), 
-      new ModuleIOTalonFX(DriveConstants.REAR_RIGHT_DRIVE_MOTOR_ID, 0, 0, 0, null, null, null, null));
+      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]), 
+      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]), 
+      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]), 
+      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
 
   }
   

@@ -7,6 +7,7 @@ package frc.robot.subsystems.swerve;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -147,7 +148,7 @@ public class SwerveConstants {
         // public static final double STEER_CURRENT_LIMIT = ModuleConstants.ST;
 
         /* equations that calculates some constants for the simulator (don't modify) */
-        private static final double GRAVITY_CONSTANT = 9.8;
+        private static final double GRAVITY_CONSTANT = 9.81;
         public static final double
                 DRIVE_BASE_RADIUS = DriveConstants.MODULE_TRANSLATIONS[0].getNorm(),
                 /* friction_force = normal_force * coefficient_of_friction */
@@ -192,4 +193,21 @@ public class SwerveConstants {
         public static final double ODOMETRY_WAIT_TIMEOUT_SECONDS = 0.02;
         public static final int SIMULATION_TICKS_IN_1_PERIOD = 5;
     }
+
+    public static final ModuleConfig[] moduleConfigs = 
+    new ModuleConfig[] {
+        new ModuleConfig(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_ID, DriveConstants.FRONT_LEFT_TURN_MOTOR_ID, DriveConstants.FRONT_LEFT_CANCODER_ID, DriveConstants.FRONT_LEFT_ZERO_ANGLE, DriveConstants.FRONT_LEFT_CANCODER_REVERSED, DriveConstants.FRONT_LEFT_TURN_MOTOR_REVERSED, DriveConstants.FRONT_LEFT_DRIVE_ENCODER_REVERSED),
+        new ModuleConfig(DriveConstants.FRONT_RIGHT_DRIVE_MOTOR_ID, DriveConstants.FRONT_RIGHT_TURN_MOTOR_ID, DriveConstants.FRONT_RIGHT_CANCODER_ID, DriveConstants.FRONT_RIGHT_ZERO_ANGLE, DriveConstants.FRONT_RIGHT_CANCODER_REVERSED, DriveConstants.FRONT_RIGHT_TURN_MOTOR_REVERSED, DriveConstants.FRONT_RIGHT_DRIVE_ENCODER_REVERSED),
+        new ModuleConfig(DriveConstants.REAR_LEFT_DRIVE_MOTOR_ID, DriveConstants.REAR_LEFT_TURN_MOTOR_ID, DriveConstants.REAR_LEFT_CANCODER_ID, DriveConstants.REAR_LEFT_ZERO_ANGLE, DriveConstants.REAR_LEFT_CANCODER_REVERSED, DriveConstants.REAR_LEFT_TURN_MOTOR_REVERSED, DriveConstants.REAR_LEFT_DRIVE_ENCODER_REVERSED),
+        new ModuleConfig(DriveConstants.REAR_RIGHT_DRIVE_MOTOR_ID, DriveConstants.REAR_RIGHT_TURN_MOTOR_ID, DriveConstants.REAR_RIGHT_CANCODER_ID, DriveConstants.REAR_RIGHT_ZERO_ANGLE, DriveConstants.REAR_RIGHT_CANCODER_REVERSED, DriveConstants.REAR_RIGHT_TURN_MOTOR_REVERSED, DriveConstants.REAR_RIGHT_DRIVE_ENCODER_REVERSED)
+    };
+
+    public record ModuleConfig(
+        int driveMotorChannel,
+        int turnMotorChannel,
+        int turnEncoderChannel,
+        double angleZero,
+        SensorDirectionValue encoderReversed,
+        InvertedValue turnReversed,
+        InvertedValue driveReversed) {}
 }
