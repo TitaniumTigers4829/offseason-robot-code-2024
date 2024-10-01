@@ -1,188 +1,189 @@
 package frc.robot.subsystems.swerve.physicsSim;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import frc.robot.Robot;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
-import frc.robot.Constants.LogPaths;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.extras.util.GeomUtil;
-import frc.robot.extras.util.TimeUtil;
-import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
-import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
-import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
+
 import org.dyn4j.geometry.Vector2;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
- * simulates the behavior of our robot
- * it has all the physics behavior as a simulated holonomic chassis
- * in addition to that, it simulates the swerve module behaviors
- * the class is like the bridge between ModuleIOSim and HolonomicChassisSimulation
- * it reads the motor power from ModuleIOSim
- * and feed the result of the physics simulation back to ModuleIOSim, to simulate the odometry encoders' readings
+ * <h1>Simulates a Swerve DriveTrain</h1>
+ * <p>Made up of more than two {@link SwerveModuleSimulation}</p>
+ * <h3>To Simulate Odometry: </h3>
+ * <p>1. Retrieve the encoder readings from {@link SwerveModuleSimulation}.</p>
+ * <p>2. Use a {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry} to estimate the pose of your robot.
+ * <a href="https://v6.docs.ctr-electronics.com/en/latest/docs/application-notes/update-frequency-impact.html">250HZ Odometry</a> IS SUPPORTED</p>
+ * <p>3. Optionally, obtain real robot pose from {@link AbstractDriveTrainSimulation}.getSimulatedDriveTrainPose() and feed it to <a href="https://docs.photonvision.org/en/latest/docs/simulation/simulation-java.html#updating-the-simulation-world">photon vision simulation</a> to simulate vision</p>
+ * <p>this way, you get a realistic simulation of the odometry, which accounts for measurement errors due to skidding and imu drifting.</p>
  * */
-public class SwerveDriveSimulation extends HolonomicChassisSimulation {
-    private static final String LOG_PATH = LogPaths.PHYSICS_SIMULATION_PATH + "SwerveDriveSim/";
+public class SwerveDriveSimulation extends AbstractDriveTrainSimulation {
+    private final SwerveModuleSimulation[] moduleSimulations;
+    private final GyroSimulation gyroSimulation;
+    private final Translation2d[] moduleTranslations;
+    private final SwerveDriveKinematics swerveDriveKinematics;
 
-    private final GyroIOSim gyroIOSim;
-    private final ModuleIOSim[] modules;
-    private final Consumer<Pose2d> resetOdometryCallBack;
-    public SwerveDriveSimulation(
-            GyroIOSim gyroIOSim,
-            ModuleIOSim frontLeft, ModuleIOSim frontRight, ModuleIOSim backLeft, ModuleIOSim backRight,
-            Pose2d startingPose,
-            Consumer<Pose2d> resetOdometryCallBack
-    ) {
-        super(new RobotSimulationProfile(
+    /**
+     * @param initialPoseOnField
+     */
+    public SwerveDriveSimulation(double robotMassWithBumpersKg, double bumperWidthMeters, double bumperLengthMeters, SwerveModuleSimulation[] moduleSimulations, Translation2d[] moduleTranslations,  GyroSimulation gyroSimulation, Pose2d initialPoseOnField) {
+        super(
+                new DriveTrainSimulationProfile(
+                        moduleSimulations[0].getModuleTheoreticalSpeedMPS(),
+                        moduleSimulations[0].getModuleMaxAccelerationMPSsq(robotMassWithBumpersKg, moduleSimulations.length),
+                        moduleSimulations[0].getModuleTheoreticalSpeedMPS() / moduleTranslations[0].getNorm(),
+                        moduleSimulations[0].getModuleMaxAccelerationMPSsq(robotMassWithBumpersKg, moduleSimulations.length) / moduleTranslations[0].getNorm(),
+                        robotMassWithBumpersKg,
+                        bumperWidthMeters,
+                        bumperLengthMeters
+                ).withAngularVelocityDamping(1).withLinearVelocityDamping(1),
+                initialPoseOnField);
 
-        ), startingPose);
-        this.gyroIOSim = gyroIOSim;
-        this.modules = new ModuleIOSim[] {frontLeft, frontRight, backLeft, backRight};
-        this.resetOdometryCallBack = resetOdometryCallBack;
-        resetOdometryToActualRobotPose();
-        System.out.println("swerve drive sim profile: " + new RobotSimulationProfile());
+        this.moduleSimulations = moduleSimulations;
+        this.moduleTranslations = moduleTranslations;
+        this.swerveDriveKinematics = new SwerveDriveKinematics(moduleTranslations);
+        this.gyroSimulation = gyroSimulation;
     }
 
-    public void resetOdometryToActualRobotPose() {
-        resetOdometryCallBack.accept(getRobotPoseOnField());
+    private double getGravityForceOnEachModule() {
+        return profile.robotMass * 9.8 / moduleSimulations.length;
     }
 
     @Override
-    public void updateSimulationSubTick(int tickNum, double tickSeconds) {
-        for (int i = 0; i < modules.length; i++)
-            moduleSimulationSubTick(
-                    getRobotPoseOnField(),
-                    modules[i],
-                    DriveConstants.MODULE_TRANSLATIONS[i],
-                    tickNum, tickSeconds
+    public void simulationSubTick() {
+        /* update the gyro simulation */
+        gyroSimulation.updateSimulationSubTick(super.getAngularVelocity());
+
+        /* simulate the translational friction force */
+        simulateChassisFrictionForce();
+        /* simulate the rotational friction torque */
+        simulateChassisFrictionTorque();
+
+        /* simulate the propelling force of each module */
+        simulateModulePropellingForces();
+    }
+
+    private void simulateModulePropellingForces() {
+        for (int i = 0; i < moduleSimulations.length; i++) {
+            final Vector2 moduleWorldPosition = getWorldPoint(GeomUtil.toDyn4jVector2(moduleTranslations[i]));
+            final Vector2 moduleForce = moduleSimulations[i].updateSimulationSubTickGetModuleForce(
+                    super.getLinearVelocity(moduleWorldPosition),
+                    getSimulatedDriveTrainPose().getRotation(),
+                    getGravityForceOnEachModule()
             );
-
-        simulateFrictionForce();
-
-        gyroSimulationSubTick(
-                super.getRobotPoseOnField().getRotation(),
-                super.getAngularVelocity(),
-                tickNum
-        );
-    }
-
-    private void moduleSimulationSubTick(
-            Pose2d robotWorldPose,
-            ModuleIOSim module,
-            Translation2d moduleTranslationOnRobot,
-            int tickNum,
-            double tickPeriodSeconds
-    ) {
-        /* update the DC motor simulation of the steer */
-        module.updateSim(tickPeriodSeconds);
-
-        /* simulate the propelling force of the module */
-        final Rotation2d moduleWorldFacing = module.getSimulationSteerFacing().plus(robotWorldPose.getRotation());
-        final Vector2 moduleWorldPosition = GeomUtil.toDyn4jVector2(
-                robotWorldPose.getTranslation()
-                        .plus(moduleTranslationOnRobot.rotateBy(robotWorldPose.getRotation()))
-        );
-        double actualPropellingForceOnFloorNewtons = module.getSimulationTorque() / DriveTrainConstants.WHEEL_RADIUS_METERS;
-        final boolean skidding = Math.abs(actualPropellingForceOnFloorNewtons) > DriveTrainConstants.MAX_FRICTION_FORCE_PER_MODULE;
-        if (skidding)
-            actualPropellingForceOnFloorNewtons = Math.copySign(DriveTrainConstants.MAX_FRICTION_FORCE_PER_MODULE, actualPropellingForceOnFloorNewtons);
-        super.applyForce(
-                Vector2.create(actualPropellingForceOnFloorNewtons, moduleWorldFacing.getRadians()),
-                moduleWorldPosition
-        );
-
-
-        final Vector2 floorVelocity = super.getLinearVelocity(moduleWorldPosition);
-        final double floorVelocityProjectionOnWheelDirectionMPS = floorVelocity.getMagnitude() *
-                Math.cos(floorVelocity.getAngleBetween(new Vector2(moduleWorldFacing.getRadians())));
-
-        if (skidding)
-            /* if the chassis is skidding, the toque will cause the wheels to spin freely */
-            module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec += module.getSimulationTorque() / DriveTrainConstants.DRIVE_INERTIA * tickPeriodSeconds;
-        else
-            /* otherwise, the floor velocity is projected to the wheel */
-            module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec = floorVelocityProjectionOnWheelDirectionMPS / DriveTrainConstants.WHEEL_RADIUS_METERS;
-
-        module.physicsSimulationResults.odometrySteerPositions[tickNum] = module.getSimulationSteerFacing();
-        module.physicsSimulationResults.driveWheelFinalRevolutions += Units.radiansToRotations(
-                module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec * tickPeriodSeconds
-        );
-        module.physicsSimulationResults.odometryDriveWheelRevolutions[tickNum] = module.physicsSimulationResults.driveWheelFinalRevolutions;
-    }
-
-    private void simulateFrictionForce() {
-        final ChassisSpeeds speedsDifference = getDifferenceBetweenFloorAndFreeSpeed();
-        final Translation2d translationalSpeedsDifference = new Translation2d(speedsDifference.vxMetersPerSecond, speedsDifference.vyMetersPerSecond);
-        final double forceMultiplier = Math.min(translationalSpeedsDifference.getNorm() * 3, 1);
-        super.applyForce(Vector2.create(
-                forceMultiplier * DriveTrainConstants.MAX_FRICTION_ACCELERATION * DriveTrainConstants.ROBOT_MASS_KG,
-                translationalSpeedsDifference.getAngle().getRadians()
-        ));
-
-        if (Math.abs(getDesiredSpeedsFieldRelative().omegaRadiansPerSecond)
-                / DriveTrainConstants.CHASSIS_MAX_ANGULAR_VELOCITY_RAD_PER_SEC
-                < 0.01)
-            simulateRotationalMotion(0);
-    }
-
-    private ChassisSpeeds getDifferenceBetweenFloorAndFreeSpeed() {
-        ChassisSpeeds chassisFreeSpeedsFieldRelative = getFreeSpeedsFieldRelative();
-
-        final double freeSpeedMagnitude = Math.hypot(chassisFreeSpeedsFieldRelative.vxMetersPerSecond, chassisFreeSpeedsFieldRelative.vyMetersPerSecond),
-                floorSpeedMagnitude = Math.hypot(getMeasuredChassisSpeedsFieldRelative().vxMetersPerSecond, getMeasuredChassisSpeedsFieldRelative().vyMetersPerSecond);
-        if (freeSpeedMagnitude > floorSpeedMagnitude)
-            chassisFreeSpeedsFieldRelative = chassisFreeSpeedsFieldRelative.times(floorSpeedMagnitude / freeSpeedMagnitude);
-
-        return chassisFreeSpeedsFieldRelative.minus(getMeasuredChassisSpeedsFieldRelative());
-    }
-
-    private ChassisSpeeds getFreeSpeedsFieldRelative() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
-                        Arrays.stream(modules)
-                                .map(ModuleIOSim::getSimulationSwerveState)
-                                .toArray(SwerveModuleState[]::new)),
-                getRobotPoseOnField().getRotation()
-        );
-    }
-
-    private ChassisSpeeds getDesiredSpeedsFieldRelative() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
-                        Arrays.stream(modules)
-                                .map(ModuleIOSim::getDesiredSwerveState)
-                                .toArray(SwerveModuleState[]::new)),
-                getRobotPoseOnField().getRotation()
-        );
-    }
-
-    private void gyroSimulationSubTick(
-            Rotation2d currentFacing,
-            double angularVelocityRadPerSec,
-            int tickNum
-    ) {
-        final GyroIOSim.GyroPhysicsSimulationResults results = gyroIOSim.gyroPhysicsSimulationResults;
-        results.robotAngularVelocityRadPerSec = angularVelocityRadPerSec;
-        results.odometryYawPositions[tickNum] = currentFacing;
-        results.hasReading = true;
-    }
-
-    public static final class OdometryThreadSim implements OdometryThread {
-        @Override
-        public void updateInputs(OdometryThreadInputs inputs) {
-            inputs.measurementTimeStamps = new double[DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD];
-            final double robotStartingTimeStamps = TimeUtil.getLogTimeSeconds(),
-                    iterationPeriodSeconds = Robot.defaultPeriodSecs / DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD;
-            for (int i =0; i < DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD; i++)
-                inputs.measurementTimeStamps[i] = robotStartingTimeStamps + i * iterationPeriodSeconds;
+            super.applyForce(
+                    moduleForce,
+                    moduleWorldPosition
+            );
         }
+    }
+
+    private void simulateChassisFrictionForce() {
+        final ChassisSpeeds differenceBetweenFloorSpeedAndModuleSpeedsRobotRelative = getModuleSpeeds()
+                .minus(getDriveTrainSimulatedChassisSpeedsRobotRelative());
+        final Translation2d floorAndModuleSpeedsDiffFieldRelative = new Translation2d(
+                differenceBetweenFloorSpeedAndModuleSpeedsRobotRelative.vxMetersPerSecond,
+                differenceBetweenFloorSpeedAndModuleSpeedsRobotRelative.vyMetersPerSecond
+        ).rotateBy(getSimulatedDriveTrainPose().getRotation());
+
+        SmartDashboard.putString("MapleArenaSimulation/difference", floorAndModuleSpeedsDiffFieldRelative.toString());
+
+        final double totalGrippingForce = moduleSimulations[0].getGrippingForceNewtons(getGravityForceOnEachModule())
+                * moduleSimulations.length,
+                FRICTION_FORCE_GAIN = 1;
+        final Vector2 frictionForce = Vector2.create(
+                Math.min(FRICTION_FORCE_GAIN * totalGrippingForce * floorAndModuleSpeedsDiffFieldRelative.getNorm(), totalGrippingForce),
+                floorAndModuleSpeedsDiffFieldRelative.getAngle().getRadians()
+        );
+        super.applyForce(frictionForce);
+        SmartDashboard.putString("MapleArenaSimulation/chassisFrictionForce", frictionForce.toString());
+    }
+
+    private void simulateChassisFrictionTorque() {
+        final double
+                desiredRotationalMotionPercent = Math.abs(getDesiredSpeed().omegaRadiansPerSecond / getTheoreticalMaxAngularVelocity()),
+                actualRotationalMotionPercent = Math.abs(getAngularVelocity() / getTheoreticalMaxAngularVelocity()),
+                differenceBetweenFloorSpeedAndModuleSpeed = getModuleSpeeds().omegaRadiansPerSecond - getAngularVelocity(),
+                grippingTorqueMagnitude =
+                        moduleSimulations[0].getGrippingForceNewtons(getGravityForceOnEachModule())
+                                * moduleTranslations[0].getNorm()
+                                * moduleSimulations.length,
+                FRICTION_TORQUE_GAIN = 1;
+
+        if (actualRotationalMotionPercent < 0.01 && desiredRotationalMotionPercent < 0.02)
+            super.setAngularVelocity(0);
+        else super.applyTorque(Math.copySign(
+                Math.min(FRICTION_TORQUE_GAIN * grippingTorqueMagnitude * Math.abs(differenceBetweenFloorSpeedAndModuleSpeed), grippingTorqueMagnitude),
+                differenceBetweenFloorSpeedAndModuleSpeed
+        ));
+    }
+
+    private ChassisSpeeds getDesiredSpeed() {
+        return swerveDriveKinematics.toChassisSpeeds(
+                Arrays.stream(moduleSimulations)
+                        .map((SwerveModuleSimulation::getFreeSpinState))
+                        .toArray(SwerveModuleState[]::new)
+        );
+    }
+
+    private ChassisSpeeds getModuleSpeeds() {
+        return swerveDriveKinematics.toChassisSpeeds(
+                Arrays.stream(moduleSimulations)
+                        .map((SwerveModuleSimulation::getCurrentState))
+                        .toArray(SwerveModuleState[]::new)
+        );
+    }
+
+    public double getTheoreticalMaxLinearVelocity() {
+        return moduleSimulations[0].getModuleTheoreticalSpeedMPS();
+    }
+
+    public double getTheoreticalMaxLinearAcceleration() {
+        return moduleSimulations[0].getModuleMaxAccelerationMPSsq(profile.robotMass, moduleSimulations.length);
+    }
+
+    public double getTheoreticalMaxAngularVelocity() {
+        return moduleSimulations[0].getModuleTheoreticalSpeedMPS() / moduleTranslations[0].getNorm();
+    }
+
+    public double getSwerveDriveMaxAngularAcceleration() {
+        return moduleSimulations[0].getTheoreticalPropellingForcePerModule(profile.robotMass, moduleSimulations.length)
+                * moduleTranslations[0].getNorm() * moduleSimulations.length / super.getMass().getInertia();
+    }
+
+    public SwerveModuleSimulation[] getModules() {
+        return moduleSimulations;
+    }
+
+    public static SwerveDriveSimulation createSwerve(
+            double robotMassWidthBumpersKg,
+            double trackLengthMeters, double trackWidthMeters,
+            double bumperWidthMeters, double bumperLengthMeters,
+            Supplier<SwerveModuleSimulation> swerveModuleFactory,
+            GyroSimulation gyroSimulation,
+            Pose2d initialPoseOnField) {
+        return new SwerveDriveSimulation(
+                robotMassWidthBumpersKg,
+                bumperWidthMeters,
+                bumperLengthMeters,
+                new SwerveModuleSimulation[]{
+                        swerveModuleFactory.get(), swerveModuleFactory.get(),
+                        swerveModuleFactory.get(), swerveModuleFactory.get()
+                },
+                new Translation2d[]{
+                        new Translation2d(trackLengthMeters / 2, trackWidthMeters / 2),
+                        new Translation2d(trackLengthMeters / 2, -trackWidthMeters / 2),
+                        new Translation2d(-trackLengthMeters / 2, trackWidthMeters / 2),
+                        new Translation2d(-trackLengthMeters / 2, -trackWidthMeters / 2)
+                },
+                gyroSimulation,
+                initialPoseOnField
+        );
     }
 }

@@ -7,6 +7,8 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.extras.util.AllianceFlipper;
+// import frc.robot.extras.util.FieldMirroringUtils;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO.GyroIOInputs;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 
@@ -50,12 +52,11 @@ public class GyroIONavX implements GyroIO {
         return -gyro.getRate();
     }
 
-    public double getAllianceAngleOffset() {
-        return 180;
-    }
-
     public Rotation2d getGyroFieldRelativeRotation2d() {
-        return getGyroRotation2d().plus(Rotation2d.fromDegrees(getAllianceAngleOffset()));
+        if (AllianceFlipper.isBlue()) {
+            return getGyroRotation2d();
+        }
+        return AllianceFlipper.flipRotation(getGyroRotation2d());
     }
 
 }

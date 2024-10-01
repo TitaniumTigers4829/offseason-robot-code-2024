@@ -21,6 +21,7 @@ import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.DeviceCANBus;
+import frc.robot.extras.util.AllianceFlipper;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
@@ -95,34 +96,28 @@ public class SwerveDrive extends VirtualSubsystem {
         visionNoResultAlert.setActivated(timeNotVisionResultSeconds > 4);
     }
 
-     public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
+    public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
         SwerveModuleState[] swerveModuleStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
             fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, Rotation2d.fromDegrees(180))
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
-          SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
-          for (SwerveModuleState swerveModuleState : swerveModuleStates) {
+            for (SwerveModuleState swerveModuleState : swerveModuleStates) {
             setModuleStates(swerveModuleState);
-          }
-  }
-   /**
-  * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
-  * perspective. This method is needed so that the drive command and poseEstimator don't fight each
-  * other. It uses odometry rotation.
-  */
- public Rotation2d getOdometryAllianceRelativeRotation2d() {
-   return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset()));
- }
-
- /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
- public double getAllianceAngleOffset() {
-
-    alliance = DriverStation.getAlliance();
-    double offset =
-        alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
-    return offset;
-  }
+        }
+    }
+    /**
+     * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
+    * perspective. This method is needed so that the drive command and poseEstimator don't fight each
+    * other. It uses odometry rotation.
+    */
+    public Rotation2d getOdometryAllianceRelativeRotation2d() {
+        if (AllianceFlipper.isBlue()) {
+            return getPose().getRotation();
+        }
+        return AllianceFlipper.flipRotation(getPose().getRotation());
+    }
 
     /**
    * Sets the modules to the specified states.
@@ -130,11 +125,11 @@ public class SwerveDrive extends VirtualSubsystem {
    * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
    *     frontRight, backLeft, backRight (should be the same as the kinematics).
    */
-  public void setModuleStates(SwerveModuleState desiredStates) {
-    for (SwerveModule module : swerveModules) {
-        module.setDesiredState(desiredStates);
+    public void setModuleStates(SwerveModuleState desiredStates) {
+        for (SwerveModule module : swerveModules) {
+            module.setDesiredState(desiredStates);
+        }
     }
-  }
 
     private void fetchOdometryInputs() {
         odometryThread.lockOdometry();

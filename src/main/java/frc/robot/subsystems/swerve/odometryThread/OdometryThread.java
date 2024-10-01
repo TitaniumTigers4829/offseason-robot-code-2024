@@ -58,7 +58,7 @@ public interface OdometryThread {
                     registeredInputs.toArray(new OdometryDoubleInput[0]),
                     registeredStatusSignals.toArray(new BaseStatusSignal[0])
             );
-            case SIM -> new SwerveDriveSimulation.OdometryThreadSim();
+            case SIM -> new OdometryThreadSim();
             case REPLAY -> inputs -> {};
         };
     }

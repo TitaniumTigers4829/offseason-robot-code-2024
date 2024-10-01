@@ -1,9 +1,5 @@
 package frc.robot.extras;
 
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.hardware.ParentDevice;
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import frc.robot.Constants.HardwareConstants;
 
   /** CTRE Phoenix CAN bus */
