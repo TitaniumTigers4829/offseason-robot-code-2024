@@ -3,7 +3,7 @@ package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.extras.CANTHINGY.DeviceCANBus;
 import frc.robot.extras.TimeUtils;
 import frc.robot.subsystems.swerve.SwerveDrive;

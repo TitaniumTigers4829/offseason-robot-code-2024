@@ -11,7 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.VirtualSubsystem;
@@ -72,23 +72,9 @@ public class SwerveModule extends VirtualSubsystem {
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
+        Logger.recordOutput("Drive/Module-" + name + " desiredState", desiredState);
         io.setDesiredState(desiredState);
     }
-
-
-   
-//TODO: REMOVE! (replace with drive(in SwerveDrive as well))
-    // /**
-    //  * Runs the module with the specified setpoint state. Returns the optimized state.
-    //  */
-    // public SwerveModuleState runSetPoint(SwerveModuleState state) {
-    //     this.setPoint = SwerveModuleState.optimize(state, getSteerFacing());
-
-    //     runDriveControlLoop();
-    //     runSteerCloseLoop();
-
-    //     return this.setPoint;
-    // }
 
     @Override
     public void onDisable() {

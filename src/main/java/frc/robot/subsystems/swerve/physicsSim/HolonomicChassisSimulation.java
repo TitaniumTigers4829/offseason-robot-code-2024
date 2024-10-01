@@ -2,7 +2,7 @@ package frc.robot.subsystems.swerve.physicsSim;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.extras.simulation.fieldDisplay.RobotOnFieldDisplay;
 import frc.robot.extras.CommonMath;
 import frc.robot.extras.GeomUtil;
@@ -16,7 +16,7 @@ import org.dyn4j.geometry.Vector2;
  * simulates the physics behavior of holonomic chassis,
  * with respect to its collision space, friction and motor propelling forces
  * */
-public abstract class HolonomicChassisSimulation extends Body implements RobotOnFieldDisplay {
+public abstract class HolonomicChassisSimulation extends Body {
     public final RobotSimulationProfile profile;
     public HolonomicChassisSimulation(RobotSimulationProfile profile, Pose2d startingPose) {
         this.profile = profile;
@@ -52,26 +52,26 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
         super.setAngularVelocity(givenSpeeds.omegaRadiansPerSecond);
     }
 
-    public void simulateChassisBehaviorWithRobotRelativeSpeeds(ChassisSpeeds desiredChassisSpeedsRobotRelative) {
-        simulateChassisBehaviorWithFieldRelativeSpeeds(ChassisSpeeds.fromRobotRelativeSpeeds(desiredChassisSpeedsRobotRelative, getObjectOnFieldPose2d().getRotation()));
+    public void simulateRobotRelativeMotion(ChassisSpeeds desiredChassisSpeedsRobotRelative) {
+        simulateFieldRelativeMotion(ChassisSpeeds.fromRobotRelativeSpeeds(desiredChassisSpeedsRobotRelative, getRobotPoseOnField().getRotation()));
     }
 
-    protected void simulateChassisBehaviorWithFieldRelativeSpeeds(ChassisSpeeds desiredChassisSpeedsFieldRelative) {
+    protected void simulateFieldRelativeMotion(ChassisSpeeds desiredChassisSpeedsFieldRelative) {
         super.setAtRest(false);
 
         final Vector2 desiredLinearMotionPercent = GeomUtil
                 .toDyn4jLinearVelocity(desiredChassisSpeedsFieldRelative)
                 .multiply(1.0 / profile.robotMaxVelocity);
-        simulateChassisTranslationalBehavior(Vector2.create(
+        simulateTranslationalMotion(Vector2.create(
                 CommonMath.constrainMagnitude(desiredLinearMotionPercent.getMagnitude(), 1),
                 desiredLinearMotionPercent.getDirection()
         ));
 
         final double desiredRotationalMotionPercent = desiredChassisSpeedsFieldRelative.omegaRadiansPerSecond / profile.maxAngularVelocity;
-        simulateChassisRotationalBehavior(CommonMath.constrainMagnitude(desiredRotationalMotionPercent, 1));
+        simulateRotationalMotion(CommonMath.constrainMagnitude(desiredRotationalMotionPercent, 1));
     }
 
-    protected void simulateChassisTranslationalBehavior(Vector2 desiredLinearMotionPercent) {
+    protected void simulateTranslationalMotion(Vector2 desiredLinearMotionPercent) {
         final boolean robotRequestedToMoveLinearly = desiredLinearMotionPercent.getMagnitude() > 0.03;
         if (!robotRequestedToMoveLinearly) {
             simulateTranslationalFrictionNoMotion();
@@ -81,6 +81,7 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
         super.applyForce(new Force(forceVec));
     }
 
+    /** Simulates translation friction while the robot is still.*/
     protected void simulateTranslationalFrictionNoMotion() {
         final double actualLinearPercent = getLinearVelocity().getMagnitude() / profile.robotMaxVelocity;
         final boolean robotActuallyMovingLinearly = actualLinearPercent > 0.03;
@@ -92,8 +93,14 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
             super.setLinearVelocity(new Vector2());
     }
 
-    protected void simulateChassisRotationalBehavior(double desiredRotationalMotionPercent) {
+    /**
+     * Simulates the rotational behavior of the chassis
+     * 
+     * @param desiredRotationalMotionPercent the desired rotational motion as a percentage 
+     */
+    protected void simulateRotationalMotion(double desiredRotationalMotionPercent) {
         final double maximumTorque = this.profile.maxAngularAcceleration * super.getMass().getInertia();
+
         if (Math.abs(desiredRotationalMotionPercent) > 0.01) {
             super.applyTorque(desiredRotationalMotionPercent * maximumTorque);
             return;
@@ -101,21 +108,36 @@ public abstract class HolonomicChassisSimulation extends Body implements RobotOn
 
         final double actualRotationalMotionPercent = Math.abs(getAngularVelocity() / profile.maxAngularVelocity),
                 frictionalTorqueMagnitude = this.profile.angularFrictionAcceleration * super.getMass().getInertia();
+
         if (actualRotationalMotionPercent > 0.01)
             super.applyTorque(Math.copySign(frictionalTorqueMagnitude, -super.getAngularVelocity()));
         else
             super.setAngularVelocity(0);
     }
 
-    @Override
-    public Pose2d getObjectOnFieldPose2d() {
+    /**
+     * Gets the robots position on the field
+     * 
+     * @return Pose2d of the robot
+     */
+    public Pose2d getRobotPoseOnField() {
         return GeomUtil.toWpilibPose2d(getTransform());
     }
 
+    /**
+     * Gets the robot-relative speeds of the simulated robot
+     * 
+     * @return robot-relative speeds of the simulated robot as a ChassisSpeeds
+     */
     public ChassisSpeeds getMeasuredChassisSpeedsRobotRelative() {
-        return ChassisSpeeds.fromFieldRelativeSpeeds(getMeasuredChassisSpeedsFieldRelative(), getObjectOnFieldPose2d().getRotation());
+        return ChassisSpeeds.fromFieldRelativeSpeeds(getMeasuredChassisSpeedsFieldRelative(), getRobotPoseOnField().getRotation());
     }
 
+    /**
+     * Gets the field-relative speeds of the simulated robot
+     * 
+     * @return field-relative speeds of the simulated robot as a ChassisSpeeds
+     */
     public ChassisSpeeds getMeasuredChassisSpeedsFieldRelative() {
         return GeomUtil.toWpilibChassisSpeeds(getLinearVelocity(), getAngularVelocity());
     }

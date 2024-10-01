@@ -3,17 +3,15 @@ package frc.robot.subsystems.swerve.gyroIO;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.extras.CommonMath;
 import frc.robot.extras.TimeUtils;
 
-// import frc.robot.utils.CustomMaths.MapleCommonMath;
-// import frc.robot.utils.MapleTimeUtils;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 
-import static frc.robot.Constants.DriveTrainConstants.*;
+import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.*;
 
 public class GyroIOSim implements GyroIO {
     public final GyroPhysicsSimulationResults gyroPhysicsSimulationResults = new GyroPhysicsSimulationResults();
@@ -39,7 +37,7 @@ public class GyroIOSim implements GyroIO {
                 Arrays.stream(gyroPhysicsSimulationResults.odometryYawPositions)
                 .map((robotFacing) -> robotFacing.rotateBy(currentGyroDriftAmount))
                 .toArray(Rotation2d[]::new);
-        inputs.yawPosition = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1];//TODO: fix units
+        inputs.yawPosition = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1];
         inputs.yawVelocity = gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec;
 
         Logger.recordOutput(GYRO_LOG_PATH + "robot true yaw (deg)",

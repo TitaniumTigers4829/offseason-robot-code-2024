@@ -8,8 +8,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.LogPaths;
 import frc.robot.extras.GeomUtil;
 import frc.robot.extras.TimeUtils;
@@ -20,8 +20,6 @@ import org.dyn4j.geometry.Vector2;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
-
-import static frc.robot.Constants.DriveTrainConstants.*;
 
 /**
  * simulates the behavior of our robot
@@ -54,14 +52,14 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
     }
 
     public void resetOdometryToActualRobotPose() {
-        resetOdometryCallBack.accept(getObjectOnFieldPose2d());
+        resetOdometryCallBack.accept(getRobotPoseOnField());
     }
 
     @Override
     public void updateSimulationSubTick(int tickNum, double tickSeconds) {
         for (int i = 0; i < modules.length; i++)
             moduleSimulationSubTick(
-                    getObjectOnFieldPose2d(),
+                    getRobotPoseOnField(),
                     modules[i],
                     DriveConstants.MODULE_TRANSLATIONS[i],
                     tickNum, tickSeconds
@@ -70,7 +68,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
         simulateFrictionForce();
 
         gyroSimulationSubTick(
-                super.getObjectOnFieldPose2d().getRotation(),
+                super.getRobotPoseOnField().getRotation(),
                 super.getAngularVelocity(),
                 tickNum
         );
@@ -108,10 +106,10 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
 
         if (skidding)
             /* if the chassis is skidding, the toque will cause the wheels to spin freely */
-            module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec += module.getSimulationTorque() / DRIVE_INERTIA * tickPeriodSeconds;
+            module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec += module.getSimulationTorque() / DriveTrainConstants.DRIVE_INERTIA * tickPeriodSeconds;
         else
             /* otherwise, the floor velocity is projected to the wheel */
-            module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec = floorVelocityProjectionOnWheelDirectionMPS / WHEEL_RADIUS_METERS;
+            module.physicsSimulationResults.driveWheelFinalVelocityRadPerSec = floorVelocityProjectionOnWheelDirectionMPS / DriveTrainConstants.WHEEL_RADIUS_METERS;
 
         module.physicsSimulationResults.odometrySteerPositions[tickNum] = module.getSimulationSteerFacing();
         module.physicsSimulationResults.driveWheelFinalRevolutions += Units.radiansToRotations(
@@ -132,7 +130,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
         if (Math.abs(getDesiredSpeedsFieldRelative().omegaRadiansPerSecond)
                 / DriveTrainConstants.CHASSIS_MAX_ANGULAR_VELOCITY_RAD_PER_SEC
                 < 0.01)
-            simulateChassisRotationalBehavior(0);
+            simulateRotationalMotion(0);
     }
 
     private ChassisSpeeds getDifferenceBetweenFloorAndFreeSpeed() {
@@ -152,7 +150,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
                         Arrays.stream(modules)
                                 .map(ModuleIOSim::getSimulationSwerveState)
                                 .toArray(SwerveModuleState[]::new)),
-                getObjectOnFieldPose2d().getRotation()
+                getRobotPoseOnField().getRotation()
         );
     }
 
@@ -162,7 +160,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
                         Arrays.stream(modules)
                                 .map(ModuleIOSim::getDesiredSwerveState)
                                 .toArray(SwerveModuleState[]::new)),
-                getObjectOnFieldPose2d().getRotation()
+                getRobotPoseOnField().getRotation()
         );
     }
 

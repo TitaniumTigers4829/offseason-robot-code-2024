@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.CANTHINGY.*;
@@ -33,7 +33,7 @@ import org.dyn4j.geometry.Rotation;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import static frc.robot.Constants.DriveTrainConstants.*;
+import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.*;
 
 import java.util.Optional;
 
@@ -43,29 +43,28 @@ public class SwerveDrive extends VirtualSubsystem {
     private final OdometryThreadInputsAutoLogged odometryThreadInputs;
     private final SwerveModule[] swerveModules;
 
-    private Rotation2d rawGyroRotation;
     private final SwerveModulePosition[] lastModulePositions;
     private final SwerveDrivePoseEstimator odometry;
     
   private Optional<DriverStation.Alliance> alliance;
 
     private final OdometryThread odometryThread;
-    private final Alert gyroDisconnectedAlert = new Alert("Gyro Hardware Fault", Alert.AlertType.ERROR),  visionNoResultAlert = new Alert("Vision No Result", Alert.AlertType.INFO);
-    public SwerveDrive(GyroIO gyroIO, ModuleIO frontLeftModuleIO, ModuleIO frontRightModuleIO, ModuleIO backLeftModuleIO, ModuleIO backRightModuleIO) {
+    private final Alert gyroDisconnectedAlert = new Alert("Gyro Hardware Fault", Alert.AlertType.ERROR); 
+    private final Alert visionNoResultAlert = new Alert("Vision No Result", Alert.AlertType.INFO);
+    public SwerveDrive(GyroIO gyroIO, ModuleIO frontLeftModuleIO, ModuleIO frontRightModuleIO, ModuleIO rearLeftModuleIO, ModuleIO rearRightModuleIO) {
         super("Drive");
         this.gyroIO = gyroIO;
         this.gyroInputs = new GyroIOInputsAutoLogged();
-        this.rawGyroRotation = new Rotation2d();
         this.swerveModules = new SwerveModule[] {
                 new SwerveModule(frontLeftModuleIO, "FrontLeft"),
                 new SwerveModule(frontRightModuleIO, "FrontRight"),
-                new SwerveModule(backLeftModuleIO, "BackLeft"),
-                new SwerveModule(backRightModuleIO, "BackRight"),
+                new SwerveModule(rearLeftModuleIO, "RearLeft"),
+                new SwerveModule(rearRightModuleIO, "RearRight"),
         };
 
         lastModulePositions = new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
         this.odometry = new SwerveDrivePoseEstimator(
-                DriveConstants.DRIVE_KINEMATICS, rawGyroRotation, lastModulePositions, new Pose2d(),
+                DriveConstants.DRIVE_KINEMATICS, getRawGyroYaw(), lastModulePositions, new Pose2d(),
                 VecBuilder.fill(1,2,3), // TODO: add da constants
                 VecBuilder.fill(4,5,6) // TODO: add da constants
         );
@@ -105,7 +104,8 @@ public class SwerveDrive extends VirtualSubsystem {
           for (SwerveModuleState swerveModuleState : swerveModuleStates) {
             setModuleStates(swerveModuleState);
           }
-  } /**
+  }
+   /**
   * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
   * perspective. This method is needed so that the drive command and poseEstimator don't fight each
   * other. It uses odometry rotation.
@@ -152,7 +152,7 @@ public class SwerveDrive extends VirtualSubsystem {
     }
 
     private void modulesPeriodic(double dt, boolean enabled) {
-        for (var module : swerveModules)
+        for (SwerveModule module : swerveModules)
             module.periodic(dt, enabled);
     }
 
@@ -160,12 +160,12 @@ public class SwerveDrive extends VirtualSubsystem {
         final SwerveModulePosition[] modulePositions = getModulesPosition(timeStampIndex),
                 moduleDeltas = getModulesDelta(modulePositions);
 
-        if (!updateRobotFacingWithGyroReading(timeStampIndex))
-            updateRobotFacingWithOdometry(moduleDeltas);
+        // if (!updateRobotFacingWithGyroReading(timeStampIndex))
+        //     updateRobotFacingWithOdometry(moduleDeltas);
 
         odometry.updateWithTime(
                 odometryThreadInputs.measurementTimeStamps[timeStampIndex],
-                rawGyroRotation,
+                getRawGyroYaw(),
                 modulePositions
         );
     }
@@ -188,26 +188,26 @@ public class SwerveDrive extends VirtualSubsystem {
         return deltas;
     }
 
-    /**
-     * updates the robot facing using the reading from the gyro
-     * @param timeStampIndex the index of the time stamp
-     * @return whether the update is success
-     * */
-    private boolean updateRobotFacingWithGyroReading(int timeStampIndex) {
-        if (!gyroInputs.connected)
-            return false;
-        rawGyroRotation = gyroInputs.odometryYawPositions[timeStampIndex];
-        return true;
-    }
+    // /**
+    //  * updates the robot facing using the reading from the gyro
+    //  * @param timeStampIndex the index of the time stamp
+    //  * @return whether the update is success
+    //  * */
+    // private boolean updateRobotFacingWithGyroReading(int timeStampIndex) {
+    //     if (!gyroInputs.connected)
+    //         return false;
+    //     getRawGyroYaw() = gyroInputs.odometryYawPositions[timeStampIndex];
+    //     return true;
+    // }
 
-    /**
-     * updates the robot facing using the reading from the gyro
-     * @param modulesDelta the delta of the swerve modules calculated from the odometry
-     * */
-    private void updateRobotFacingWithOdometry(SwerveModulePosition[] modulesDelta) {
-        Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(modulesDelta);
-        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-    }
+    // /**
+    //  * updates the robot facing using the reading from the gyro
+    //  * @param modulesDelta the delta of the swerve modules calculated from the odometry
+    //  * */
+    // private void updateRobotFacingWithOdometry(SwerveModulePosition[] modulesDelta) {
+    //     Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(modulesDelta);
+    //     rawGyroRotation = getRawGyroYaw().plus(new Rotation2d(twist.dtheta));
+    // }
 
     
     public void runRawChassisSpeeds(ChassisSpeeds speeds) {
@@ -274,7 +274,7 @@ public class SwerveDrive extends VirtualSubsystem {
 
     
     public void setPose(Pose2d pose) {
-        odometry.resetPosition(rawGyroRotation, getModuleLatestPositions(), pose);
+        odometry.resetPosition(getRawGyroYaw(), getModuleLatestPositions(), pose);
     }
 
     

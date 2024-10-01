@@ -7,7 +7,7 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.CANTHINGY.DeviceCANBus;
 import frc.robot.subsystems.swerve.SwerveDrive;
@@ -44,6 +44,7 @@ public interface OdometryThread {
         registeredStatusSignals.add(signal);
         return registerInput(signal.asSupplier());
     }
+
     static Queue<Double> registerInput(Supplier<Double> supplier) {
         final OdometryDoubleInput odometryDoubleInput = new OdometryDoubleInput(Robot.CURRENT_ROBOT_MODE, supplier);
         registeredInputs.add(odometryDoubleInput);

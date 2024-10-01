@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import java.util.Arrays;
 
-import static frc.robot.Constants.DriveTrainConstants.*;
+import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.*;
 
 /**
  * Physics sim implementation of module IO.
