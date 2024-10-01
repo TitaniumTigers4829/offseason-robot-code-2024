@@ -26,8 +26,7 @@ import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import frc.robot.extras.CANTHINGY;
-import frc.robot.extras.CANTHINGY.DeviceCANBus;
+import frc.robot.extras.DeviceCANBus;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 
 import java.util.Queue;
@@ -150,11 +149,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         inputs.steerVelocityRadPerSec = Units.rotationsToRadians(steerEncoderVelocityRevolutionsPerSecond.getValueAsDouble());
         inputs.steerMotorAppliedVolts = steerMotorAppliedVolts.getValueAsDouble();
         inputs.steerMotorCurrentAmps = steerMotorCurrent.getValueAsDouble();
-    }
-
-    @Override
-    public String getCANBus() {
-        return CANTHINGY.getCANBus(driveMotor);
     }
 
     private Rotation2d getSteerFacingFromCANCoderReading(double canCoderReadingRotations) {

@@ -9,7 +9,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.extras.CANTHINGY.DeviceCANBus;
+import frc.robot.extras.DeviceCANBus;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadReal;
 import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;

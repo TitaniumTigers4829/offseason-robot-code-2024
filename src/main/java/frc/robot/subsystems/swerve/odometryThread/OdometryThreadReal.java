@@ -1,16 +1,9 @@
-// By 5516 Iron Maple https://github.com/Shenzhen-Robotics-Alliance/
 package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
-import frc.robot.extras.CANTHINGY.DeviceCANBus;
+import frc.robot.extras.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
-import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
-import frc.robot.subsystems.swerve.odometryThread.OdometryThread.OdometryDoubleInput;
-import frc.robot.subsystems.swerve.odometryThread.OdometryThread.OdometryThreadInputs;
-
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
@@ -34,7 +27,7 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
 
     @Override
     public synchronized void start() {
-        if (odometryDoubleInputs.length > 0)
+        if (odometryDoubleInputs.length > 0 || statusSignals.length > 0)
             super.start();
     }
 
@@ -49,7 +42,7 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
 
         lock.lock();
         timeStampsQueue.offer(estimateAverageTimeStamps());
-        for(OdometryDoubleInput odometryDoubleInput : odometryDoubleInputs)
+        for (OdometryDoubleInput odometryDoubleInput : odometryDoubleInputs)
             odometryDoubleInput.cacheInputToQueue();
         lock.unlock();
     }

@@ -6,16 +6,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import frc.robot.Constants.HardwareConstants;
 
-public class CANTHINGY {
-  public static boolean isCANFD = false;
-
-  public static boolean isCANFD(ParentDevice device) {return isCANFD = CANBus.isNetworkFD(device.getNetwork());  }
-
-  public static String getCANBus(ParentDevice device) {
-    if (isCANFD(device)) {
-      return DeviceCANBus.CANIVORE.name;
-    } return DeviceCANBus.RIO.name;
-  }
   /** CTRE Phoenix CAN bus */
   public enum DeviceCANBus {
     /** roboRIO CAN bus */
@@ -33,4 +23,3 @@ public class CANTHINGY {
       this.name = name;
     }
   }
-}

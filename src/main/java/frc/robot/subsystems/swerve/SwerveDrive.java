@@ -20,8 +20,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
-import frc.robot.extras.CANTHINGY;
-import frc.robot.extras.CANTHINGY.*;
+import frc.robot.extras.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
@@ -70,7 +69,7 @@ public class SwerveDrive extends VirtualSubsystem {
                 VecBuilder.fill(4,5,6) // TODO: add da constants
         );
 
-        this.odometryThread = OdometryThread.createInstance(getCANBus());
+        this.odometryThread = OdometryThread.createInstance(DeviceCANBus.CANIVORE);
         this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
         this.odometryThread.start();
 
@@ -80,11 +79,6 @@ public class SwerveDrive extends VirtualSubsystem {
         startDashboardDisplay();
     }
 
-    public DeviceCANBus getCANBus() {
-        for (SwerveModule swerveModule : swerveModules) {
-            return swerveModule.getCANBus();
-        } return DeviceCANBus.RIO;
-    }
 
     
     public void periodic(double dt, boolean enabled) {
