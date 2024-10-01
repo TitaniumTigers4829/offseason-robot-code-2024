@@ -4,8 +4,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.extras.simulation.fieldDisplay.RobotOnFieldDisplay;
-import frc.robot.extras.CommonMath;
-import frc.robot.extras.GeomUtil;
+import frc.robot.extras.util.MathUtil;
+import frc.robot.extras.util.GeomUtil;
+
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.Geometry;
@@ -63,12 +64,12 @@ public abstract class HolonomicChassisSimulation extends Body {
                 .toDyn4jLinearVelocity(desiredChassisSpeedsFieldRelative)
                 .multiply(1.0 / profile.robotMaxVelocity);
         simulateTranslationalMotion(Vector2.create(
-                CommonMath.constrainMagnitude(desiredLinearMotionPercent.getMagnitude(), 1),
+                MathUtil.constrainMagnitude(desiredLinearMotionPercent.getMagnitude(), 1),
                 desiredLinearMotionPercent.getDirection()
         ));
 
         final double desiredRotationalMotionPercent = desiredChassisSpeedsFieldRelative.omegaRadiansPerSecond / profile.maxAngularVelocity;
-        simulateRotationalMotion(CommonMath.constrainMagnitude(desiredRotationalMotionPercent, 1));
+        simulateRotationalMotion(MathUtil.constrainMagnitude(desiredRotationalMotionPercent, 1));
     }
 
     protected void simulateTranslationalMotion(Vector2 desiredLinearMotionPercent) {

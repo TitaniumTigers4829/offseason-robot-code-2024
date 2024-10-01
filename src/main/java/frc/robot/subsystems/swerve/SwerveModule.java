@@ -15,6 +15,7 @@ import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.VirtualSubsystem;
+import frc.robot.extras.CANTHINGY.DeviceCANBus;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -27,6 +28,7 @@ public class SwerveModule extends VirtualSubsystem {
     // private final PIDController turnCloseLoop, driveCloseLoop;
     private SwerveModuleState setPoint;
     private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[]{};
+    private String canBus;
 
     private final Alert hardwareFaultAlert;
 
@@ -49,6 +51,8 @@ public class SwerveModule extends VirtualSubsystem {
         // turnCloseLoop.calculate(getSteerFacing().getRadians()); // activate close loop controller
         io.setDriveBrake(true);
         io.setSteerBrake(true);
+
+        canBus = io.getCANBus();
     }
 
     public void updateOdometryInputs() {
@@ -74,6 +78,12 @@ public class SwerveModule extends VirtualSubsystem {
     public void setDesiredState(SwerveModuleState desiredState) {
         Logger.recordOutput("Drive/Module-" + name + " desiredState", desiredState);
         io.setDesiredState(desiredState);
+    }
+
+    public DeviceCANBus getCANBus() {
+        if (canBus == DeviceCANBus.CANIVORE.name) {
+            return DeviceCANBus.CANIVORE;
+        } return DeviceCANBus.RIO;
     }
 
     @Override

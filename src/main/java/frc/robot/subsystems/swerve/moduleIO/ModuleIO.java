@@ -29,6 +29,10 @@ public interface ModuleIO {
      */
     void updateInputs(ModuleIOInputs inputs);
 
+    default String getCANBus() {
+        return "";
+    };
+
     default void calibrate() {}
 
     default void setDesiredState(SwerveModuleState desiredState) {}

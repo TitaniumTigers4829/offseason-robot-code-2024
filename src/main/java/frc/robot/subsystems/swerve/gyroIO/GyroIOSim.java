@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
-import frc.robot.extras.CommonMath;
-import frc.robot.extras.TimeUtils;
+import frc.robot.extras.util.MathUtil;
+import frc.robot.extras.util.TimeUtil;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -29,7 +29,7 @@ public class GyroIOSim implements GyroIO {
                 angularAccelerationMagnitudeRadPerSecSq * SKIDDING_AMOUNT_AT_THRESHOLD_RAD / GYRO_ANGULAR_ACCELERATION_THRESHOLD_SKIDDING_RAD_PER_SEC_SQ
                 : Math.abs(gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec) * GYRO_DRIFT_IN_1_TICK_Std_Dev_RAD / AVERAGE_VELOCITY_RAD_PER_SEC_DURING_TEST;
         currentGyroDriftAmount = currentGyroDriftAmount.rotateBy(
-                Rotation2d.fromRadians(CommonMath.generateRandomNormal(0, currentTickDriftStdDevRad))
+                Rotation2d.fromRadians(MathUtil.generateRandomNormal(0, currentTickDriftStdDevRad))
         );
 
         inputs.connected = gyroPhysicsSimulationResults.hasReading;
@@ -43,7 +43,7 @@ public class GyroIOSim implements GyroIO {
         Logger.recordOutput(GYRO_LOG_PATH + "robot true yaw (deg)",
                 gyroPhysicsSimulationResults.odometryYawPositions[gyroPhysicsSimulationResults.odometryYawPositions.length-1].getDegrees()
         );
-        Logger.recordOutput(GYRO_LOG_PATH + "robot power for (Sec)", TimeUtils.getLogTimeSeconds());
+        Logger.recordOutput(GYRO_LOG_PATH + "robot power for (Sec)", TimeUtil.getLogTimeSeconds());
         Logger.recordOutput(GYRO_LOG_PATH + "imu total drift (Deg)", currentGyroDriftAmount.getDegrees());
         Logger.recordOutput(GYRO_LOG_PATH + "gyro reading yaw (Deg)", inputs.yawPosition);
         Logger.recordOutput(GYRO_LOG_PATH + "angular velocity (Deg per Sec)", Math.toDegrees(previousAngularVelocityRadPerSec));

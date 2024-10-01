@@ -1,11 +1,11 @@
-package frc.robot.extras;
+package frc.robot.extras.util;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.BuildConstants;
 
 import java.util.Random;
 
-public class CommonMath {
+public class MathUtil {
     /**
      * random object that generates random variables
      * the seed is the hash of GIT_SHA

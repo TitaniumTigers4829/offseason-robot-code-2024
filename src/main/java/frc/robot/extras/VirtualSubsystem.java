@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.LogPaths;
+import frc.robot.extras.util.TimeUtil;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -65,10 +66,10 @@ public abstract class VirtualSubsystem extends SubsystemBase {
 
     private double getDt() {
         if (previousUpdateTimeStamp == 0) {
-            previousUpdateTimeStamp = TimeUtils.getLogTimeSeconds();
+            previousUpdateTimeStamp = TimeUtil.getLogTimeSeconds();
             return Robot.defaultPeriodSecs;
         }
-        final double dt = TimeUtils.getLogTimeSeconds() - previousUpdateTimeStamp;
+        final double dt = TimeUtil.getLogTimeSeconds() - previousUpdateTimeStamp;
         previousUpdateTimeStamp = Logger.getTimestamp();
         return dt;
     }

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -32,15 +33,16 @@ import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import java.util.Queue;
 
 public class ModuleIOTalonFX implements ModuleIO {
-    // private final String name;
     private final TalonFX driveMotor;
     private final TalonFX turnMotor;
     private final CANcoder turnEncoder;
 
-    private final VoltageOut voltageOut;
-    private final DutyCycleOut percentOut;
-    private final VelocityVoltage velocityRequest;
-    private final MotionMagicVoltage mmPositionRequest;
+    private String canBus = "";
+
+    private final VoltageOut voltageOut = new VoltageOut(0.0); // test: .withUpdateFreqHz(0.0);
+    private final DutyCycleOut percentOut = new DutyCycleOut(0.0); 
+    private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
+    private final MotionMagicVoltage mmPositionRequest = new MotionMagicVoltage(0.0);
 
     private final Queue<Double> driveEncoderUngearedRevolutions;
     private final StatusSignal<Double> driveEncoderUngearedRevolutionsPerSecond, driveMotorAppliedVoltage, driveMotorCurrent;
@@ -51,15 +53,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     private final BaseStatusSignal[] periodicallyRefreshedSignals;
 
     public ModuleIOTalonFX(ModuleConfig moduleConfig) {
-        // this.name = name;
-        driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), HardwareConstants.CANIVORE_CAN_BUS_STRING);
-        turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), HardwareConstants.CANIVORE_CAN_BUS_STRING);
+        driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.CANIVORE.name);
+        turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.CANIVORE.name);
         turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.CANIVORE.name);
-
-        voltageOut = new VoltageOut(0.0);
-        percentOut = new DutyCycleOut(0.0);
-        velocityRequest = new VelocityVoltage(0.0);
-        mmPositionRequest = new MotionMagicVoltage(0.0);
 
         CANcoderConfiguration turnEncoderConfig = new CANcoderConfiguration();
         turnEncoderConfig.MagnetSensor.MagnetOffset = -moduleConfig.angleZero();
@@ -121,6 +117,9 @@ public class ModuleIOTalonFX implements ModuleIO {
                 steerMotorAppliedVolts, steerMotorCurrent
         };
 
+        driveMotor.setPosition(0.0);
+        turnMotor.setPosition(0.0);
+
         BaseStatusSignal.setUpdateFrequencyForAll(50.0, periodicallyRefreshedSignals);
         driveMotor.optimizeBusUtilization();
         turnMotor.optimizeBusUtilization();
@@ -151,6 +150,11 @@ public class ModuleIOTalonFX implements ModuleIO {
         inputs.steerVelocityRadPerSec = Units.rotationsToRadians(steerEncoderVelocityRevolutionsPerSecond.getValueAsDouble());
         inputs.steerMotorAppliedVolts = steerMotorAppliedVolts.getValueAsDouble();
         inputs.steerMotorCurrentAmps = steerMotorCurrent.getValueAsDouble();
+    }
+
+    @Override
+    public String getCANBus() {
+        return CANTHINGY.getCANBus(driveMotor);
     }
 
     private Rotation2d getSteerFacingFromCANCoderReading(double canCoderReadingRotations) {

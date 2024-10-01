@@ -5,7 +5,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.extras.CANTHINGY.DeviceCANBus;
-import frc.robot.extras.TimeUtils;
+import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread.OdometryDoubleInput;
@@ -57,7 +57,7 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
     private void refreshSignalsAndBlockThread() {
         switch (canBus) {
             case RIO -> {
-                TimeUtils.delay(1.0 / DriveTrainConstants.ODOMETRY_FREQUENCY);
+                TimeUtil.delay(1.0 / DriveTrainConstants.ODOMETRY_FREQUENCY);
                 BaseStatusSignal.refreshAll();
             }
             case CANIVORE ->
@@ -66,7 +66,7 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
     }
 
     private double estimateAverageTimeStamps() {
-        double currentTime = TimeUtils.getRealTimeSeconds(), totalLatency = 0;
+        double currentTime = TimeUtil.getRealTimeSeconds(), totalLatency = 0;
         for (BaseStatusSignal signal:statusSignals)
             totalLatency += signal.getTimestamp().getLatency();
 

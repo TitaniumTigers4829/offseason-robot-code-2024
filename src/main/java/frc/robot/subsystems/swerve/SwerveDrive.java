@@ -20,8 +20,9 @@ import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
+import frc.robot.extras.CANTHINGY;
 import frc.robot.extras.CANTHINGY.*;
-import frc.robot.extras.TimeUtils;
+import frc.robot.extras.util.TimeUtil;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOInputsAutoLogged;
@@ -69,7 +70,7 @@ public class SwerveDrive extends VirtualSubsystem {
                 VecBuilder.fill(4,5,6) // TODO: add da constants
         );
 
-        this.odometryThread = OdometryThread.createInstance(DeviceCANBus.CANIVORE);
+        this.odometryThread = OdometryThread.createInstance(getCANBus());
         this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
         this.odometryThread.start();
 
@@ -79,17 +80,23 @@ public class SwerveDrive extends VirtualSubsystem {
         startDashboardDisplay();
     }
 
+    public DeviceCANBus getCANBus() {
+        for (SwerveModule swerveModule : swerveModules) {
+            return swerveModule.getCANBus();
+        } return DeviceCANBus.RIO;
+    }
+
     
     public void periodic(double dt, boolean enabled) {
-        final double t0 = TimeUtils.getRealTimeSeconds();
+        final double t0 = TimeUtil.getRealTimeSeconds();
         fetchOdometryInputs();
-        Logger.recordOutput("SystemPerformance/OdometryFetchingTimeMS", (TimeUtils.getRealTimeSeconds() - t0)*1000);
+        Logger.recordOutput("SystemPerformance/OdometryFetchingTimeMS", (TimeUtil.getRealTimeSeconds() - t0)*1000);
         modulesPeriodic(dt, enabled);
 
         for (int timeStampIndex = 0; timeStampIndex < odometryThreadInputs.measurementTimeStamps.length; timeStampIndex++)
             feedSingleOdometryDataToPositionEstimator(timeStampIndex);
 
-        final double timeNotVisionResultSeconds = TimeUtils.getLogTimeSeconds() - previousMeasurementTimeStamp;
+        final double timeNotVisionResultSeconds = TimeUtil.getLogTimeSeconds() - previousMeasurementTimeStamp;
         visionNoResultAlert.setText(String.format("AprilTag Vision No Result For %.2f (s)", timeNotVisionResultSeconds));
         visionNoResultAlert.setActivated(timeNotVisionResultSeconds > 4);
     }

@@ -11,8 +11,8 @@ import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.LogPaths;
-import frc.robot.extras.GeomUtil;
-import frc.robot.extras.TimeUtils;
+import frc.robot.extras.util.GeomUtil;
+import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
@@ -179,7 +179,7 @@ public class SwerveDriveSimulation extends HolonomicChassisSimulation {
         @Override
         public void updateInputs(OdometryThreadInputs inputs) {
             inputs.measurementTimeStamps = new double[DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD];
-            final double robotStartingTimeStamps = TimeUtils.getLogTimeSeconds(),
+            final double robotStartingTimeStamps = TimeUtil.getLogTimeSeconds(),
                     iterationPeriodSeconds = Robot.defaultPeriodSecs / DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD;
             for (int i =0; i < DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD; i++)
                 inputs.measurementTimeStamps[i] = robotStartingTimeStamps + i * iterationPeriodSeconds;
