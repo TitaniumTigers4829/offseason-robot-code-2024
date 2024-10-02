@@ -83,6 +83,10 @@ public class Vision extends SubsystemBase {
         }
     }
 
+    public boolean canSeeAprilTags() {
+        return false;
+    }
+
     public void disableUpdates(int id){
         shouldUpdate[id] = false;
     }
