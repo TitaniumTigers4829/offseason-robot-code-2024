@@ -1,27 +1,42 @@
 package frc.robot.subsystems.vision;
+
+
+import java.io.IOException;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+
+import edu.wpi.first.apriltag.AprilTagDetector;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import frc.robot.Constants.VisionConstants;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 
-public class VisionIOReal implements VisionIO {
+public class VisionIOPhoton implements VisionIO {
     PhotonPipelineResult result;
 
     PhotonCamera camera;
 
     PhotonPoseEstimator poseEstimator;
 
+    Pose2d speakerPosition;
     double distanceToTarget;
 
     Pose3d tagPose;
 
-    public VisionIOReal(int camIndex) {
-        camera = new PhotonCamera(VisionConstants.cameraIds[camIndex]); 
-        poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.cameraPoses[camIndex]);
+    AprilTagFieldLayout aprilTagFieldLayout;
+
+    public VisionIOPhoton(int camIndex) throws IOException {
+        camera = new PhotonCamera("");
+         
+        aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+
+        poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
+                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0)));
 
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
@@ -44,4 +59,3 @@ public class VisionIOReal implements VisionIO {
         });
     }
 }
-

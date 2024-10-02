@@ -1,107 +1,102 @@
-// package frc.robot.subsystems.vision;
+package frc.robot.subsystems.vision;
 
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.RobotState;
-// import frc.robot.Constants.FieldConstants;
-// import frc.robot.subsystems.vision.LimelightConfiguration;
-// import org.littletonrobotics.junction.AutoLogOutput;
-// import org.littletonrobotics.junction.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-// public class Vision extends SubsystemBase {
-//     private final VisionIO visionIO;
-//     private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
-//     /**
-//      * Position of camera on the robot.
-//      * This is calculated through the horizontal distance (in meters) from the fiducial to the lens of the camera.
-//      */
-//     private Pose2d cameraToAprilTagPose = new Pose2d();
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.VisionConstants;
 
-//     /**
-//      * Horizontal Distance (in meters) from the Fiducial marker to the Lens of the camera.
-//      */
-//     private double horizontalDistanceToTargetMeters = 0;
+public class Vision extends SubsystemBase {
+    private VisionIO io[];
+    private VisionIOInputsAutoLogged inputs[];
+    private boolean[] shouldUpdate = new boolean[] {true, true, true};
 
-//     /**
-//      * Contains information about the mounting of the limelight on the robot.
-//      * This is required when calculating the horizontalDistanceToTargetMeters.
-//      */
-//     private final LimelightConfiguration limelightConfiguration;
+    private final Translation3d redSpeaker = new Translation3d(16.379342, 5.547868, 2.06);
+    private final Translation3d blueSpeaker = new Translation3d(0.1619, 5.547868, 2.06);
+    
+    @AutoLogOutput
+    private Translation3d speakerPosition = new Translation3d();
 
-//     public Vision(VisionIO visionIO, LimelightConfiguration limelightConfiguration) {
-//         // Initializing Fields
-//         this.visionIO = visionIO;
+    public static Vision instance;
+    
+    public static Vision getInstance() {
+        return instance;
+    }
 
-//         this.limelightConfiguration = limelightConfiguration;
-//     }
+    public static Vision initialize(VisionIO... io) {
+        if (instance == null) {
+            instance = new Vision(io);
+        }
+        return instance;
+    }
 
-//     @Override
-//     public void periodic() {
-//         // Updates limelight inputs
-//         visionIO.updateInputs(inputs);
-//         Logger.processInputs(limelightConfiguration.Name, inputs);
+    private Vision(VisionIO visionIO[]) {
+        io = visionIO;
 
-//         cameraToAprilTagPose = null;
-//         horizontalDistanceToTargetMeters = Double.NaN;
+        inputs = new VisionIOInputsAutoLogged[io.length];
+        for (int i = 0; i < io.length; i++) {
+            inputs[i] = new VisionIOInputsAutoLogged();
+        }
 
-//         if (hasTargets()) {
-//             // Calculate total pitch of camera. It is a combination of the ty value and the mounting angle of the LL.
-//             double theta = getPitchRadians() + limelightConfiguration.LimelightMountingPitchRadians;
-//             var tagPose = FieldConstants.FIELD_LAYOUT.getTagPose(inputs.tagId);
+        setSpeakerPos();
+    }
 
-//             if (tagPose.isPresent()) {
-//                 var pose = tagPose.get();
-//                 // Calculate height from camera to target by subtracting the height of the April Tag and the height of
-//                 // the LL on the robot.
-//                 double heightFromRobotToTargetMeters = pose.getZ() - limelightConfiguration.LimelightHeightOffsetMeters;
+    public double getDistancetoSpeaker(Pose2d robotPose) {
+        if(speakerPosition == null){
+            return 0;
+        }
+        return robotPose.getTranslation().getDistance(speakerPosition.toTranslation2d());
+    }
 
-//                 // Finds horizontal distance from camera to target.
-//                 horizontalDistanceToTargetMeters = heightFromRobotToTargetMeters / Math.tan(theta);
+    public void setSpeakerPos(){
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isPresent()) {
+            if (ally.get() == Alliance.Red) {
+                speakerPosition = redSpeaker;
+            } else if (ally.get() == Alliance.Blue) {
+                speakerPosition = blueSpeaker;
+            }
+        } else {
+            speakerPosition = new Translation3d();
+        }
+    }
 
-//                 // Get Camera to Tag pose
-//                 cameraToAprilTagPose = new Pose2d(
-//                         getHorizontalDistanceToTargetMeters() * Math.cos(getYawRadians()),
-//                         getHorizontalDistanceToTargetMeters() * Math.sin(getYawRadians()),
-//                         Rotation2d.fromRadians(getYawRadians()));
+    public Translation3d getSpeakerPos() {
+        return speakerPosition;
+    }
 
-//                 Logger.recordOutput("Vision/CameraToAprilTag" + inputs.tagId, cameraToAprilTagPose);
-//             }
-//         }
+    public void setReferencePose(Pose2d reference) {
+        for(int i = 0; i < io.length; i++) {
+            io[i].setReferencePose(reference);
+        }
+    }
 
-//         // Pushing Camera to tag pose to RobotState class.
-//         RobotState.getInstance()
-//                 .addVisionFromAprilTagObservation(new RobotState.VisionFromAprilTagObservation(
-//                         inputs.lastTimeStamp,
-//                         cameraToAprilTagPose,
-//                         inputs.tagId,
-//                         inputs.hasTargets,
-//                         horizontalDistanceToTargetMeters));
-//     }
+    public void disableUpdates(int id){
+        shouldUpdate[id] = false;
+    }
 
-//     @AutoLogOutput(key = "Vision/Horizontal Distance to Target")
-//     public double getHorizontalDistanceToTargetMeters() {
-//         return horizontalDistanceToTargetMeters;
-//     }
+    public void enableUpdates(int id){
+        shouldUpdate[id] = true;
+    }
 
-//     @AutoLogOutput(key = "Vision/Has Targets")
-//     public boolean hasTargets() {
-//         return getPitchRadians() != 0.00;
-//         //        return inputs.hasTargets;
-//     }
-
-//     @AutoLogOutput(key = "Vision/Yaw (tx)")
-//     public double getYawRadians() {
-//         return inputs.horizontalAngleRadians;
-//     }
-
-//     @AutoLogOutput(key = "Vision/Pitch (ty)")
-//     public double getPitchRadians() {
-//         return inputs.verticalAngleRadians;
-//     }
-
-//     public void setLeds(boolean on) {
-//         visionIO.setLeds(on);
-//     }
-// }
+    public void periodic() {
+        for (int i = 0; i < io.length; i++) {
+            io[i].updateInputs(inputs[i]);
+            Logger.processInputs("Vision/" + VisionConstants.cameraIds[i], inputs[i]);
+        }
+        
+        setSpeakerPos();
+    }
+}
