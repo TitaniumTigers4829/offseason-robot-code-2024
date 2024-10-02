@@ -89,7 +89,7 @@ public class CrescendoFieldSimulation extends SimulatedField {
                     new Translation2d(FIELD_WIDTH, 1)
             );
 
-            // blue state
+            // blue stage
             super.addRectangularObstacle(
                     0.35, 0.35,
                     new Pose2d(3.4, 4.1, new Rotation2d())
