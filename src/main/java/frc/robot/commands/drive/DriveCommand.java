@@ -53,12 +53,12 @@ public class DriveCommand extends Command {
       angularSpeed = DriveConstants.LOW_ANGULAR_SPEED_RADIANS_PER_SECOND;
     }
     
-    // driveSubsystem.drive(
-    //   leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
-    //   leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
-    //   rightJoystickX.getAsDouble() * angularSpeed,
-    //   isFieldRelative.getAsBoolean()
-    // );
+    driveSubsystem.drive(
+      leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
+      leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
+      rightJoystickX.getAsDouble() * angularSpeed,
+      isFieldRelative.getAsBoolean()
+    );
 
     // Runs all the code from DriveCommandBase that estimates pose
     super.execute();

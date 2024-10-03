@@ -143,15 +143,15 @@ public class RobotContainer {
 
     // // driving
 
-    // Command driveCommand = new DriveCommand(driveSubsystem,
-    //   driverLeftStick[1],
-    //   driverLeftStick[0],
-    //   () -> modifyAxisCubed(driverRightStickX),
-    //   () -> !driverRightBumper.getAsBoolean(),
-    //   () -> driverLeftBumper.getAsBoolean()
-    // );
+    Command driveCommand = new DriveCommand(driveSubsystem,
+      driverLeftStick[1],
+      driverLeftStick[0],
+      () -> modifyAxisCubed(driverRightStickX),
+      () -> !driverRightBumper.getAsBoolean(),
+      () -> driverLeftBumper.getAsBoolean()
+    );
 
-    // driveSubsystem.setDefaultCommand(driveCommand);
+    driveSubsystem.setDefaultCommand(driveCommand);
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem, visionSubsystem));
 
     // driverLeftTrigger.whileTrue(new TowerIntake(intakeSubsystem, pivotSubsystem, shooterSubsystem, false, ledSubsystem, this::intakeCallback));
