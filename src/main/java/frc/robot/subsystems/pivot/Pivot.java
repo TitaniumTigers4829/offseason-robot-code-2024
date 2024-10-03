@@ -14,7 +14,7 @@ import frc.robot.Constants.HardwareConstants;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
-  
+  private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
   private final SysIdRoutine sysId;
   /** Creates a new Pivot. */
   public Pivot(PivotIO io) {
@@ -44,6 +44,8 @@ public class Pivot extends SubsystemBase {
 
   @Override
   public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Pivot", inputs);
     // This method will be called once per scheduler run
   }
   

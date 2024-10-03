@@ -10,46 +10,47 @@ import org.littletonrobotics.junction.AutoLog;
 public interface PivotIO {
   @AutoLog
    class PivotIOInputs {
-    public boolean leftMotorConnected = true;
-    public boolean rightMotorConnected = true;
+    public boolean leaderMotorConnected = true;
+    public boolean followerMotorConnected = true;
+    public double leaderPositionRads = 0.0;
+    public double leaderVelocityRpm = 0.0;
+    public double leaderAppliedVolts = 0.0;
+    public double[] leaderSupplyCurrentAmps = null;
+    public double leaderTorqueCurrentAmps = 0.0;
+    public double leaderTempCelsius = 0.0;
 
-    public double leftPositionRads = 0.0;
-    public double leftVelocityRpm = 0.0;
-    public double leftAppliedVolts = 0.0;
-    public double leftSupplyCurrentAmps = 0.0;
-    public double leftTorqueCurrentAmps = 0.0;
-    public double leftTempCelsius = 0.0;
-
-    public double rightPositionRads = 0.0;
-    public double rightVelocityRpm = 0.0;
-    public double rightAppliedVolts = 0.0;
-    public double rightSupplyCurrentAmps = 0.0;
-    public double rightTorqueCurrentAmps = 0.0;
-    public double rightTempCelsius = 0.0;
+    public double followerPositionRads = 0.0;
+    public double followerVelocityRpm = 0.0;
+    public double followerAppliedVolts = 0.0;
+    public double[] followerSupplyCurrentAmps = null;
+    public double followerTorqueCurrentAmps = 0.0;
+    public double followerTempCelsius = 0.0;
   }
   /** Update inputs */
-  default void updateInputs(PivotIOInputs inputs) {}
+  public default void updateInputs(PivotIOInputs inputs) {}
 
-  /** Run both motors at voltage */
-  default void runVolts(double leftVolts) {}
+  public default double getAngle() {
+    return 0.0;
+  }
 
-  /** Stop both flywheels */
-  default void stop() {}
+  public default boolean isPivotWithinAcceptableError() {
+    return false;
+  }
 
-  /** Run left and right flywheels at velocity in rpm */
-  default void runVelocity(double leftRpm, double rightRpm, double leftFeedforward, double rightFeedforward) {}
+  public default void setPivotFromSpeakerDistance(double speakerDistance) {}
 
-  /** Config PID values for both motors */
-  default void setPID(double kP, double kI, double kD) {}
+  public default void setPivotSpeed(double output) {}
 
-  /** Config FF values for both motors */
-  default void setFF(double kS, double kV, double kA) {}
 
-  /** Run left flywheels at voltage */
-  default void runCharacterizationLeft(double input) {}
+  public default void setPivotFromPassDistance(double passDistance) {}
+  
+  public default void setPivotAngle(double angle) {}
 
-  /** Run right flywheels at voltage */
-  default void runCharacterizationRight(double input) {}
+  public default double getPivotTarget() {
+    return 0.0;
+  }
+
+
 }
 
   
