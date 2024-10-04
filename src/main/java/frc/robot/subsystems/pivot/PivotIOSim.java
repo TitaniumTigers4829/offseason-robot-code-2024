@@ -21,7 +21,10 @@ public class PivotIOSim implements PivotIO {
     private double leaderAppliedVolts = 0.0;
     private double followerAppliedVolts = 0.0;
 
-
+    private boolean closedLoop = false;
+    private double ffVolts = 0.0;
+  
+  
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
@@ -37,7 +40,19 @@ public class PivotIOSim implements PivotIO {
     inputs.followerVelocityRpm = followerPivotMotorSim.getVelocityRadPerSec();
     inputs.followerAppliedVolts = followerAppliedVolts; 
     inputs.followerSupplyCurrentAmps = new double[] {followerPivotMotorSim.getCurrentDrawAmps()};
-
-    
-}
+  }
+  
+  @Override
+  public void setLeaderVoltage(double volts) {
+    closedLoop = false;
+    leaderAppliedVolts = volts;
+    leaderPivotMotorSim.setInputVoltage(volts);
+  }
+  
+  @Override
+  public void setFollowerVoltage(double volts) {
+    closedLoop = false;
+    followerAppliedVolts = volts;
+    followerPivotMotorSim.setInputVoltage(volts);
+  }
 }

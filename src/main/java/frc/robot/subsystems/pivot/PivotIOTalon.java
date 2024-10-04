@@ -160,6 +160,17 @@ public class PivotIOTalon implements PivotIO {
             followerTempCelsius,
             pivotPos);
     }
+    @Override
+    public void setLeaderVoltage(double volts) {
+      leaderPivotMotor.setControl(new VoltageOut(volts));
+
+    }
+
+    @Override
+    public void setFollowerVoltage(double volts) {
+      followerPivotMotor.setControl(new VoltageOut(volts));
+
+    }
 
     @Override
     public double getAngle(){

@@ -38,8 +38,10 @@ public class Pivot extends SubsystemBase {
             null,
             null,
             null,
-            (state) -> Logger.recordOutput("Pivot/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism((voltage) -> io.runVolts(voltage.in(Volts)), null, this));
+            (state) -> Logger.recordOutput("Pivot/SysIdState", state.toString())
+            ),
+        new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this)
+        );
   }
 
   @Override
@@ -47,6 +49,11 @@ public class Pivot extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Pivot", inputs);
     // This method will be called once per scheduler run
+  }
+  public void runVolts(double volts) {
+    io.setLeaderVoltage(volts);
+    io.setFollowerVoltage(volts);
+
   }
   
 }

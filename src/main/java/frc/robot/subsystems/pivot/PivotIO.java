@@ -41,6 +41,9 @@ public interface PivotIO {
 
   public default void setPivotSpeed(double output) {}
 
+  public default void setLeaderVoltage(double volts) {}
+
+  public default void setFollowerVoltage(double volts) {}
 
   public default void setPivotFromPassDistance(double passDistance) {}
   
