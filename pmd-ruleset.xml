@@ -1,15 +1,14 @@
-
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="WPILibRuleset"
-  xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
   <description>PMD Ruleset for WPILib</description>
 
   <exclude-pattern>.*/LimeligtHelpers.java</exclude-pattern>
 
-  <rule ref="category/java/bestpractices.xml">
+  <rule ref="rulesets/java/bestpractices.xml">
     <exclude name="AccessorClassGeneration" />
     <exclude name="AccessorMethodGeneration" />
     <exclude name="AvoidPrintStackTrace" />
@@ -31,19 +30,21 @@
     <exclude name="SystemPrintln" />
     <exclude name="UseVarargs" />
   </rule>
-  <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod">
+
+  <rule ref="rulesets/java/bestpractices.xml/UnusedPrivateMethod">
     <properties>
       <property name="violationSuppressRegex"
-        value=".*'.*Arguments\(\)'.*" />
+                value=".*'.*Arguments\(\)'.*" />
     </properties>
   </rule>
-  <rule ref="category/java/bestpractices.xml/UnusedLocalVariable">
+
+  <rule ref="rulesets/java/bestpractices.xml/UnusedLocalVariable">
     <properties>
       <property name="violationSuppressXPath" value="//Resource" />
     </properties>
   </rule>
 
-  <rule ref="category/java/design.xml">
+  <rule ref="rulesets/java/design.xml">
     <exclude name="AvoidThrowingRawExceptionTypes" />
     <exclude name="AvoidThrowingNewInstanceOfSameException" />
     <exclude name="CognitiveComplexity" />
@@ -63,7 +64,7 @@
     <exclude name="TooManyMethods" />
   </rule>
 
-  <rule ref="category/java/errorprone.xml">
+  <rule ref="rulesets/java/errorprone.xml">
     <exclude name="AssignmentToNonFinalStatic" />
     <exclude name="AvoidCatchingThrowable" />
     <exclude name="AvoidDuplicateLiterals" />
@@ -79,48 +80,15 @@
     <exclude name="NullAssignment" />
   </rule>
 
-  <rule ref="category/java/multithreading.xml">
+  <rule ref="rulesets/java/multithreading.xml">
     <exclude name="AvoidSynchronizedAtMethodLevel" />
     <exclude name="AvoidUsingVolatile" />
     <exclude name="DoNotUseThreads" />
     <exclude name="UseConcurrentHashMap" />
   </rule>
 
-  <rule ref="category/java/performance.xml">
+  <rule ref="rulesets/java/performance.xml">
     <exclude name="AvoidInstantiatingObjectsInLoops" />
   </rule>
 
-  <rule name="UnnecessaryCastRule" language="java"
-    message="Avoid unnecessary casts"
-    class="net.sourceforge.pmd.lang.java.rule.codestyle.UnnecessaryCastRule"
-    externalInfoUrl="https://github.com/pmd/pmd/blob/master/pmd-java/src/main/java/net/sourceforge/pmd/lang/java/rule/codestyle/UnnecessaryCastRule.java" />
-
-  <!-- Custom Rules -->
-  <rule name="UseRequireNonNull"
-    message="Use Objects.requireNonNull() instead of throwing a NullPointerException yourself."
-    language="java" class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
-    <description>Use Objects.requireNonNull() instead of throwing a
-      NullPointerException yourself.</description>
-    <properties>
-      <property name="xpath">
-        <value>
-          <![CDATA[
-            //IfStatement[child::Expression//NullLiteral]/Statement//ThrowStatement/Expression/PrimaryExpression/PrimaryPrefix/AllocationExpression/ClassOrInterfaceType[@Image='NullPointerException']
-          ]]>
-        </value>
-      </property>
-    </properties>
-    <priority>3</priority>
-    <example>
-<![CDATA[
-                public class Example {
-                    public Example(Object example) {
-                        if (example == null) {
-                            throw new NullPointerException();
-                        }
-                    }
-                }
-            ]]>
-    </example>
-  </rule>
 </ruleset>

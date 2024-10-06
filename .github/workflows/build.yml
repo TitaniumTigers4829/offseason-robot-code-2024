@@ -54,12 +54,11 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-java@v4
       with:
-        distribution: 'temurin'
-        java-version: '11'
+        distribution: temurin
+        java-version: 17
     - uses: pmd/pmd-github-action@v2
       id: pmd
       with:
-        version: '6.55.0'
         rulesets: 'pmd-ruleset.xml'
         analyzeModifiedFilesOnly: false
     - name: Fail build if there are violations
