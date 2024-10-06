@@ -58,6 +58,7 @@ jobs:
         java-version: 17
     - uses: pmd/pmd-github-action@v2
       with:
+        version: '6.55.0'
         rulesets: 'pmd-ruleset.xml'
         analyzeModifiedFilesOnly: false
      - name: Fail build if there are violations
