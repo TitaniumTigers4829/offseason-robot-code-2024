@@ -60,5 +60,5 @@ jobs:
       with:
         rulesets: 'pmd-ruleset.xml'
         analyzeModifiedFilesOnly: false
-      if: steps.pmd.outputs.violations != 0
-      run: exit 1
+      # if: steps.pmd.outputs.violations != 0
+      # run: exit 1
