@@ -60,3 +60,4 @@ jobs:
       with:
         rulesets: 'pmd-ruleset.xml'
         analyzeModifiedFilesOnly: false
+        # failOnWarnings: false
