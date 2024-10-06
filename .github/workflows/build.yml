@@ -60,6 +60,11 @@ jobs:
       with:
         rulesets: 'pmd-ruleset.xml'
         analyzeModifiedFilesOnly: false
+    - name: Capture PMD output
+      run: |
+        echo "PMD Output:"
+        cat ${{ github.action_path }}/pmd.log
+        echo "Violations Count: ${{{ steps.pmd.outputs.violations }}}"
     - name: Fail build if there are violations
       if: steps.pmd.outputs.violations != ''
       run: exit 1
