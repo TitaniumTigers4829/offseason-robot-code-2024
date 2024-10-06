@@ -174,6 +174,7 @@ public class PolynomialRegression implements Comparable<PolynomialRegression> {
   }
 
   /** Compare lexicographically. */
+  @Override
   public int compareTo(PolynomialRegression that) {
     double EPSILON = 1E-5;
     int maxDegree = Math.max(this.degree(), that.degree());

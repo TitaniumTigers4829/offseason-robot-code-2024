@@ -46,3 +46,17 @@ jobs:
         distribution: temurin
     - name: Run formatter
       run: ./gradlew spotlessCheck
+
+  lint: 
+    name: "Lint"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+    - uses: pmd/pmd-github-action@v2
+      with:
+        rulesets: 'pmd-ruleset.xml'
+        analyzeModifiedFilesOnly: false
