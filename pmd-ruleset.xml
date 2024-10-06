@@ -8,7 +8,7 @@
 
   <exclude-pattern>.*/LimeligtHelpers.java</exclude-pattern>
 
-  <rule ref="rulesets/java/bestpractices.xml">
+  <rule ref="category/java/bestpractices.xml">
     <exclude name="AccessorClassGeneration" />
     <exclude name="AccessorMethodGeneration" />
     <exclude name="AvoidPrintStackTrace" />
@@ -31,20 +31,20 @@
     <exclude name="UseVarargs" />
   </rule>
 
-  <rule ref="rulesets/java/bestpractices.xml/UnusedPrivateMethod">
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod">
     <properties>
       <property name="violationSuppressRegex"
                 value=".*'.*Arguments\(\)'.*" />
     </properties>
   </rule>
 
-  <rule ref="rulesets/java/bestpractices.xml/UnusedLocalVariable">
+  <rule ref="category/java/bestpractices.xml/UnusedLocalVariable">
     <properties>
       <property name="violationSuppressXPath" value="//Resource" />
     </properties>
   </rule>
 
-  <rule ref="rulesets/java/design.xml">
+  <rule ref="category/java/design.xml">
     <exclude name="AvoidThrowingRawExceptionTypes" />
     <exclude name="AvoidThrowingNewInstanceOfSameException" />
     <exclude name="CognitiveComplexity" />
@@ -64,7 +64,7 @@
     <exclude name="TooManyMethods" />
   </rule>
 
-  <rule ref="rulesets/java/errorprone.xml">
+  <rule ref="category/java/errorprone.xml">
     <exclude name="AssignmentToNonFinalStatic" />
     <exclude name="AvoidCatchingThrowable" />
     <exclude name="AvoidDuplicateLiterals" />
@@ -80,14 +80,14 @@
     <exclude name="NullAssignment" />
   </rule>
 
-  <rule ref="rulesets/java/multithreading.xml">
+  <rule ref="category/java/multithreading.xml">
     <exclude name="AvoidSynchronizedAtMethodLevel" />
     <exclude name="AvoidUsingVolatile" />
     <exclude name="DoNotUseThreads" />
     <exclude name="UseConcurrentHashMap" />
   </rule>
 
-  <rule ref="rulesets/java/performance.xml">
+  <rule ref="category/java/performance.xml">
     <exclude name="AvoidInstantiatingObjectsInLoops" />
   </rule>
 
