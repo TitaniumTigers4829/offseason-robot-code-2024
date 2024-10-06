@@ -24,10 +24,12 @@
 // import java.util.Queue;
 
 // /**
-//  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
+//  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller,
+// and
 //  * CANcoder
 //  *
-//  * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
+//  * <p>NOTE: This implementation should be used as a starting point and adapted to different
+// hardware
 //  * configurations (e.g. If using an analog encoder, copy from "ModuleIOSparkMax")
 //  *
 //  * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
@@ -58,8 +60,10 @@
 //   private final StatusSignal<Double> turnCurrent;
 
 //   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0);
-//   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0).withUpdateFreqHz(0);
-//   private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0).withSlot(0).withUpdateFreqHz(0);
+//   private final VelocityVoltage velocityControl = new
+// VelocityVoltage(0).withSlot(0).withUpdateFreqHz(0);
+//   private final MotionMagicVoltage positionControl = new
+// MotionMagicVoltage(0).withSlot(0).withUpdateFreqHz(0);
 
 //   public ModuleIOTalonFX(int driveMotorChannel,
 //     int turnMotorChannel,
@@ -70,11 +74,11 @@
 //     InvertedValue driveReversed) {
 
 //       // timestampQueue = new Queue<Double>() {};
-      
+
 //     driveTalon = new TalonFX(driveMotorChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
 //     turnTalon = new TalonFX(turnEncoderChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
 //     cancoder = new CANcoder(turnEncoderChannel, HardwareConstants.CANIVORE_CAN_BUS_STRING);
-    
+
 //     driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
 //     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 //     driveTalon.getConfigurator().apply(driveConfig);
@@ -133,13 +137,16 @@
 //         turnCurrent);
 
 //     inputs.drivePositionMeters =
-//         Units.rotationsToRadians(drivePosition.getValueAsDouble()) / ModuleConstants.DRIVE_GEAR_RATIO;
+//         Units.rotationsToRadians(drivePosition.getValueAsDouble()) /
+// ModuleConstants.DRIVE_GEAR_RATIO;
 //     inputs.driveVelocityMetersPerSec =
-//         Units.rotationsToRadians(driveVelocity.getValueAsDouble()) / ModuleConstants.DRIVE_GEAR_RATIO;
+//         Units.rotationsToRadians(driveVelocity.getValueAsDouble()) /
+// ModuleConstants.DRIVE_GEAR_RATIO;
 //     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
 //     inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
 
-//     inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
+//     inputs.turnAbsolutePosition =
+// Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
 //     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
 //     inputs.turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
 
@@ -147,7 +154,8 @@
 //     //     timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
 //     inputs.odometryDrivePositionsRad =
 //         drivePositionQueue.stream()
-//             .mapToDouble((Double value) -> Units.rotationsToRadians(value) / ModuleConstants.DRIVE_GEAR_RATIO)
+//             .mapToDouble((Double value) -> Units.rotationsToRadians(value) /
+// ModuleConstants.DRIVE_GEAR_RATIO)
 //             .toArray();
 //     // timestampQueue.clear();
 //     drivePositionQueue.clear();
@@ -217,9 +225,10 @@
 //   @Override
 //   public void setDesiredState(SwerveModuleState desiredState) {
 //     double turnRadians = getTurnRadians();
- 
+
 //     // Optimize the reference state to avoid spinning further than 90 degrees
-//     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(desiredState, new Rotation2d(turnRadians));
+//     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(desiredState, new
+// Rotation2d(turnRadians));
 
 //     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
 //       driveTalon.set(0);
@@ -228,11 +237,12 @@
 //     }
 
 //     // Converts meters per second to rotations per second
-//     double desiredDriveRPS = optimizedDesiredState.speedMetersPerSecond 
+//     double desiredDriveRPS = optimizedDesiredState.speedMetersPerSecond
 //      * ModuleConstants.DRIVE_GEAR_RATIO / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
-     
+
 //     driveTalon.setControl(velocityControl.withVelocity(desiredDriveRPS));
-//     turnTalon.setControl(positionControl.withPosition(optimizedDesiredState.angle.getRotations()));
+//
+// turnTalon.setControl(positionControl.withPosition(optimizedDesiredState.angle.getRotations()));
 //   }
 
 // }

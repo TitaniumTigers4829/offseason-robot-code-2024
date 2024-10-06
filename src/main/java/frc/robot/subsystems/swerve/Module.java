@@ -5,18 +5,17 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.extras.LoggedTunableNumber;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
   private static final LoggedTunableNumber drivekP =
       new LoggedTunableNumber("Drive/Module/DrivekP", ModuleConstants.DRIVE_P);
   private static final LoggedTunableNumber drivekD =
-      new LoggedTunableNumber("Drive/Module/DrivekD",ModuleConstants.DRIVE_D);
+      new LoggedTunableNumber("Drive/Module/DrivekD", ModuleConstants.DRIVE_D);
   private static final LoggedTunableNumber drivekS =
       new LoggedTunableNumber("Drive/Module/DrivekS", ModuleConstants.DRIVE_S);
   private static final LoggedTunableNumber drivekV =
-      new LoggedTunableNumber("Drive/Module/DrivekV", ModuleConstants.DRIVE_V);  
+      new LoggedTunableNumber("Drive/Module/DrivekV", ModuleConstants.DRIVE_V);
   private static final LoggedTunableNumber drivekA =
       new LoggedTunableNumber("Drive/Module/DrivekV", ModuleConstants.DRIVE_A);
   private static final LoggedTunableNumber turnkP =
@@ -65,8 +64,6 @@ public class Module {
     // driveMotorDisconnected.set(!inputs.driveMotorConnected);
     // turnMotorDisconnected.set(!inputs.turnMotorConnected);
   }
-
-  
 
   /** Sets brake mode to {@code enabled}. */
   public void setBrakeMode(boolean enabled) {

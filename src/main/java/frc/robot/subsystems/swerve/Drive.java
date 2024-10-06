@@ -1,10 +1,8 @@
 package frc.robot.subsystems.swerve;
 
-import java.util.Optional;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,12 +13,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.extras.LocalADStarAK;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -44,7 +43,8 @@ public class Drive extends SubsystemBase {
       };
 
   private SwerveDrivePoseEstimator odometry =
-      new SwerveDrivePoseEstimator(DriveConstants.DRIVE_KINEMATICS, getGyroRotation2d(), lastModulePositions, new Pose2d());
+      new SwerveDrivePoseEstimator(
+          DriveConstants.DRIVE_KINEMATICS, getGyroRotation2d(), lastModulePositions, new Pose2d());
 
   public Drive(
       GyroIO gyroIO,
@@ -83,8 +83,7 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-   alliance = DriverStation.getAlliance();
-
+    alliance = DriverStation.getAlliance();
   }
 
   public void periodic() {
@@ -152,8 +151,10 @@ public class Drive extends SubsystemBase {
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+    SwerveModuleState[] setpointStates =
+        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        setpointStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
     // Send setpoints to modules
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
@@ -170,11 +171,14 @@ public class Drive extends SubsystemBase {
   @SuppressWarnings("ParameterName")
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
     // SmartDashboard.putBoolean("isFieldRelative", fieldRelative);
-    SwerveModuleState[] swerveModuleStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
-      fieldRelative
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
-      : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+    SwerveModuleState[] swerveModuleStates =
+        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+            fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                    xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
+                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
     for (int i = 0; i < 4; i++) {
       modules[i].setDesiredState(swerveModuleStates[i]);
@@ -188,12 +192,13 @@ public class Drive extends SubsystemBase {
 
   public double getAllianceAngleOffset() {
     alliance = DriverStation.getAlliance();
-    double offset = alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
+    double offset =
+        alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
     return offset;
   }
 
   public Rotation2d getOdometryAllianceRelativeRotation2d() {
-    return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())); 
+    return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset()));
   }
 
   /**
@@ -262,20 +267,17 @@ public class Drive extends SubsystemBase {
     return swerveModulePositions;
   }
 
-  public void setPoseEstimatorVisionConfidence(double xStandardDeviation, double yStandardDeviation,
-    double thetaStandardDeviation) {
-    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
+  public void setPoseEstimatorVisionConfidence(
+      double xStandardDeviation, double yStandardDeviation, double thetaStandardDeviation) {
+    odometry.setVisionMeasurementStdDevs(
+        VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
   }
 
   public void addPoseEstimatorSwerveMeasurement() {
-    odometry.updateWithTime(
-      Timer.getFPGATimestamp(),
-      getGyroRotation2d(),
-      getModulePositions()
-    );
+    odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroRotation2d(), getModulePositions());
   }
 
-  public Rotation2d getGyroRotation2d () {
+  public Rotation2d getGyroRotation2d() {
     return rawGyroRotation;
   }
 }
