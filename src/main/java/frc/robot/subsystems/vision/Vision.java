@@ -15,7 +15,8 @@
 
 //     /**
 //      * Position of camera on the robot.
-//      * This is calculated through the horizontal distance (in meters) from the fiducial to the lens of the camera.
+//      * This is calculated through the horizontal distance (in meters) from the fiducial to the
+// lens of the camera.
 //      */
 //     private Pose2d cameraToAprilTagPose = new Pose2d();
 
@@ -47,18 +48,23 @@
 //         horizontalDistanceToTargetMeters = Double.NaN;
 
 //         if (hasTargets()) {
-//             // Calculate total pitch of camera. It is a combination of the ty value and the mounting angle of the LL.
-//             double theta = getPitchRadians() + limelightConfiguration.LimelightMountingPitchRadians;
+//             // Calculate total pitch of camera. It is a combination of the ty value and the
+// mounting angle of the LL.
+//             double theta = getPitchRadians() +
+// limelightConfiguration.LimelightMountingPitchRadians;
 //             var tagPose = FieldConstants.FIELD_LAYOUT.getTagPose(inputs.tagId);
 
 //             if (tagPose.isPresent()) {
 //                 var pose = tagPose.get();
-//                 // Calculate height from camera to target by subtracting the height of the April Tag and the height of
+//                 // Calculate height from camera to target by subtracting the height of the April
+// Tag and the height of
 //                 // the LL on the robot.
-//                 double heightFromRobotToTargetMeters = pose.getZ() - limelightConfiguration.LimelightHeightOffsetMeters;
+//                 double heightFromRobotToTargetMeters = pose.getZ() -
+// limelightConfiguration.LimelightHeightOffsetMeters;
 
 //                 // Finds horizontal distance from camera to target.
-//                 horizontalDistanceToTargetMeters = heightFromRobotToTargetMeters / Math.tan(theta);
+//                 horizontalDistanceToTargetMeters = heightFromRobotToTargetMeters /
+// Math.tan(theta);
 
 //                 // Get Camera to Tag pose
 //                 cameraToAprilTagPose = new Pose2d(
@@ -66,7 +72,8 @@
 //                         getHorizontalDistanceToTargetMeters() * Math.sin(getYawRadians()),
 //                         Rotation2d.fromRadians(getYawRadians()));
 
-//                 Logger.recordOutput("Vision/CameraToAprilTag" + inputs.tagId, cameraToAprilTagPose);
+//                 Logger.recordOutput("Vision/CameraToAprilTag" + inputs.tagId,
+// cameraToAprilTagPose);
 //             }
 //         }
 

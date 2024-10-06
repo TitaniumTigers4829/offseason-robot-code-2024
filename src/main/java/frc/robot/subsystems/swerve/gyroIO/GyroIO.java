@@ -1,10 +1,7 @@
 package frc.robot.subsystems.swerve.gyroIO;
 
-import org.littletonrobotics.junction.AutoLog;
-
-import com.ctre.phoenix6.BaseStatusSignal;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface GyroIO {
     @AutoLog
@@ -18,10 +15,9 @@ public interface GyroIO {
         public double yawVelocity = 0.0;
     }
 
-    public default void updateInputs(GyroIOInputs inputs){}
-    
-    public default void reset(){}
+  public default void updateInputs(GyroIOInputs inputs) {}
 
-    public default void addOffset(Rotation2d offset) {}
+  public default void reset() {}
 
+  public default void addOffset(Rotation2d offset) {}
 }
