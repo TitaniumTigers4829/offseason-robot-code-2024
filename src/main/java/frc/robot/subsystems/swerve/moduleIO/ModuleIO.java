@@ -13,7 +13,7 @@ public interface ModuleIO {
         public double driveMotorAppliedVolts = 0.0;
         public double driveMotorCurrentAmps = 0;
 
-        public Rotation2d steerFacing = new Rotation2d();
+        public Rotation2d turnRotation = new Rotation2d();
         public double steerVelocityRadPerSec = 0.0;
         public double steerMotorAppliedVolts = 0.0;
         public double steerMotorCurrentAmps = 0.0;
@@ -58,4 +58,6 @@ public interface ModuleIO {
      * Enable or disable brake mode on the turn motor.
      */
     default void setSteerBrake(boolean enable) {}
+
+    default void stopModule() {}
 }

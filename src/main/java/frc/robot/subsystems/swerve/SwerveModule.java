@@ -79,11 +79,15 @@ public class SwerveModule extends VirtualSubsystem {
         io.setDriveVoltage(0);
     }
 
+    public void stopModule () {
+        io.stopModule();
+    }
+
     /**
      * Returns the current turn angle of the module.
      */
-    public Rotation2d getSteerFacing() {
-        return inputs.steerFacing;
+    public Rotation2d getTurnRotation() {
+        return inputs.turnRotation;
     }
 
     public double getSteerVelocityRadPerSec() {
@@ -104,7 +108,7 @@ public class SwerveModule extends VirtualSubsystem {
     /**
      * Returns the current drive velocity of the module in meters per second.
      */
-    public double getDriveVelocityMetersPerSec() {
+    public double getDriveVelocity() {
         return driveWheelRevolutionsToMeters(inputs.driveWheelFinalVelocityRevolutionsPerSec);
     }
 
@@ -112,14 +116,14 @@ public class SwerveModule extends VirtualSubsystem {
      * Returns the module position (turn angle and drive position).
      */
     public SwerveModulePosition getLatestPosition() {
-        return new SwerveModulePosition(getDrivePositionMeters(), getSteerFacing());
+        return new SwerveModulePosition(getDrivePositionMeters(), getTurnRotation());
     }
 
     /**
      * Returns the module state (turn angle and drive velocity).
      */
     public SwerveModuleState getMeasuredState() {
-        return new SwerveModuleState(getDriveVelocityMetersPerSec(), getSteerFacing());
+        return new SwerveModuleState(getDriveVelocity(), getTurnRotation());
     }
 
     /**

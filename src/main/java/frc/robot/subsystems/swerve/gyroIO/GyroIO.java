@@ -9,10 +9,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface GyroIO {
     @AutoLog
     public static class GyroIOInputs {
-        public boolean connected = false;
-        public Rotation2d yawPosition = new Rotation2d();
-        public double pitch = 0.0;
-        public double roll = 0.0;
+        public boolean isConnected = false;
+        public Rotation2d yawDegrees = new Rotation2d();
+        public double pitchDegrees = 0.0;
+        public double rollDegrees = 0.0;
         public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
         public double[] accel = new double[] {0, 0, 0};
         public double yawVelocity = 0.0;

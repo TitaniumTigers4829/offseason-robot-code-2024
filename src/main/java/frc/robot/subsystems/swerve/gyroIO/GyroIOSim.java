@@ -32,12 +32,12 @@ public class GyroIOSim implements GyroIO {
                 Rotation2d.fromRadians(MathUtil.generateRandomNormal(0, currentTickDriftStdDevRad))
         );
 
-        inputs.connected = gyroPhysicsSimulationResults.hasReading;
+        inputs.isConnected = gyroPhysicsSimulationResults.hasReading;
         inputs.odometryYawPositions =
                 Arrays.stream(gyroPhysicsSimulationResults.odometryYawPositions)
                 .map((robotFacing) -> robotFacing.rotateBy(currentGyroDriftAmount))
                 .toArray(Rotation2d[]::new);
-        inputs.yawPosition = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1];
+        inputs.yawDegrees = inputs.odometryYawPositions[inputs.odometryYawPositions.length-1];
         inputs.yawVelocity = gyroPhysicsSimulationResults.robotAngularVelocityRadPerSec;
 
         Logger.recordOutput(GYRO_LOG_PATH + "robot true yaw (deg)",
@@ -45,7 +45,7 @@ public class GyroIOSim implements GyroIO {
         );
         Logger.recordOutput(GYRO_LOG_PATH + "robot power for (Sec)", TimeUtil.getLogTimeSeconds());
         Logger.recordOutput(GYRO_LOG_PATH + "imu total drift (Deg)", currentGyroDriftAmount.getDegrees());
-        Logger.recordOutput(GYRO_LOG_PATH + "gyro reading yaw (Deg)", inputs.yawPosition);
+        Logger.recordOutput(GYRO_LOG_PATH + "gyro reading yaw (Deg)", inputs.yawDegrees);
         Logger.recordOutput(GYRO_LOG_PATH + "angular velocity (Deg per Sec)", Math.toDegrees(previousAngularVelocityRadPerSec));
         Logger.recordOutput(GYRO_LOG_PATH + "gyro angular acc (Deg per Sec^2)", Math.toDegrees(angularAccelerationMagnitudeRadPerSecSq));
         Logger.recordOutput(GYRO_LOG_PATH + "new drift in current tick Std Dev (Deg)", Math.toDegrees(currentTickDriftStdDevRad));

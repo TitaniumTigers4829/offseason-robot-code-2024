@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,12 +14,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.DeviceCANBus;
 import frc.robot.extras.util.AllianceFlipper;
@@ -36,9 +39,27 @@ import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.*;
 
+import java.sql.Driver;
 import java.util.Optional;
 
 public class SwerveDrive extends VirtualSubsystem {
+
+      // This will stay the same throughout the match. These values are harder to test for and tune, so
+  // assume this guess is right.
+  private static final Vector<N3> stateStandardDeviations =
+      VecBuilder.fill(
+          DriveConstants.X_POS_TRUST,
+          DriveConstants.Y_POS_TRUST,
+          Units.degreesToRadians(DriveConstants.ANGLE_TRUST));
+
+  // This will be changed throughout the match depending on how confident we are that the limelight
+  // is right.
+  private static final Vector<N3> visionMeasurementStandardDeviations =
+      VecBuilder.fill(
+          VisionConstants.VISION_X_POS_TRUST,
+          VisionConstants.VISION_Y_POS_TRUST,
+          Units.degreesToRadians(VisionConstants.VISION_ANGLE_TRUST));
+
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs;
     private final OdometryThreadInputsAutoLogged odometryThreadInputs;
@@ -50,8 +71,7 @@ public class SwerveDrive extends VirtualSubsystem {
   private Optional<DriverStation.Alliance> alliance;
 
     private final OdometryThread odometryThread;
-    private final Alert gyroDisconnectedAlert = new Alert("Gyro Hardware Fault", Alert.AlertType.ERROR); 
-    private final Alert visionNoResultAlert = new Alert("Vision No Result", Alert.AlertType.INFO);
+    private final Alert gyroDisconnectedAlert = new Alert("Gyro Hardware Fault", Alert.AlertType.ERROR);
     public SwerveDrive(GyroIO gyroIO, ModuleIO frontLeftModuleIO, ModuleIO frontRightModuleIO, ModuleIO rearLeftModuleIO, ModuleIO rearRightModuleIO) {
         super("Drive");
         this.gyroIO = gyroIO;
@@ -65,9 +85,9 @@ public class SwerveDrive extends VirtualSubsystem {
 
         lastModulePositions = new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
         this.odometry = new SwerveDrivePoseEstimator(
-                DriveConstants.DRIVE_KINEMATICS, getRawGyroYaw(), lastModulePositions, new Pose2d(),
-                VecBuilder.fill(1,2,3), // TODO: add da constants
-                VecBuilder.fill(4,5,6) // TODO: add da constants
+                DriveConstants.DRIVE_KINEMATICS, getRawGyroYaw(), getModuleLatestPositions(), new Pose2d(),
+                stateStandardDeviations,
+                visionMeasurementStandardDeviations
         );
 
         this.odometryThread = OdometryThread.createInstance(DeviceCANBus.CANIVORE);
@@ -75,7 +95,6 @@ public class SwerveDrive extends VirtualSubsystem {
         this.odometryThread.start();
 
         gyroDisconnectedAlert.setActivated(false);
-        visionNoResultAlert.setActivated(false);
 
         startDashboardDisplay();
     }
@@ -89,42 +108,40 @@ public class SwerveDrive extends VirtualSubsystem {
         modulesPeriodic(dt, enabled);
 
         for (int timeStampIndex = 0; timeStampIndex < odometryThreadInputs.measurementTimeStamps.length; timeStampIndex++)
-            feedSingleOdometryDataToPositionEstimator(timeStampIndex);
-
-        final double timeNotVisionResultSeconds = TimeUtil.getLogTimeSeconds() - previousMeasurementTimeStamp;
-        visionNoResultAlert.setText(String.format("AprilTag Vision No Result For %.2f (s)", timeNotVisionResultSeconds));
-        visionNoResultAlert.setActivated(timeNotVisionResultSeconds > 4);
+            updateOdometry(timeStampIndex);
     }
 
     public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
         SwerveModuleState[] swerveModuleStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
             fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, Rotation2d.fromDegrees(180))
-            : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
-            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
+                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
-            for (SwerveModuleState swerveModuleState : swerveModuleStates) {
+        for (SwerveModuleState swerveModuleState : swerveModuleStates) {
             setModuleStates(swerveModuleState);
         }
+        Logger.recordOutput("SwerveStates/SwerveModuleStates", swerveModuleStates);
     }
+
     /**
-     * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
+    * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
     * perspective. This method is needed so that the drive command and poseEstimator don't fight each
     * other. It uses odometry rotation.
     */
     public Rotation2d getOdometryAllianceRelativeRotation2d() {
         if (AllianceFlipper.isBlue()) {
-            return getPose().getRotation();
+            return getOdometryRotation();
         }
-        return AllianceFlipper.flipRotation(getPose().getRotation());
+        return AllianceFlipper.flipRotation(getOdometryRotation());
     }
 
     /**
-   * Sets the modules to the specified states.
-   *
-   * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
-   *     frontRight, backLeft, backRight (should be the same as the kinematics).
-   */
+    * Sets the modules to the specified states.
+    *
+    * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
+    *     frontRight, backLeft, backRight (should be the same as the kinematics).
+    */
     public void setModuleStates(SwerveModuleState desiredStates) {
         for (SwerveModule module : swerveModules) {
             module.setDesiredState(desiredStates);
@@ -142,7 +159,7 @@ public class SwerveDrive extends VirtualSubsystem {
 
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
-        gyroDisconnectedAlert.setActivated(!gyroInputs.connected);
+        gyroDisconnectedAlert.setActivated(!gyroInputs.isConnected);
 
         odometryThread.unlockOdometry();
     }
@@ -152,12 +169,12 @@ public class SwerveDrive extends VirtualSubsystem {
             module.periodic(dt, enabled);
     }
 
-    private void feedSingleOdometryDataToPositionEstimator(int timeStampIndex) {
+    private void updateOdometry(int timeStampIndex) {
         final SwerveModulePosition[] modulePositions = getModulesPosition(timeStampIndex),
                 moduleDeltas = getModulesDelta(modulePositions);
 
-        // if (!updateRobotFacingWithGyroReading(timeStampIndex))
-        //     updateRobotFacingWithOdometry(moduleDeltas);
+        if (!isGyroConnected(timeStampIndex))
+            updateRotationWithOdometry(moduleDeltas);
 
         odometry.updateWithTime(
                 odometryThreadInputs.measurementTimeStamps[timeStampIndex],
@@ -184,48 +201,22 @@ public class SwerveDrive extends VirtualSubsystem {
         return deltas;
     }
 
-    // /**
-    //  * updates the robot facing using the reading from the gyro
-    //  * @param timeStampIndex the index of the time stamp
-    //  * @return whether the update is success
-    //  * */
-    // private boolean updateRobotFacingWithGyroReading(int timeStampIndex) {
-    //     if (!gyroInputs.connected)
-    //         return false;
-    //     getRawGyroYaw() = gyroInputs.odometryYawPositions[timeStampIndex];
-    //     return true;
-    // }
-
-    // /**
-    //  * updates the robot facing using the reading from the gyro
-    //  * @param modulesDelta the delta of the swerve modules calculated from the odometry
-    //  * */
-    // private void updateRobotFacingWithOdometry(SwerveModulePosition[] modulesDelta) {
-    //     Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(modulesDelta);
-    //     rawGyroRotation = getRawGyroYaw().plus(new Rotation2d(twist.dtheta));
-    // }
-
-    
-    public void runRawChassisSpeeds(ChassisSpeeds speeds) {
-        SwerveModuleState[] setpointStates = DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, CHASSIS_MAX_VELOCITY);
-
-        // Send setpoints to modules
-        SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
-        for (int i = 0; i < 4; i++)
-            // optimizedSetpointStates[i] = swerveModules[i].runSetPoint(setpointStates[i]);
-
-        Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-        Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+    /**
+     * updates the robot facing using the reading from the gyro
+     * @param timeStampIndex the index of the time stamp
+     * @return whether the update is success
+     * */
+    private boolean isGyroConnected(int timeStampIndex) {
+        return gyroInputs.isConnected;
     }
 
-    
-    public void stop() {
-        Rotation2d[] swerveHeadings = new Rotation2d[swerveModules.length];
-        for (int i = 0; i < swerveHeadings.length; i++)
-            swerveHeadings[i] = new Rotation2d();
-        DriveConstants.DRIVE_KINEMATICS.resetHeadings(swerveHeadings);
-        runRobotCentricChassisSpeeds(new ChassisSpeeds());
+    /**
+     * updates the robot facing using the reading from the gyro
+     * @param modulesDelta the delta of the swerve modules calculated from the odometry
+     * */
+    private void updateRotationWithOdometry(SwerveModulePosition[] modulesDelta) {
+        Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(modulesDelta);
+        getRawGyroYaw().plus(new Rotation2d(twist.dtheta));
     }
 
     /**
@@ -237,7 +228,9 @@ public class SwerveDrive extends VirtualSubsystem {
         for (int i = 0; i < swerveHeadings.length; i++)
             swerveHeadings[i] = DriveConstants.MODULE_TRANSLATIONS[i].getAngle();
         DriveConstants.DRIVE_KINEMATICS.resetHeadings(swerveHeadings);
-        runRobotCentricChassisSpeeds(new ChassisSpeeds());
+        for (SwerveModule swerveModule : swerveModules) {
+            swerveModule.stopModule();
+        }
     }
 
     /**
@@ -266,7 +259,7 @@ public class SwerveDrive extends VirtualSubsystem {
         return odometry.getEstimatedPosition();
     }
     
-    public Rotation2d getRawGyroYaw() {return gyroInputs.yawPosition; }
+    public Rotation2d getRawGyroYaw() {return gyroInputs.yawDegrees; }
 
     
     public void setPose(Pose2d pose) {
@@ -299,67 +292,27 @@ public class SwerveDrive extends VirtualSubsystem {
         SmartDashboard.putData("Swerve Drive", builder -> {
             builder.setSmartDashboardType("SwerveDrive");
 
-            builder.addDoubleProperty("Front Left Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-            builder.addDoubleProperty("Front Left Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+            builder.addDoubleProperty("Front Left Angle", () -> swerveModules[0].getTurnRotation().getRadians(), null);
+            builder.addDoubleProperty("Front Left Velocity", () -> swerveModules[0].getDriveVelocity(), null);
 
-            builder.addDoubleProperty("Front Right Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-            builder.addDoubleProperty("Front Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+            builder.addDoubleProperty("Front Right Angle", () -> swerveModules[0].getTurnRotation().getRadians(), null);
+            builder.addDoubleProperty("Front Right Velocity", () -> swerveModules[0].getDriveVelocity(), null);
 
-            builder.addDoubleProperty("Back Left Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-            builder.addDoubleProperty("Back Left Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+            builder.addDoubleProperty("Back Left Angle", () -> swerveModules[0].getTurnRotation().getRadians(), null);
+            builder.addDoubleProperty("Back Left Velocity", () -> swerveModules[0].getDriveVelocity(), null);
 
-            builder.addDoubleProperty("Back Right Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-            builder.addDoubleProperty("Back Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+            builder.addDoubleProperty("Back Right Angle", () -> swerveModules[0].getTurnRotation().getRadians(), null);
+            builder.addDoubleProperty("Back Right Velocity", () -> swerveModules[0].getDriveVelocity(), null);
 
-            // builder.addDoubleProperty("Robot Angle", () -> getFacing().minus(FieldConstants.getDriverStationFacing()).getRadians(), null);
+            builder.addDoubleProperty("Robot Angle", () -> getOdometryRotation().getDegrees(), null);
         });
     }
 
 
-    public Rotation2d getFacing() {return getPose().getRotation(); }
+    public Rotation2d getOdometryRotation() {return getPose().getRotation(); }
 
     public ChassisSpeeds getMeasuredChassisSpeedsFieldRelative() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(getMeasuredChassisSpeedsRobotRelative(), getFacing());
-    }
-
-    /**
-     * runs a driverstation-centric ChassisSpeeds
-     * @param driverStationCentricSpeeds a continuous chassis speeds, driverstation-centric, normally from a gamepad
-     * */
-    public void runDriverStationCentricChassisSpeeds(ChassisSpeeds driverStationCentricSpeeds) {
-        final Rotation2d driverStationFacing = DriverStation.getAlliance().equals(Alliance.Blue) ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(Math.PI); 
-        runRobotCentricChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
-                driverStationCentricSpeeds,
-                getPose().getRotation().minus(driverStationFacing)
-        ));
-    }
-
-    /**
-     * runs a field-centric ChassisSpeeds
-     * @param fieldCentricSpeeds a continuous chassis speeds, field-centric, normally from a pid position controller
-     * */
-    public void runFieldCentricChassisSpeeds(ChassisSpeeds fieldCentricSpeeds) {
-        runRobotCentricChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
-                fieldCentricSpeeds,
-                getPose().getRotation()
-        ));
-    }
-
-    /**
-     * runs a ChassisSpeeds, pre-processed with ChassisSpeeds.discretize()
-     * @param speeds a continuous chassis speed, robot-centric
-     * */
-    public void runRobotCentricChassisSpeeds(ChassisSpeeds speeds) {
-        final double PERCENT_DEADBAND = 0.03;
-        if (Math.abs(speeds.omegaRadiansPerSecond) < PERCENT_DEADBAND * getChassisMaxAngularVelocity()
-            && Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond) < PERCENT_DEADBAND * getChassisMaxLinearVelocityMetersPerSec())
-            speeds = new ChassisSpeeds();
-
-        runRawChassisSpeeds(ChassisSpeeds.discretize(speeds, 0.02));
-    }
-
-    static boolean isZero(ChassisSpeeds chassisSpeeds) {
-        return Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.toRadians(5) && Math.abs(chassisSpeeds.vxMetersPerSecond) < 0.05 && Math.abs(chassisSpeeds.vyMetersPerSecond) < 0.05;
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getMeasuredChassisSpeedsRobotRelative(), getOdometryRotation());
     }
 
     public ChassisSpeeds constrainAcceleration(

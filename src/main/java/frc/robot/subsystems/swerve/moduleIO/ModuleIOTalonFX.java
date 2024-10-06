@@ -140,7 +140,7 @@ public class ModuleIOTalonFX implements ModuleIO {
                 .toArray(Rotation2d[]::new);
         steerEncoderAbsolutePositionRevolutions.clear();
         if (inputs.odometrySteerPositions.length > 0)
-            inputs.steerFacing = inputs.odometrySteerPositions[inputs.odometrySteerPositions.length-1];
+            inputs.turnRotation = inputs.odometrySteerPositions[inputs.odometrySteerPositions.length-1];
 
         inputs.driveWheelFinalVelocityRevolutionsPerSec = driveEncoderUngearedRevolutionsPerSecond.getValueAsDouble() / ModuleConstants.DRIVE_GEAR_RATIO;
         inputs.driveMotorAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
@@ -201,5 +201,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     @Override
     public void setSteerBrake(boolean enable) {
         turnMotor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
+
+    @Override
+    public void stopModule() {
+        driveMotor.stopMotor();
+        turnMotor.stopMotor();
     }
 }

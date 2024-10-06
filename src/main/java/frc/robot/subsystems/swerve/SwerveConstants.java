@@ -85,7 +85,8 @@ public class SwerveConstants {
   }
   
   public static final class ModuleConstants { 
-    public static final double DRIVE_GEAR_RATIO = 4.59;
+    public static final double DRIVE_GEAR_RATIO = 7.13;
+    public static final double TURN_GEAR_RATIO = 11.3142;
     public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.774788522800778);
 
     public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
