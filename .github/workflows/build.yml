@@ -60,9 +60,5 @@ jobs:
       with:
         rulesets: 'pmd-ruleset.xml'
         analyzeModifiedFilesOnly: false
-     - name: Check PMD output
-      id: pmd-check
-      run: echo "::set-output::violations::${{ steps.pmd.outputs.violations }}"
-    - name: Fail build if there are violations
-      if: steps.pmd-check.outputs.violations != ''
+      if: steps.pmd.outputs.violations != 0
       run: exit 1
