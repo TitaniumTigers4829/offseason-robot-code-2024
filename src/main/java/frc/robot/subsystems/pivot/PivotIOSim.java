@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems.pivot;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.PivotConstants;
 
@@ -17,6 +19,8 @@ public class PivotIOSim implements PivotIO {
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(2), pivotGearing, pivotMass, pivotLength, 0, 0, true, 0);
 
+  private final Constraints pivotConstraints = new Constraints(0,0);
+  private final ProfiledPIDController pivotController = new ProfiledPIDController(0, 0, 0 , pivotConstraints);
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
 
@@ -51,5 +55,10 @@ public class PivotIOSim implements PivotIO {
     leaderAppliedVolts = volts;
     followerAppliedVolts = volts;
     pivotSim.setInputVoltage(volts);
+  }
+
+  @Override
+  public void setPivotAngle(double angle) {
+      pivotController.calculate(angle, pivotSim.getAngleRads());
   }
 }
