@@ -22,13 +22,13 @@ import org.littletonrobotics.junction.Logger;
 
 import frc.robot.Constants;
 import frc.robot.Constants.FlywheelConstants;
-
+import frc.robot.Constants.HardwareConstants;
 
 public class FlywheelSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
-  // private final SimpleMotorFeedforward ffModel;
+  private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
 
   // private final VelocityVoltage velocityRequest;
@@ -36,7 +36,20 @@ public class FlywheelSubsystem extends SubsystemBase {
   
   public FlywheelSubsystem(FlywheelIO io) {
     this.io = io;
-    io.configurePID(FlywheelConstants.FLYWHEEL_P, FlywheelConstants.FLYWHEEL_I, FlywheelConstants.FLYWHEEL_D);
+    switch (HardwareConstants.currentMode) {
+      case REAL:
+      case REPLAY:
+        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
+        io.configurePID(1.0, 0.0, 0.0);
+        break;
+      case SIM:
+        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
+        io.configurePID(0.5, 0.0, 0.0);
+        break;
+      default:
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
+        break;
+    }
     sysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(

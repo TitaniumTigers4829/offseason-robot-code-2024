@@ -159,11 +159,16 @@ public final class Constants {
     public static final int LEADER_FLYWHEEL_MOTOR_ID = 4;
     public static final int FOLLOWER_FLYWHEEL_MOTOR_ID = 12;
 
-    public static final double GEAR_RATIO = 1;
+    public static final double GEAR_RATIO = 1.0;
 
-    public static final double FLYWHEEL_P = 0;
-    public static final double FLYWHEEL_I = 0;
-    public static final double FLYWHEEL_D = 0;
+    public static final double FLYWHEEL_P = 0.0;
+    public static final double FLYWHEEL_I = 0.0;
+    public static final double FLYWHEEL_D = 0.0;
+
+    public static final double FLYWHEEL_SUPPLY_LIMIT = 60.0;
+    public static final boolean FLYWHEEL_SUPPLY_ENABLE = true;
+    public static final double FLYWHEEL_STATOR_LIMIT = 60.0;
+    public static final boolean FLYWHEEL_STATOR_ENABLE = true;
   }
   public static final class VisionConstants {
     public static final double VISION_X_POS_TRUST = 0.5; // meters

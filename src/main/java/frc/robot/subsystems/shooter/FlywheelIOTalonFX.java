@@ -21,6 +21,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.FlywheelConstants;
@@ -39,10 +40,14 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   public FlywheelIOTalonFX() {
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
-    flywheelConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
-    flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    flywheelConfig.CurrentLimits.SupplyCurrentLimit = FlywheelConstants.FLYWHEEL_SUPPLY_LIMIT;
+    flywheelConfig.CurrentLimits.StatorCurrentLimit = FlywheelConstants.FLYWHEEL_STATOR_LIMIT;
+    flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = FlywheelConstants.FLYWHEEL_SUPPLY_ENABLE;
+    flywheelConfig.CurrentLimits.StatorCurrentLimitEnable = FlywheelConstants.FLYWHEEL_STATOR_ENABLE;
     flywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
     leaderFlywheelMotor.getConfigurator().apply(flywheelConfig);
+    flywheelConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     followerFlywheelMotor.getConfigurator().apply(flywheelConfig);
     followerFlywheelMotor.setControl(new Follower(leaderFlywheelMotor.getDeviceID(), false));
 
@@ -88,12 +93,16 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     leaderFlywheelMotor.stopMotor();
   }
 
-  @Override
-  public void configurePID(double kP, double kI, double kD) {
+  //@Override
+  public void configurePID(double kP, double kI, double kD, double kS, double kV, double kA) {
     var config = new Slot0Configs();
     config.kP = kP;
     config.kI = kI;
     config.kD = kD;
+    config.kS = kS;
+    config.kV = kV;
+    config.kA = kA;
+
     leaderFlywheelMotor.getConfigurator().apply(config);
   }
 }
