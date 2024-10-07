@@ -6,10 +6,9 @@ package frc.robot.subsystems.pivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
-
 public interface PivotIO {
   @AutoLog
-   public static class PivotIOInputs {
+  public static class PivotIOInputs {
     public boolean leaderMotorConnected = true;
     public boolean followerMotorConnected = true;
     public double leaderPosition = 0.0;
@@ -28,7 +27,7 @@ public interface PivotIO {
   }
 
   public default void updateInputs(PivotIOInputs inputs) {}
-  
+
   public default double getAngle() {
     return 0.0;
   }
@@ -40,19 +39,14 @@ public interface PivotIO {
   public default void setPivotFromSpeakerDistance(double speakerDistance) {}
 
   public default void setPivotSpeed(double output) {}
-  
+
   public default void setVoltage(double volts) {}
-  
+
   public default void setPivotFromPassDistance(double passDistance) {}
-  
+
   public default void setPivotAngle(double angle) {}
 
   public default double getPivotTarget() {
     return 0.0;
   }
-
-
 }
-
-  
-

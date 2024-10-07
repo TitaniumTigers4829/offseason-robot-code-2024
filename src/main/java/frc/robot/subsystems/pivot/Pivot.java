@@ -3,18 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.pivot;
+
 import static edu.wpi.first.units.Units.*;
 
-import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.math.util.Units;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.HardwareConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
-  
+
   /** Creates a new Pivot. */
   public Pivot(PivotIO io) {
     this.io = io;
@@ -26,8 +24,8 @@ public class Pivot extends SubsystemBase {
     Logger.processInputs("Pivot", inputs);
     // This method will be called once per scheduler run
   }
-  
+
   public void runVolts(double volts) {
     io.setVoltage(volts);
-  }  
+  }
 }
