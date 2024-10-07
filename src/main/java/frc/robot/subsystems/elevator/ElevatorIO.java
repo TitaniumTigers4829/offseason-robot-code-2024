@@ -22,9 +22,9 @@ public interface ElevatorIO {
 
     public default double getElevatorPosition() {return 0.0;}
 
-    public default void setElevatorPosition() {}
+    public default void setElevatorPosition(double position) {}
 
-    public default void setVolts() {}
+    public default void setVolts(double volts) {}
 
     public default double getVolts() {return 0.0;}
 }
