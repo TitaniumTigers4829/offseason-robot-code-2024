@@ -9,39 +9,15 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.HardwareConstants;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
-  private final SysIdRoutine sysId;
+  
   /** Creates a new Pivot. */
   public Pivot(PivotIO io) {
     this.io = io;
-
-  switch (HardwareConstants.currentMode) {
-    case REAL:
-    case REPLAY:
-      //Tuning for replay values here
-      break;
-    case SIM:
-      //Tuning for SIM here
-      break;
-    default:
-      //idk default tuning here ig
-      break;
-  }
-  sysId =
-    new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Pivot/SysIdState", state.toString())
-            ),
-        new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this)
-        );
   }
 
   @Override
@@ -50,10 +26,8 @@ public class Pivot extends SubsystemBase {
     Logger.processInputs("Pivot", inputs);
     // This method will be called once per scheduler run
   }
-  public void runVolts(double volts) {
-    io.setLeaderVoltage(volts);
-    io.setFollowerVoltage(volts);
-
-  }
   
+  public void runVolts(double volts) {
+    io.setVoltage(volts);
+  }  
 }

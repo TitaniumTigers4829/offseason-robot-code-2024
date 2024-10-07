@@ -105,11 +105,7 @@ public class PivotIOTalon implements PivotIO {
         followerPivotMotor.getConfigurator().apply(pivotConfig, HardwareConstants.TIMEOUT_S);
 
 
-        leaderPivotMotor.getConfigurator().apply(pivotConfig, 1.0);
-        followerPivotMotor.getConfigurator().apply(pivotConfig, 1.0);
-        leaderPivotMotor.getConfigurator().apply(controllerConfig, 1.0);
-        followerPivotMotor.getConfigurator().apply(controllerConfig, 1.0);
-
+  
         leaderPosition = leaderPivotMotor.getPosition();
         leaderVelocity = leaderPivotMotor.getVelocity();
         leaderAppliedVolts = leaderPivotMotor.getMotorVoltage();
@@ -143,8 +139,13 @@ public class PivotIOTalon implements PivotIO {
             pivotPos);
     }
 
+    /**
+     * Updates Inputs
+     * @param inputs inputs for logging
+     */
     @Override
-    public void updateInputs(PivotIOInputs inputs){
+    public void updateInputs(PivotIOInputs inputs) {
+        
         BaseStatusSignal.refreshAll(
             leaderPosition,
             leaderVelocity,
@@ -159,40 +160,78 @@ public class PivotIOTalon implements PivotIO {
             followerTorqueCurrent,
             followerTempCelsius,
             pivotPos);
+      
+        inputs.leaderPosition = leaderPivotMotor.getPosition().getValueAsDouble();
+        inputs.leaderVelocity = leaderPivotMotor.getVelocity().getValueAsDouble();
+        inputs.leaderAppliedVolts = leaderPivotMotor.getMotorVoltage().getValueAsDouble();
+        inputs.leaderSupplyCurrentAmps = leaderPivotMotor.getSupplyCurrent().getValueAsDouble();
+
+        inputs.followerPosition = followerPivotMotor.getPosition().getValueAsDouble();
+        inputs.followerVelocity = followerPivotMotor.getVelocity().getValueAsDouble();
+        inputs.followerAppliedVolts = followerPivotMotor.getMotorVoltage().getValueAsDouble();
+        inputs.followerSupplyCurrentAmps = followerPivotMotor.getSupplyCurrent().getValueAsDouble();
     }
+
+    /**
+     * Sets the voltage of the pivot motors
+     *
+     * @param volts the voltage
+     */    
     @Override
-    public void setLeaderVoltage(double volts) {
+    public void setVoltage(double volts) {
       leaderPivotMotor.setControl(new VoltageOut(volts));
-
-    }
-
-    @Override
-    public void setFollowerVoltage(double volts) {
       followerPivotMotor.setControl(new VoltageOut(volts));
 
     }
 
+
+  /**
+   * Gets the angle of the pivot
+   *
+   * @return angle of pivot in rotations
+   */
     @Override
-    public double getAngle(){
+    public double getAngle() {
         pivotPos.refresh();
         return pivotPos.getValueAsDouble();
     }
     
+    /**
+     * Returns if the pivot is within an acceptable rotation in relation to the target position
+     *
+     * @return pivot error between desired and actual state in rotations
+     */
     @Override
     public boolean isPivotWithinAcceptableError() {
         return Math.abs(pivotTargetAngle - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
     }
 
+    /**
+     *  Sets the output of the pivot
+     * 
+     * @param output output value from -1.0 to 1.9
+     */
     @Override
     public void setPivotSpeed(double output) {
         leaderPivotMotor.set(output);
         followerPivotMotor.set(output);
       }
+
+    /**
+     * Gets the target angle of the pivot in degrees
+     *
+     * @return the target angle
+     */
     @Override
     public double getPivotTarget() {
         return pivotTargetAngle;
       }
 
+    /**
+     * Uses distance in meters from the speaker to set the pivot angle (degrees) of the shooter
+     *
+     * @param speakerDistance the distance in meters from the speaker
+     */
     @Override
     public void setPivotFromSpeakerDistance(double speakerDistance) {
         double speakerAngle = speakerAngleLookupValues.getLookupValue(speakerDistance);
@@ -200,6 +239,7 @@ public class PivotIOTalon implements PivotIO {
         setPivotAngle(speakerAngle);
       }
 
+    /** Sets Pivot based on Pass Distance */
     @Override
     public void setPivotFromPassDistance(double passDistance) {
         double passAngle = passAngleLookupValues.getLookupValue(passDistance);
@@ -207,6 +247,12 @@ public class PivotIOTalon implements PivotIO {
         setPivotAngle(passAngle);
       }
 
+    /**
+     * Uses distance in meters from the passing position to set the pivot angle (degrees) of the
+     * shooter
+     *
+     * @param passDistance the distance in meters from the passing position
+     */
     @Override
     public void setPivotAngle(double angle) {
         pivotTargetAngle = angle;
