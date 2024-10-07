@@ -111,8 +111,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     @Override
     public void setElevatorPosition(double position) {
-        leaderElevatorMotor.setControl(mmPositionRequest.withPosition(position));
-        followerElevatorMotor.setControl(mmPositionRequest.withPosition(position));
+        leaderElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
+        followerElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
+    }
+
+    private double metersToRotations(double value) {
+        return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
     }
 
     @Override
