@@ -4,11 +4,10 @@
 
 package frc.robot.commands.pivot;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.pivot.Pivot;
+import java.util.function.DoubleSupplier;
 
 public class ManualPivot extends Command {
 

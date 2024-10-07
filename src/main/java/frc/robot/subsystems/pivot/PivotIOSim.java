@@ -19,8 +19,9 @@ public class PivotIOSim implements PivotIO {
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(2), pivotGearing, pivotMass, pivotLength, 0, 0, true, 0);
 
-  private final Constraints pivotConstraints = new Constraints(0,0);
-  private final ProfiledPIDController pivotController = new ProfiledPIDController(0, 0, 0 , pivotConstraints);
+  private final Constraints pivotConstraints = new Constraints(0, 0);
+  private final ProfiledPIDController pivotController =
+      new ProfiledPIDController(0, 0, 0, pivotConstraints);
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
 
@@ -59,6 +60,6 @@ public class PivotIOSim implements PivotIO {
 
   @Override
   public void setPivotAngle(double angle) {
-      pivotController.calculate(angle, pivotSim.getAngleRads());
+    pivotController.calculate(angle, pivotSim.getAngleRads());
   }
 }
