@@ -34,15 +34,19 @@
 //         SwerveModuleState[] measuredStatesDiff = new SwerveModuleState[4];
 //         for (int i = 0; i < 4; i++) {
 //             measuredStatesDiff[i] = new SwerveModuleState(
-//                     (drive.getSwerveModules()[i].getPosition().distanceMeters - lastModulePositionsRad[i])
+//                     (drive.getSwerveModules()[i].getPosition().distanceMeters -
+// lastModulePositionsRad[i])
 //                             * Units.inchesToMeters(2),
 //                     turnPositions[i]);
 //             lastModulePositionsRad[i] = drive.getModulePositions().distanceMeters;
 //         }
 
 //         simOdometry = simOdometry.exp(new Twist2d(
-//                 DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(measuredStatesDiff).vxMetersPerSecond,
-//                 DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(measuredStatesDiff).vyMetersPerSecond,
-//                 DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(measuredStatesDiff).omegaRadiansPerSecond));
+//
+// DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(measuredStatesDiff).vxMetersPerSecond,
+//
+// DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(measuredStatesDiff).vyMetersPerSecond,
+//
+// DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(measuredStatesDiff).omegaRadiansPerSecond));
 //     }
 // }
