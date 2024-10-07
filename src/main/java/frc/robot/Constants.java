@@ -155,9 +155,17 @@ public final class Constants {
     public static final double DRIVE_V = 1.73 * WHEEL_CIRCUMFERENCE_METERS / DRIVE_GEAR_RATIO; // = 0.1203 V*s/m 
     public static final double DRIVE_A = 0.32 * WHEEL_CIRCUMFERENCE_METERS / DRIVE_GEAR_RATIO; // = 0.02225 V*s^2/m
   }
+  public static final class FlywheelConstants {
+    public static final int LEADER_FLYWHEEL_MOTOR_ID = 4;
+    public static final int FOLLOWER_FLYWHEEL_MOTOR_ID = 12;
 
+    public static final double GEAR_RATIO = 1;
+
+    public static final double FLYWHEEL_P = 0;
+    public static final double FLYWHEEL_I = 0;
+    public static final double FLYWHEEL_D = 0;
+  }
   public static final class VisionConstants {
-
     public static final double VISION_X_POS_TRUST = 0.5; // meters
     public static final double VISION_Y_POS_TRUST = 0.5; // meters
     public static final double VISION_ANGLE_TRUST = Units.degreesToRadians(50); // radians
