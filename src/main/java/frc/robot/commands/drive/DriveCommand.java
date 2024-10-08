@@ -1,16 +1,16 @@
 package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.swerve.Drive;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveDrive;
 // import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class DriveCommand extends Command {
 
-  private final Drive driveSubsystem;
+  private final SwerveDrive driveSubsystem;
 
   private final DoubleSupplier leftJoystickY, leftJoystickX, rightJoystickX;
   private final BooleanSupplier isFieldRelative, isHighRotation;
@@ -27,13 +27,7 @@ public class DriveCommand extends Command {
    * @param isFieldRelative The boolean supplier if the robot should drive field relative
    * @param isHighRotation The boolean supplier for if the robot should drive with a higher rotation
    */
-  public DriveCommand(
-      Drive driveSubsystem,
-      DoubleSupplier leftJoystickY,
-      DoubleSupplier leftJoystickX,
-      DoubleSupplier rightJoystickX,
-      BooleanSupplier isFieldRelative,
-      BooleanSupplier isHighRotation) {
+  public DriveCommand(SwerveDrive driveSubsystem,  DoubleSupplier leftJoystickY, DoubleSupplier leftJoystickX, DoubleSupplier rightJoystickX, BooleanSupplier isFieldRelative, BooleanSupplier isHighRotation) {
     // super(driveSubsystem, visionSubsystem);
     this.driveSubsystem = driveSubsystem;
     addRequirements(driveSubsystem);
@@ -69,7 +63,7 @@ public class DriveCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     // When the command ends, it stops the robot
-    driveSubsystem.drive(0, 0, 0, true);
+    // driveSubsystem.drive(0, 0, 0, true);
   }
 
   @Override

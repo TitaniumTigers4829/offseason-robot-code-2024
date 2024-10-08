@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 public class LimelightHelpers {
 
   public static class LimelightTarget_Retro {
-
     @JsonProperty("t6c_ts")
     private double[] cameraPose_TargetSpace;
 
@@ -261,7 +260,6 @@ public class LimelightHelpers {
   }
 
   public static class Results {
-
     @JsonProperty("pID")
     public double pipelineID;
 
@@ -408,6 +406,17 @@ public class LimelightHelpers {
     public double avgTagArea;
     public RawFiducial[] rawFiducials;
 
+    public PoseEstimate() {
+      this.pose = new Pose2d();
+      this.timestampSeconds = 0;
+      this.latency = 0;
+      this.tagCount = 0;
+      this.tagSpan = 0;
+      this.avgTagDist = 0;
+      this.avgTagArea = 0;
+      this.rawFiducials = new RawFiducial[] {};
+    }
+
     public PoseEstimate(
         Pose2d pose,
         double timestampSeconds,
@@ -540,6 +549,10 @@ public class LimelightHelpers {
       System.out.printf("  Ambiguity: %.2f%n", fiducial.ambiguity);
       System.out.println();
     }
+  }
+
+  public static Boolean isValidPoseEstimate(PoseEstimate pose) {
+    return pose != null && pose.rawFiducials != null && pose.rawFiducials.length != 0;
   }
 
   public static NetworkTable getLimelightNTTable(String tableName) {
