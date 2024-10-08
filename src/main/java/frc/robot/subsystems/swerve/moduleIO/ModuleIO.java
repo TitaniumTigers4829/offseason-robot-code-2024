@@ -22,6 +22,18 @@ public interface ModuleIO {
         public Rotation2d[] odometrySteerPositions = new Rotation2d[]{};
 
         public boolean hardwareConnected = false;
+        public Object drivePositionRad;
+        public double driveVelocityRadPerSec;
+        public double driveAppliedVolts;
+        public double[] driveCurrentAmps;
+        public Rotation2d turnAbsolutePosition;
+        public Rotation2d turnPosition;
+        public double turnVelocityRadPerSec;
+        public double turnAppliedVolts;
+        public double[] turnCurrentAmps;
+        public double[] odometryTimestamps;
+        public double[] odometryDrivePositionsRad;
+        public Rotation2d[] odometryTurnPositions;
     }
 
     /**
@@ -41,13 +53,13 @@ public interface ModuleIO {
      * Run the drive motor at the specified percent speed.
      * @param speedPercent from -1 to 1, where 1 is the forward direction of the wheel
      */
-    default void setDriveVoltage(double speedPercent) {}
+    default void setDriveSpeed(double speedPercent) {}
 
     /**
      * Run the turn motor at the specified percent power.
      * @param powerPercent from -1 to 1, where 1 is counter-clockwise
      */
-    default void setSteerPowerPercent(double powerPercent) {}
+    default void setTurnSpeed(double powerPercent) {}
 
     /**
      * Enable or disable brake mode on the drive motor.
@@ -57,7 +69,11 @@ public interface ModuleIO {
     /**
      * Enable or disable brake mode on the turn motor.
      */
-    default void setSteerBrake(boolean enable) {}
+    default void setTurnBrake(boolean enable) {}
+
+    default void setDriveVoltage(double voltage) {}
+
+    default void setTurnVoltage(double voltage) {}
 
     default void stopModule() {}
 }

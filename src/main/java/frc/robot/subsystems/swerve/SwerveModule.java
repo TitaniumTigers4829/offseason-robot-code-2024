@@ -16,7 +16,6 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
-import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule extends VirtualSubsystem {
@@ -45,7 +44,7 @@ public class SwerveModule extends VirtualSubsystem {
         setPoint = new SwerveModuleState();
 
         io.setDriveBrake(true);
-        io.setSteerBrake(true);
+        io.setTurnBrake(true);
     }
 
     public void updateOdometryInputs() {
@@ -75,8 +74,8 @@ public class SwerveModule extends VirtualSubsystem {
 
     @Override
     public void onDisable() {
-        io.setSteerPowerPercent(0);
-        io.setDriveVoltage(0);
+        io.setTurnSpeed(0);
+        io.setDriveSpeed(0);
     }
 
     public void stopModule () {

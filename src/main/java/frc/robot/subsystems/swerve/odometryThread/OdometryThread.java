@@ -27,7 +27,7 @@ public interface OdometryThread {
         private final Queue<Double> queue;
         
 
-        public OdometryDoubleInput(HardwareConstants.Mode mode, Supplier<Double> signal) {
+        public OdometryDoubleInput(Constants.Mode mode, Supplier<Double> signal) {
             this.supplier = signal;
             this.queue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
         }

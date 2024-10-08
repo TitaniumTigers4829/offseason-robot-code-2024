@@ -238,8 +238,8 @@ public class SwerveModuleSimulation {
         );
 
         /* calculate the torque generated,  */
-        final double torqueOnRotter = DRIVE_MOTOR.getTorque(driveMotorSupplyCurrentAmps);
-        return torqueOnRotter * DRIVE_GEAR_RATIO;
+        final double torqueOnRotor = DRIVE_MOTOR.getTorque(driveMotorSupplyCurrentAmps);
+        return torqueOnRotor * DRIVE_GEAR_RATIO;
     }
 
     /**

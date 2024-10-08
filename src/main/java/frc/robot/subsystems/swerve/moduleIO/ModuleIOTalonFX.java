@@ -156,12 +156,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     }
 
     @Override
-    public void setDriveVoltage(double volts) {
+    public void setDriveSpeed(double volts) {
         driveMotor.setControl(voltageOut.withOutput(volts));
     }
 
     @Override
-    public void setSteerPowerPercent(double powerPercent) {
+    public void setTurnSpeed(double powerPercent) {
        turnMotor.setControl(percentOut.withOutput(powerPercent));
     }
 
@@ -199,7 +199,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     }
 
     @Override
-    public void setSteerBrake(boolean enable) {
+    public void setTurnBrake(boolean enable) {
         turnMotor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
 

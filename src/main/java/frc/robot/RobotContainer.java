@@ -2,12 +2,17 @@ package frc.robot;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
+import frc.robot.extras.simulation.CrescendoFieldSimulation;
+import frc.robot.extras.simulation.SimulatedField;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
@@ -17,24 +22,103 @@ import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
+import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
+import frc.robot.subsystems.swerve.physicsSim.GyroSimulation;
+import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;
+import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
+import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
 
 public class RobotContainer {
+ // Simulation, we store them here in the robot container
+  private final SimulatedField simulatedArena;
+  private final SwerveDriveSimulation swerveDriveSimulation;
+  private final GyroSimulation gyroSimulation;
 
-  // private final Vision visionSubsystem;
+  // Subsystems
   private final SwerveDrive driveSubsystem;
   private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
-    // visionSubsystem = new Vision();
-    driveSubsystem = new SwerveDrive(
-      new GyroIONavX(), 
-      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]), 
-      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]), 
-      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]), 
-      new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
+    switch (Constants.currentMode) {
+      case REAL:
+        /* Real robot, instantiate hardware IO implementations */
+
+        /* Disable Simulations */
+        this.simulatedArena = null;
+        this.gyroSimulation = null;
+        this.swerveDriveSimulation = null;
+
+      
+        driveSubsystem = new SwerveDrive(
+          new GyroIONavX(), 
+          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]), 
+          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]), 
+          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]), 
+          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
+             break;
+
+      case SIM:
+        /* Sim robot, instantiate physics sim IO implementations */
+
+        /* create simulations */
+        /* create simulation for pigeon2 IMU (different IMUs have different measurement erros) */
+        this.gyroSimulation = GyroSimulation.createPigeon2();
+        /* create a swerve drive simulation */
+        this.swerveDriveSimulation =
+            SwerveDriveSimulation.createSwerve(
+                45,
+                0.5,
+                0.5,
+                0.7,
+                0.7,
+                SwerveModuleSimulation.getMark4( // creates a mark4 module
+                    DCMotor.getKrakenX60(1), // drive motor is Kracken x60
+                    DCMotor.getFalcon500(1), // steer motor is falcon 500
+                    80, // current limit: 80 Amps
+                    DRIVE_WHEEL_TYPE.RUBBER, // wheels are rubbers
+                    3 // l3 gear ratio
+                    ),
+                gyroSimulation,
+                new Pose2d(
+                    3,
+                    3,
+                    new Rotation2d())); // initial starting pose on field, set it to where-ever you
+        // arena simulation (the simulation world)
+        this.simulatedArena = new CrescendoFieldSimulation(swerveDriveSimulation);
+        // reset the field for auto (placing game-pieces in positions)
+        this.simulatedArena.resetFieldForAuto();
+        driveSubsystem =
+            new SwerveDrive(
+                new GyroIOSim(
+                    gyroSimulation), // GyroIOSim is a wrapper around gyro simulation, that reads
+                // the simulation result
+                /* ModuleIOSim are edited such that they also wraps around module simulations */
+                new ModuleIOSim(swerveDriveSimulation.getModules()[0]),
+                new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
+                new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
+                new ModuleIOSim(swerveDriveSimulation.getModules()[3]));
+break;
+
+      default:
+        /* Replayed robot, disable IO implementations */
+
+        /* physics simulations are also not needed */
+        this.gyroSimulation = null;
+        this.swerveDriveSimulation = null;
+        this.simulatedArena = null;
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        break;
+    }
 
   }
 
