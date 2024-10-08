@@ -22,18 +22,24 @@ public interface ModuleIO {
         public Rotation2d[] odometrySteerPositions = new Rotation2d[]{};
 
         public boolean hardwareConnected = false;
-        public Object drivePositionRad;
-        public double driveVelocityRadPerSec;
-        public double driveAppliedVolts;
-        public double[] driveCurrentAmps;
-        public Rotation2d turnAbsolutePosition;
-        public Rotation2d turnPosition;
-        public double turnVelocityRadPerSec;
-        public double turnAppliedVolts;
-        public double[] turnCurrentAmps;
-        public double[] odometryTimestamps;
-        public double[] odometryDrivePositionsRad;
-        public Rotation2d[] odometryTurnPositions;
+        public Object drivePositionRad = 0.0;
+        public double driveVelocityRadPerSec = 0.0;
+        public double driveAppliedVolts = 0.0;
+        public double[] driveCurrentAmps = new double[]{};
+        public Rotation2d turnAbsolutePosition = new Rotation2d();
+        public Rotation2d turnPosition = new Rotation2d();
+        public double turnVelocityRadPerSec = 0.0;
+        public double turnAppliedVolts = 0.0;
+        public double[] turnCurrentAmps = new double[]{};
+        public double[] odometryTimestamps = new double[]{};
+        public double[] odometryDrivePositionsRad = new double[]{};
+        public Rotation2d[] odometryTurnPositions = new Rotation2d[]{};
+        public Rotation2d[] odometryturnPositions = new Rotation2d[]{};
+        public Object odometryDriveWheel = new Object();
+        public Object driveWheelFinal = new Object();
+        public double driveWheelFinalVelocityPerSec = 0.0;
+        public double turnMotorAppliedVolts = 0.0;
+        public double turnMotorCurrentAmps = 0.0;
     }
 
     /**

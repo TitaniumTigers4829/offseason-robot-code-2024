@@ -132,8 +132,8 @@ public class ModuleIOTalonFX implements ModuleIO {
                 .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
                 .toArray();
         driveEncoderUngeared.clear();
-        if (inputs.odometryDriveWheel.length > 0)
-            inputs.driveWheelFinal = inputs.odometryDriveWheel[inputs.odometryDriveWheel.length-1];
+        if (inputs.odometryDriveWheelRevolutions.length > 0)
+            inputs.driveWheelFinal = inputs.odometryDriveWheelRevolutions[inputs.odometryDriveWheelRevolutions.length-1];
 
         inputs.odometryturnPositions = turnEncoderAbsolutePosition.stream()
                 .map(this::getturnFacingFromCANCoderReading)
@@ -201,7 +201,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
 public double getTurnRotations() { 
     turnEncoder.getAbsolutePosition().refresh();
-    return turnEncoder.getAbsolutePosition().getRotations();
+    return turnEncoder.getAbsolutePosition().getValueAsDouble();
 }
 
     @Override

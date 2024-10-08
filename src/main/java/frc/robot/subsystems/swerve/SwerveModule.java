@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class SwerveModule extends VirtualSubsystem {
     private final ModuleIO io;
     private final String name;
-    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+    private final ModuleIO
 
     // private final PIDController turnCloseLoop, driveCloseLoop;
     private SwerveModuleState setPoint;
