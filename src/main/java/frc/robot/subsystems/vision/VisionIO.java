@@ -19,6 +19,12 @@ public interface VisionIO {
         int[] tags = new int[] {};
         boolean CamHastargets = false;
         double Camyaw = 0;
+        public double lastTimeStamp;
+        public double horizontalAngleRadians;
+        public double verticalAngleRadians;
+        public boolean hasTargets;
+        public double[] botpose;
+        public int tagId;
     }
 
     public default void updateInputs(VisionIOInputs inputs) {}
