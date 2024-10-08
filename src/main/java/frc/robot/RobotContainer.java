@@ -75,12 +75,12 @@ public class RobotContainer {
                 0.5,
                 0.7,
                 0.7,
-                SwerveModuleSimulation.getMark4( // creates a mark4 module
+                SwerveModuleSimulation.getModule( // creates a mark4 module
                     DCMotor.getKrakenX60(1), // drive motor is Kracken x60
                     DCMotor.getFalcon500(1), // steer motor is falcon 500
                     80, // current limit: 80 Amps
                     DRIVE_WHEEL_TYPE.RUBBER, // wheels are rubbers
-                    3 // l3 gear ratio
+                    ModuleConstants.DRIVE_GEAR_RATIO // l3 gear ratio
                     ),
                 gyroSimulation,
                 new Pose2d(

@@ -290,4 +290,23 @@ public class SwerveModuleSimulation {
         RUBBER,
         TIRE
     }
+
+    /**
+     * creates a <a href="https://www.swervedrivespecialties.com/products/mk4n-swerve-module">SDS Mark4-n Swerve Module</a> for simulation
+     * */
+    public static Supplier<SwerveModuleSimulation> getModule(DCMotor driveMotor, DCMotor steerMotor, double driveCurrentLimitAmps, DRIVE_WHEEL_TYPE driveWheelType, double driveGearRatio) {
+        return () -> new SwerveModuleSimulation(
+                driveMotor, steerMotor, driveCurrentLimitAmps,
+                driveGearRatio,
+                11.3142,
+                0.25,
+                0.05,
+                switch (driveWheelType) {
+                    case RUBBER -> 1.55;
+                    case TIRE -> 1.45;
+                },
+                Units.inchesToMeters(2),
+                0.05
+        );
+    }
 }
