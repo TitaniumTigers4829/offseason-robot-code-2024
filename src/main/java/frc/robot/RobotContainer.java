@@ -66,7 +66,7 @@ public class RobotContainer {
 
         /* create simulations */
         /* create simulation for pigeon2 IMU (different IMUs have different measurement erros) */
-        this.gyroSimulation = GyroSimulation.createPigeon2();
+        this.gyroSimulation = GyroSimulation.createNavX2();
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             SwerveDriveSimulation.createSwerve(
