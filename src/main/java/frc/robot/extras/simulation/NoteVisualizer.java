@@ -60,9 +60,11 @@
 //   public static void resetAutoNotes() {
 //     clearAutoNotes();
 //     for (int i = FieldConstants.StagingLocations.spikeTranslations.length - 1; i >= 0; i--) {
-//       autoNotes.add(AllianceFlipUtil.apply(FieldConstants.StagingLocations.spikeTranslations[i]));
+//
+// autoNotes.add(AllianceFlipUtil.apply(FieldConstants.StagingLocations.spikeTranslations[i]));
 //     }
-//     for (int i = FieldConstants.StagingLocations.centerlineTranslations.length - 1; i >= 0; i--) {
+//     for (int i = FieldConstants.StagingLocations.centerlineTranslations.length - 1; i >= 0; i--)
+// {
 //       autoNotes.add(
 //           AllianceFlipUtil.apply(FieldConstants.StagingLocations.centerlineTranslations[i]));
 //     }
@@ -71,7 +73,8 @@
 //   /**
 //    * Take note from staged note
 //    *
-//    * @param note Number of note starting with 0 - 2 being spike notes going from amp to source side
+//    * @param note Number of note starting with 0 - 2 being spike notes going from amp to source
+// side
 //    *     <br>
 //    *     and 3 - 7 being centerline notes going from amp to source side.
 //    */
@@ -102,7 +105,8 @@
 //                           startPose.getRotation());
 
 //                   final double duration =
-//                       startPose.getTranslation().getDistance(endPose.getTranslation()) / shotSpeed;
+//                       startPose.getTranslation().getDistance(endPose.getTranslation()) /
+// shotSpeed;
 //                   final Timer timer = new Timer();
 //                   timer.start();
 //                   return Commands.run(
@@ -114,7 +118,8 @@
 //                                   }))
 //                       .until(() -> timer.hasElapsed(duration))
 //                       .finallyDo(
-//                           () -> Logger.recordOutput("NoteVisualizer/ShotNotes", new Pose3d[] {}));
+//                           () -> Logger.recordOutput("NoteVisualizer/ShotNotes", new Pose3d[]
+// {}));
 //                 },
 //                 Set.of())
 //             .ignoringDisable(true));
@@ -132,7 +137,8 @@
 //                           new Transform3d(2, 0, -1 + startPose.getZ(), new Rotation3d()));
 
 //                   final double duration =
-//                       startPose.getTranslation().getDistance(endPose.getTranslation()) / ejectSpeed;
+//                       startPose.getTranslation().getDistance(endPose.getTranslation()) /
+// ejectSpeed;
 //                   final Timer timer = new Timer();
 //                   timer.start();
 //                   return Commands.run(
@@ -144,7 +150,8 @@
 //                                   }))
 //                       .until(() -> timer.hasElapsed(duration))
 //                       .finallyDo(
-//                           () -> Logger.recordOutput("NoteVisualizer/EjectNotes", new Pose3d[] {}));
+//                           () -> Logger.recordOutput("NoteVisualizer/EjectNotes", new Pose3d[]
+// {}));
 //                 },
 //                 Set.of())
 //             .ignoringDisable(true));

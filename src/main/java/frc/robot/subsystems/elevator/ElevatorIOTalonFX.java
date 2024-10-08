@@ -12,123 +12,134 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import frc.robot.Constants.HardwareConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
-    private final TalonFX leaderElevatorMotor;
-    private final TalonFX followerElevatorMotor;
+  private final TalonFX leaderElevatorMotor;
+  private final TalonFX followerElevatorMotor;
 
-    private final MotionMagicVoltage mmPositionRequest;
-    private final VoltageOut voltageRequest;
-    private final NeutralOut neutralOut;
+  private final MotionMagicVoltage mmPositionRequest;
+  private final VoltageOut voltageRequest;
+  private final NeutralOut neutralOut;
 
+  StatusSignal<Double> leaderPosition;
+  StatusSignal<Double> leaderVelocity;
+  StatusSignal<Double> leaderAppliedVolts;
+  StatusSignal<Double> leaderCurrentAmps;
 
-    StatusSignal<Double> leaderPosition;
-    StatusSignal<Double> leaderVelocity;
-    StatusSignal<Double> leaderAppliedVolts;
-    StatusSignal<Double> leaderCurrentAmps;
+  StatusSignal<Double> followerPosition;
+  StatusSignal<Double> followerVelocity;
+  StatusSignal<Double> followerAppliedVolts;
+  StatusSignal<Double> followerCurrentAmps;
 
-    StatusSignal<Double> followerPosition;
-    StatusSignal<Double> followerVelocity;
-    StatusSignal<Double> followerAppliedVolts;
-    StatusSignal<Double> followerCurrentAmps;
+  public ElevatorIOTalonFX() {
+    leaderElevatorMotor = new TalonFX(0);
+    followerElevatorMotor = new TalonFX(0);
 
-    public ElevatorIOTalonFX() {
-        leaderElevatorMotor = new TalonFX(0);
-        followerElevatorMotor = new TalonFX(0);
+    mmPositionRequest = new MotionMagicVoltage(0.0);
+    voltageRequest = new VoltageOut(0.0);
+    neutralOut = new NeutralOut();
 
-        mmPositionRequest = new MotionMagicVoltage(0.0);
-        voltageRequest = new VoltageOut(0.0);
-        neutralOut = new NeutralOut();
+    TalonFXConfiguration elevatorConfiguration = new TalonFXConfiguration();
+    elevatorConfiguration.Slot0.kP = 0.0;
+    elevatorConfiguration.Slot0.kI = 0.0;
+    elevatorConfiguration.Slot0.kD = 0.0;
+    elevatorConfiguration.Slot0.kS = 0.0;
+    elevatorConfiguration.Slot0.kV = 0.0;
+    elevatorConfiguration.Slot0.kA = 0.0;
+    elevatorConfiguration.Slot0.kG = 0.0;
+    elevatorConfiguration.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 
-        TalonFXConfiguration elevatorConfiguration = new TalonFXConfiguration();
-        elevatorConfiguration.Slot0.kP = 0.0;
-        elevatorConfiguration.Slot0.kI = 0.0;
-        elevatorConfiguration.Slot0.kD = 0.0;
-        elevatorConfiguration.Slot0.kS = 0.0;
-        elevatorConfiguration.Slot0.kV = 0.0;
-        elevatorConfiguration.Slot0.kA = 0.0;
-        elevatorConfiguration.Slot0.kG = 0.0;
-        elevatorConfiguration.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+    elevatorConfiguration.MotionMagic.MotionMagicCruiseVelocity = 0.0;
+    elevatorConfiguration.MotionMagic.MotionMagicAcceleration = 0.0;
 
-        elevatorConfiguration.MotionMagic.MotionMagicCruiseVelocity = 0.0;
-        elevatorConfiguration.MotionMagic.MotionMagicAcceleration = 0.0;
+    // TODO: TUNE!!!!
+    elevatorConfiguration.CurrentLimits.StatorCurrentLimit = 0.0;
+    elevatorConfiguration.CurrentLimits.StatorCurrentLimitEnable = false;
+    elevatorConfiguration.CurrentLimits.SupplyCurrentLimit = 0.0;
+    elevatorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = false;
 
-        // TODO: TUNE!!!!
-        elevatorConfiguration.CurrentLimits.StatorCurrentLimit = 0.0;
-        elevatorConfiguration.CurrentLimits.StatorCurrentLimitEnable = false;
-        elevatorConfiguration.CurrentLimits.SupplyCurrentLimit = 0.0;
-        elevatorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = false;
+    elevatorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // elevatorConfiguration.Feedback.FeedbackRotorOffset = 0.0;
 
-        elevatorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        // elevatorConfiguration.Feedback.FeedbackRotorOffset = 0.0;
+    elevatorConfiguration.MotorOutput.DutyCycleNeutralDeadband =
+        HardwareConstants.MIN_FALCON_DEADBAND;
+    elevatorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    elevatorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        elevatorConfiguration.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
-        elevatorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; 
-        elevatorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    elevatorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.0;
+    elevatorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+    elevatorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+    elevatorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
-        elevatorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.0;
-        elevatorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
-        elevatorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-        elevatorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+    leaderElevatorMotor.getConfigurator().apply(elevatorConfiguration, HardwareConstants.TIMEOUT_S);
+    followerElevatorMotor
+        .getConfigurator()
+        .apply(elevatorConfiguration, HardwareConstants.TIMEOUT_S);
 
+    leaderPosition = leaderElevatorMotor.getRotorPosition();
+    leaderVelocity = leaderElevatorMotor.getRotorVelocity();
+    leaderAppliedVolts = leaderElevatorMotor.getMotorVoltage();
+    leaderCurrentAmps = leaderElevatorMotor.getStatorCurrent();
 
-        leaderElevatorMotor.getConfigurator().apply(elevatorConfiguration, HardwareConstants.TIMEOUT_S);
-        followerElevatorMotor.getConfigurator().apply(elevatorConfiguration, HardwareConstants.TIMEOUT_S);
+    followerPosition = followerElevatorMotor.getRotorPosition();
+    followerVelocity = followerElevatorMotor.getRotorVelocity();
+    followerAppliedVolts = followerElevatorMotor.getMotorVoltage();
+    followerCurrentAmps = followerElevatorMotor.getStatorCurrent();
 
-        leaderPosition = leaderElevatorMotor.getRotorPosition();
-        leaderVelocity = leaderElevatorMotor.getRotorVelocity();
-        leaderAppliedVolts = leaderElevatorMotor.getMotorVoltage();
-        leaderCurrentAmps = leaderElevatorMotor.getStatorCurrent();
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        HardwareConstants.SIGNAL_FREQUENCY,
+        leaderPosition,
+        leaderVelocity,
+        followerPosition,
+        followerVelocity);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50, leaderAppliedVolts, leaderCurrentAmps, followerAppliedVolts, followerCurrentAmps);
 
-        followerPosition = followerElevatorMotor.getRotorPosition();
-        followerVelocity = followerElevatorMotor.getRotorVelocity();
-        followerAppliedVolts = followerElevatorMotor.getMotorVoltage();
-        followerCurrentAmps = followerElevatorMotor.getStatorCurrent();
+    ParentDevice.optimizeBusUtilizationForAll(leaderElevatorMotor, followerElevatorMotor);
+  }
 
-        BaseStatusSignal.setUpdateFrequencyForAll(HardwareConstants.SIGNAL_FREQUENCY, leaderPosition, leaderVelocity, followerPosition, followerVelocity);
-        BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVolts, leaderCurrentAmps, followerAppliedVolts, followerCurrentAmps);
+  @Override
+  public void updateInputs(ElevatorIOInputs inputs) {
+    inputs.isConnected =
+        BaseStatusSignal.isAllGood(
+            leaderPosition,
+            leaderVelocity,
+            followerPosition,
+            followerVelocity,
+            leaderAppliedVolts,
+            leaderCurrentAmps,
+            followerCurrentAmps);
 
-        ParentDevice.optimizeBusUtilizationForAll(leaderElevatorMotor, followerElevatorMotor);
-    }
+    inputs.leaderMotorPosition = leaderPosition.getValueAsDouble();
+    inputs.leaderMotorVelocity = leaderVelocity.getValueAsDouble();
+    inputs.leaderMotorAppliedVolts = leaderAppliedVolts.getValueAsDouble();
+    inputs.leaderMotorCurrentAmps = leaderCurrentAmps.getValueAsDouble();
 
-    @Override
-    public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.isConnected = BaseStatusSignal.isAllGood(leaderPosition, leaderVelocity, followerPosition, followerVelocity, leaderAppliedVolts, leaderCurrentAmps, followerCurrentAmps);
-        
-        inputs.leaderMotorPosition = leaderPosition.getValueAsDouble();
-        inputs.leaderMotorVelocity = leaderVelocity.getValueAsDouble();
-        inputs.leaderMotorAppliedVolts = leaderAppliedVolts.getValueAsDouble();
-        inputs.leaderMotorCurrentAmps= leaderCurrentAmps.getValueAsDouble();
-        
-        inputs.followerMotorPosition = followerPosition.getValueAsDouble();
-        inputs.followerMotorVelocity = followerVelocity.getValueAsDouble();
-        inputs.followerMotorAppliedVolts = followerAppliedVolts.getValueAsDouble();
-        inputs.followerMotorCurrentAmps = followerCurrentAmps.getValueAsDouble();
+    inputs.followerMotorPosition = followerPosition.getValueAsDouble();
+    inputs.followerMotorVelocity = followerVelocity.getValueAsDouble();
+    inputs.followerMotorAppliedVolts = followerAppliedVolts.getValueAsDouble();
+    inputs.followerMotorCurrentAmps = followerCurrentAmps.getValueAsDouble();
+  }
 
-    }
+  @Override
+  public void setElevatorPosition(double position) {
+    leaderElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
+    followerElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
+  }
 
-    @Override
-    public void setElevatorPosition(double position) {
-        leaderElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
-        followerElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
-    }
+  private double metersToRotations(double value) {
+    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
+  }
 
-    private double metersToRotations(double value) {
-        return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
-    }
+  @Override
+  public double getElevatorPosition() {
+    return leaderPosition.refresh().getValueAsDouble();
+  }
 
-    @Override
-    public double getElevatorPosition() {
-        return leaderPosition.refresh().getValueAsDouble();
-    }
-
-    @Override
-    public void setVolts(double volts) {
-        leaderElevatorMotor.setControl(voltageRequest.withOutput(volts));
-        followerElevatorMotor.setControl(voltageRequest.withOutput(volts));
-    }
-
-    
+  @Override
+  public void setVolts(double volts) {
+    leaderElevatorMotor.setControl(voltageRequest.withOutput(volts));
+    followerElevatorMotor.setControl(voltageRequest.withOutput(volts));
+  }
 }

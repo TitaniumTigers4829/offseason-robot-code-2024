@@ -1,78 +1,72 @@
 package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.hardware.ParentDevice;
-
-import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.Robot;
 import frc.robot.extras.DeviceCANBus;
-import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.odometryThread.OdometryThreadReal;
-import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;
-import org.littletonrobotics.junction.AutoLog;
-
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface OdometryThread {
-    final class OdometryDoubleInput {
-        private final Supplier<Double> supplier;
-        private final Queue<Double> queue;
-        
+  final class OdometryDoubleInput {
+    private final Supplier<Double> supplier;
+    private final Queue<Double> queue;
 
-        public OdometryDoubleInput(HardwareConstants.Mode mode, Supplier<Double> signal) {
-            this.supplier = signal;
-            this.queue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
-        }
-
-        public void cacheInputToQueue() {
-            this.queue.offer(supplier.get());
-        }
+    public OdometryDoubleInput(HardwareConstants.Mode mode, Supplier<Double> signal) {
+      this.supplier = signal;
+      this.queue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
     }
 
-    List<OdometryDoubleInput> registeredInputs = new ArrayList<>();
-    List<BaseStatusSignal> registeredStatusSignals = new ArrayList<>();
-    static Queue<Double> registerSignalInput(StatusSignal<Double> signal) {
-        signal.setUpdateFrequency(DriveTrainConstants.ODOMETRY_FREQUENCY, DriveTrainConstants.ODOMETRY_WAIT_TIMEOUT_SECONDS);
-        registeredStatusSignals.add(signal);
-        return registerInput(signal.asSupplier());
+    public void cacheInputToQueue() {
+      this.queue.offer(supplier.get());
     }
+  }
 
-    static Queue<Double> registerInput(Supplier<Double> supplier) {
-        final OdometryDoubleInput odometryDoubleInput = new OdometryDoubleInput(Robot.CURRENT_ROBOT_MODE, supplier);
-        registeredInputs.add(odometryDoubleInput);
-        return odometryDoubleInput.queue;
-    }
+  List<OdometryDoubleInput> registeredInputs = new ArrayList<>();
+  List<BaseStatusSignal> registeredStatusSignals = new ArrayList<>();
 
-    static OdometryThread createInstance(DeviceCANBus canBus) {
-        return switch (Robot.CURRENT_ROBOT_MODE) {
-            case REAL -> new OdometryThreadReal(
-                    canBus,
-                    registeredInputs.toArray(new OdometryDoubleInput[0]),
-                    registeredStatusSignals.toArray(new BaseStatusSignal[0])
-            );
-            case SIM -> new OdometryThreadSim();
-            case REPLAY -> inputs -> {};
-        };
-    }
+  static Queue<Double> registerSignalInput(StatusSignal<Double> signal) {
+    signal.setUpdateFrequency(
+        DriveTrainConstants.ODOMETRY_FREQUENCY, DriveTrainConstants.ODOMETRY_WAIT_TIMEOUT_SECONDS);
+    registeredStatusSignals.add(signal);
+    return registerInput(signal.asSupplier());
+  }
 
-    @AutoLog
-    class OdometryThreadInputs {
-        public double[] measurementTimeStamps = new double[0];
-    }
+  static Queue<Double> registerInput(Supplier<Double> supplier) {
+    final OdometryDoubleInput odometryDoubleInput =
+        new OdometryDoubleInput(Robot.CURRENT_ROBOT_MODE, supplier);
+    registeredInputs.add(odometryDoubleInput);
+    return odometryDoubleInput.queue;
+  }
 
-    void updateInputs(OdometryThreadInputs inputs);
+  static OdometryThread createInstance(DeviceCANBus canBus) {
+    return switch (Robot.CURRENT_ROBOT_MODE) {
+      case REAL ->
+          new OdometryThreadReal(
+              canBus,
+              registeredInputs.toArray(new OdometryDoubleInput[0]),
+              registeredStatusSignals.toArray(new BaseStatusSignal[0]));
+      case SIM -> new OdometryThreadSim();
+      case REPLAY -> inputs -> {};
+    };
+  }
 
-    default void start() {}
+  @AutoLog
+  class OdometryThreadInputs {
+    public double[] measurementTimeStamps = new double[0];
+  }
 
-    default void lockOdometry() {}
+  void updateInputs(OdometryThreadInputs inputs);
 
-    default void unlockOdometry() {}
+  default void start() {}
+
+  default void lockOdometry() {}
+
+  default void unlockOdometry() {}
 }
