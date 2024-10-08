@@ -76,4 +76,8 @@ public interface ModuleIO {
     default void setTurnVoltage(double voltage) {}
 
     default void stopModule() {}
+
+    default double getTurnRotations() {
+        return 0.0;
+    }
 }

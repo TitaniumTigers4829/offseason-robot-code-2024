@@ -1,19 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
-// Modified by 5516 "IRON MAPLE", original source:
-// https://github.com/Shenzhen-Robotics-Alliance/maple-sim
-
 package frc.robot.subsystems.swerve.moduleIO;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -77,12 +61,13 @@ public class ModuleIOSim implements ModuleIO {
   }
   
   public void setDesiredState(SwerveModuleState desiredState) {
+    double turnRotations = getTurnRotations();
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(desiredState, desiredState.angle);
+        SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(turnRotations));
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
-      moduleSimulation.requestDriveVoltageOut(0);;
+      moduleSimulation.requestDriveVoltageOut(0);
       moduleSimulation.requestSteerVoltageOut(0);
       return;
     }
@@ -94,7 +79,10 @@ public class ModuleIOSim implements ModuleIO {
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
 
     moduleSimulation.requestDriveVoltageOut(drivePID.calculate(moduleSimulation.getDriveWheelFinalSpeedRadPerSec(), desiredDriveRPS) + driveFF.calculate(desiredDriveRPS));
-    moduleSimulation.requestSteerVoltageOut(turnPID.calculate(moduleSimulation.getSteerAbsoluteFacing().getRotations(), desiredState.angle.getRotations()) + turnFF.calculate(desiredDriveRPS));
-    
+    moduleSimulation.requestSteerVoltageOut(turnPID.calculate(moduleSimulation.getSteerAbsoluteFacing().getRotations(), desiredState.angle.getRotations()) + turnFF.calculate(turnPID.getSetpoint().velocity)); 
+  }
+
+  public double getTurnRotations() {
+    return moduleSimulation.getSteerAbsoluteFacing().getRotations();
   }
 }
