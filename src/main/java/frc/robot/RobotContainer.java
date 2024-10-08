@@ -6,30 +6,31 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
+import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.swerve.Drive;
-import frc.robot.subsystems.swerve.GyroIO;
-import frc.robot.subsystems.swerve.ModuleIOSim;
+import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
 import java.util.function.DoubleSupplier;
 
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
-  private final Drive driveSubsystem;
+  private final SwerveDrive driveSubsystem;
   private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
     driveSubsystem =
-        new Drive(
-            new GyroIO() {},
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim());
+        new SwerveDrive(
+            new GyroIONavX(),
+            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]),
+            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]),
+            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]),
+            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
   }
 
   private static double deadband(double value, double deadband) {

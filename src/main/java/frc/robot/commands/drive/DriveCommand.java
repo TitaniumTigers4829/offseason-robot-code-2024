@@ -1,8 +1,8 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.swerve.Drive;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveDrive;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -10,7 +10,7 @@ import java.util.function.DoubleSupplier;
 
 public class DriveCommand extends Command {
 
-  private final Drive driveSubsystem;
+  private final SwerveDrive driveSubsystem;
 
   private final DoubleSupplier leftJoystickY, leftJoystickX, rightJoystickX;
   private final BooleanSupplier isFieldRelative, isHighRotation;
@@ -28,7 +28,7 @@ public class DriveCommand extends Command {
    * @param isHighRotation The boolean supplier for if the robot should drive with a higher rotation
    */
   public DriveCommand(
-      Drive driveSubsystem,
+      SwerveDrive driveSubsystem,
       DoubleSupplier leftJoystickY,
       DoubleSupplier leftJoystickX,
       DoubleSupplier rightJoystickX,
@@ -69,7 +69,7 @@ public class DriveCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     // When the command ends, it stops the robot
-    driveSubsystem.drive(0, 0, 0, true);
+    // driveSubsystem.drive(0, 0, 0, true);
   }
 
   @Override
