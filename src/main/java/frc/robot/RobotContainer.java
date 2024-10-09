@@ -25,21 +25,21 @@ import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIONavX;
 import frc.robot.subsystems.swerve.ModuleIOSim;
+import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.FlywheelIOTalonFX;
-import frc.robot.subsystems.shooter.FlywheelSubsystem;
 
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
   private final Drive driveSubsystem;
-  private final FlywheelSubsystem flywheelSubsystem;
+  private final Flywheel flywheelSubsystem;
   private final XboxController driverController = new XboxController(0);
   
   public RobotContainer() {
     SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
     driveSubsystem = new Drive(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim(), new ModuleIOSim());
-    flywheelSubsystem = new FlywheelSubsystem(new FlywheelIOTalonFX());
+    flywheelSubsystem = new Flywheel(new FlywheelIOTalonFX());
     
   }
   
@@ -102,12 +102,10 @@ public class RobotContainer {
     DoubleSupplier driverRightStickX = driverController::getRightX;
     DoubleSupplier driverLeftStick[] = new DoubleSupplier[]{()->modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0], ()->modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]};
 
-    Trigger driverBButton = new Trigger(driverController::getBButton);
     Trigger driverRightBumper = new Trigger(driverController::getRightBumper);
     Trigger driverRightDirectionPad = new Trigger(()->driverController.getPOV() == 90);
     Trigger driverDownDirectionPad = new Trigger(()->driverController.getPOV() == 180);
     Trigger driverLeftDirectionPad = new Trigger(()->driverController.getPOV() == 270);
-    driverBButton.onTrue(new SpinupFlywheel(flywheelSubsystem));
     // // autodrive
     // Trigger driverAButton = new Trigger(driverController::getAButton);
 

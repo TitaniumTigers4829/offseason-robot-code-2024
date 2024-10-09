@@ -22,7 +22,7 @@ public class FlywheelIOSim implements FlywheelIO {
   private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
-  private boolean closedLoop = false;
+  private boolean closedLoop = false; //closed loop is pid
   private double ffVolts = 0.0;
   private double appliedVolts = 0.0;
 
@@ -36,8 +36,8 @@ public class FlywheelIOSim implements FlywheelIO {
 
     sim.update(0.02);
 
-    inputs.positionRad = 0.0;
-    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+    inputs.positionRotaions = 0.0;
+    inputs.velocityRPM = sim.getAngularVelocityRPM();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
@@ -50,9 +50,9 @@ public class FlywheelIOSim implements FlywheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
+  public void setVelocity(double velocityRPM, double ffVolts) {
     closedLoop = true;
-    pid.setSetpoint(velocityRadPerSec);
+    pid.setSetpoint(velocityRPM / 60.0);
     this.ffVolts = ffVolts;
   }
 
