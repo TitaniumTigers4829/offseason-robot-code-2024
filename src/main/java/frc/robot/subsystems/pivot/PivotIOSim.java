@@ -24,6 +24,8 @@ public class PivotIOSim implements PivotIO {
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
 
+
+
   /**
    * Updates Inputs
    *
