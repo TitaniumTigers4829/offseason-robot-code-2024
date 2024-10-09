@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.pivot;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -13,18 +14,20 @@ public class PivotIOSim implements PivotIO {
   private final double pivotGearing = PivotConstants.PIVOT_GEARING;
   private final double pivotMass = PivotConstants.PIVOT_MASS;
   private final double pivotLength = PivotConstants.PIVOT_LENGTH;
+  private final double armkS = PivotConstants.ARM_KS;
+  private final double armkG = PivotConstants.ARM_KG;
+  private final double armkV = PivotConstants.ARM_KV;
 
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(2), pivotGearing, pivotMass, pivotLength, 0, 0, true, 0);
 
   private final Constraints pivotConstraints = new Constraints(0, 0);
+  private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
   private final ProfiledPIDController pivotController =
       new ProfiledPIDController(0, 0, 0, pivotConstraints);
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
-
-
 
   /**
    * Updates Inputs
@@ -35,14 +38,13 @@ public class PivotIOSim implements PivotIO {
   public void updateInputs(PivotIOInputs inputs) {
     pivotSim.update(0.02);
 
-    inputs.leaderPosition = (pivotSim.getAngleRads() / Math.PI * 2); // Rotations
-    inputs.leaderVelocity = (pivotSim.getVelocityRadPerSec() / Math.PI * 2); // Rotations/Sec
+    inputs.leaderPosition = (pivotSim.getAngleRads() / (Math.PI * 2)); // Rotations
+    inputs.leaderVelocity = (pivotSim.getVelocityRadPerSec() / (Math.PI * 2)); // Rotations/Sec
     inputs.leaderAppliedVolts = leaderAppliedVolts;
-
     inputs.leaderSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
 
-    inputs.followerPosition = (pivotSim.getAngleRads() / Math.PI * 2); // Rotations
-    inputs.followerVelocity = (pivotSim.getVelocityRadPerSec() / Math.PI * 2); // Rotations/Sec
+    inputs.followerPosition = (pivotSim.getAngleRads() / (Math.PI * 2)); // Rotations
+    inputs.followerVelocity = (pivotSim.getVelocityRadPerSec() / (Math.PI * 2)); // Rotations/Sec
     inputs.followerAppliedVolts = followerAppliedVolts;
     inputs.followerSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
   }
@@ -56,7 +58,10 @@ public class PivotIOSim implements PivotIO {
   }
 
   @Override
-  public void setPivotAngle(double angle) {
-    pivotController.calculate(angle, pivotSim.getAngleRads());
+  public void setPivotAngle(double angleRots) {
+    double angleRads = angleRots * Math.PI * 2;
+    double currentPivotAngleRots = (pivotSim.getAngleRads() / (Math.PI * 2));
+    double armFF = armFeedforward.calculate(angleRads, pivotController.getSetpoint().velocity);
+    setVoltage(pivotController.calculate(angleRots, (currentPivotAngleRots + armFF)));
   }
 }
