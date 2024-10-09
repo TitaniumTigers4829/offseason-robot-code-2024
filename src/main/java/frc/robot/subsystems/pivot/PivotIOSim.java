@@ -40,7 +40,7 @@ public class PivotIOSim implements PivotIO {
     inputs.leaderPosition = (pivotSim.getAngleRads() / Math.PI * 2); // Rotations
     inputs.leaderVelocity = (pivotSim.getVelocityRadPerSec() / Math.PI * 2); // Rotations/Sec
     inputs.leaderAppliedVolts = leaderAppliedVolts;
-    ;
+
     inputs.leaderSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
 
     inputs.followerPosition = (pivotSim.getAngleRads() / Math.PI * 2); // Rotations

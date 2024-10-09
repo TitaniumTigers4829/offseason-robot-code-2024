@@ -7,4 +7,47 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 public class IntakeIOSim {
     DCMotorSim intakeSim = new DCMotorSim(null, 0, 0);
     SingleJointedArmSim pivotSim = new SingleJointedArmSim(DCMotor.getFalcon500(2), 0, 0, 0, 0, 0, false, 0);
+  private final Constraints pivotConstraints = new Constraints(0, 0);
+  private final ProfiledPIDController pivotController =
+      new ProfiledPIDController(0, 0, 0, pivotConstraints);
+
+      private final SimpleMotorFeedforward pivotFF = new SimpleMotorFeedforward(0, 0, 0);
+
+    private double intakeAppliedVolts = 0.0;
+    private double pivotAppliedVolts = 0.0;
+
+
+    public IntakeIOSim() {
+        intakeSim.update(0.02);
+        pivotSim.update(0.02);
+
+        inputs.intakeVelocity = intakeSim.getVelocityRadPerSec() / (Math.PI * 2); 
+        inputs.intakeCurrentAmps = intakeSim.getCurrentDrawAmps();
+        inputs.intakeAppliedVolts = intakeAppliedVolts;
+
+        inputs.pivotPosition = pivotSim.getAngleRads() / (Math.PI * 2);
+        inputs.pivotVelocity = pivotSim.getVelocityRadPerSec() / (Math.PI * 2);
+        inputs.pivotAppliedVolts = pivotAppliedVolts;
+        inputs.pivotCurrentAmps = pivotSime.getCurrentDrawAmps();
+    }
+
+    @Override 
+    public void setPivotPosition(double position) {
+        pivotSim.setInputVoltage(pivotController.calculate(position, pivotSim.getAngleRads() / (Math.PI * 2)) + pivotFF.calculate(pivotContoller.getSetpoint().velocity))
+    }
+
+    @Override
+    public void setIntakeSpeed(double speed) {
+        intakeSim.setInputVoltage(speed);
+    }
+
+    @Override 
+    public double getIntakeSpeed() {
+        return intakeSim.getVelocityRadPerSec() / (Math.PI * 2)
+    }
+
+    @Override
+    public double getPivotPosition() {
+        return pivotSim.getAngleRads() / (Math.PI * 2);
+    }
 }
