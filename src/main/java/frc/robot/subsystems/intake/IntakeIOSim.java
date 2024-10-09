@@ -33,7 +33,7 @@ public class IntakeIOSim {
 
     @Override 
     public void setPivotPosition(double position) {
-        pivotSim.setInputVoltage(pivotController.calculate(position, pivotSim.getAngleRads() / (Math.PI * 2)) + pivotFF.calculate(pivotContoller.getSetpoint().velocity))
+        pivotSim.setInputVoltage(pivotController.calculate(position, pivotSim.getAngleRads() / (Math.PI * 2)) + pivotFF.calculate(pivotContoller.getSetpoint().velocity));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class IntakeIOSim {
 
     @Override 
     public double getIntakeSpeed() {
-        return intakeSim.getVelocityRadPerSec() / (Math.PI * 2)
+        return intakeSim.getVelocityRadPerSec() / (Math.PI * 2);
     }
 
     @Override

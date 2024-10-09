@@ -5,7 +5,7 @@ public class IndexerIOSim implements IndexerIO {
 
     private double indexerAppliedVolts = 0.0;
 
-    public IndexerIO() {
+    public IndexerIOSim() {
         indexerSim.update(0.02);
 
         inputs.isConnected = true;

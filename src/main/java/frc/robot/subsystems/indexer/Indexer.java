@@ -1,19 +1,19 @@
 package frc.robot.subsystems.indexer;
 
 public class Indexer extends SubsystemBase {
-    private IndexerIOInputs io
+    private IndexerIOInputs io;
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
     public Indexer(IndexerIOInputs io) {
         this.io = io;
     }
 
-    public setIndexerSpeed(double speed) {
+    public void setIndexerSpeed(double speed) {
         io.setSpeed(speed);
         Logger.recordOutput("Indexer", speed);
     }
 
-    public stop() {
+    public void stop() {
         io.stop();
     }
 
