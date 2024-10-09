@@ -20,7 +20,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.Constants.PivotConstants;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
 
 /** Add your docs here. */
