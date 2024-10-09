@@ -8,12 +8,11 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.Constants.PivotConstants;
 
 public class PivotIOSim implements PivotIO {
-  private final double pivotLength = PivotConstants.PIVOT_LENGTH;
-  private final double pivotMass = PivotConstants.PIVOT_MASS;
   private final double pivotGearing = PivotConstants.PIVOT_GEARING;
+  private final double pivotMass = PivotConstants.PIVOT_MASS;
+  private final double pivotLength = PivotConstants.PIVOT_LENGTH;
 
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
@@ -25,8 +24,7 @@ public class PivotIOSim implements PivotIO {
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
 
-  private boolean closedLoop = false;
-  private double ffVolts = 0.0;
+
 
   /**
    * Updates Inputs
@@ -40,7 +38,7 @@ public class PivotIOSim implements PivotIO {
     inputs.leaderPosition = (pivotSim.getAngleRads() / Math.PI * 2); // Rotations
     inputs.leaderVelocity = (pivotSim.getVelocityRadPerSec() / Math.PI * 2); // Rotations/Sec
     inputs.leaderAppliedVolts = leaderAppliedVolts;
-    ;
+
     inputs.leaderSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
 
     inputs.followerPosition = (pivotSim.getAngleRads() / Math.PI * 2); // Rotations
@@ -52,7 +50,6 @@ public class PivotIOSim implements PivotIO {
   /** Sets Voltage */
   @Override
   public void setVoltage(double volts) {
-    closedLoop = false;
     leaderAppliedVolts = volts;
     followerAppliedVolts = volts;
     pivotSim.setInputVoltage(volts);

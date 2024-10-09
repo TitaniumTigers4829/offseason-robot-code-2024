@@ -289,10 +289,6 @@ public final class Constants {
     public static final int FOLLOWER_PIVOT_MOTOR_ID = 10;
     public static final int PIVOT_ENCODER_ID = 33;
 
-    public static final double PIVOT_MASS = 0 - 9;
-    public static final double PIVOT_LENGTH = 0 - 9;
-    public static final double PIVOT_GEARING = 0 - 9;
-
     public static final double SUBWOOFER_ANGLE = 0.029;
 
     public static final double MIN_ANGLE = -0.00341796875;
