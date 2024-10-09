@@ -7,7 +7,7 @@ import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
 public class Intake extends SubsystemBase{
     private IntakeIO io;
-    private IntakeIOInputsAutoLogged intput = new IntakeIOInputsAutoLogged();
+    private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     public Intake(IntakeIO io) {
         this.io = io;
