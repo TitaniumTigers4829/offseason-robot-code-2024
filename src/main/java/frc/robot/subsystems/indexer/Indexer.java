@@ -1,10 +1,15 @@
 package frc.robot.subsystems.indexer;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
+
 public class Indexer extends SubsystemBase {
-    private IndexerIOInputs io;
+    private IndexerIO io;
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
-    public Indexer(IndexerIOInputs io) {
+    public Indexer(IndexerIO io) {
         this.io = io;
     }
 
