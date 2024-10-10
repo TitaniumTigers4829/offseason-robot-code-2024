@@ -1,8 +1,7 @@
 package frc.robot.subsystems.elevator;
 
-import org.littletonrobotics.junction.Logger;
-
 import frc.robot.extras.util.VirtualSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends VirtualSubsystem {
   private final ElevatorIO io;
