@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -267,8 +266,6 @@ public final class Constants {
     public static final double BLUE_PASSING_X = 1.343673825263977;
     public static final double BLUE_PASSING_Y = 6.969234943389893;
   }
-
- 
 
   public static final class ShooterConstants {
     public static final int LEADER_FLYWHEEL_ID = 4;

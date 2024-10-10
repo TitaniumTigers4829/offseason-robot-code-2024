@@ -4,18 +4,18 @@
 
 package frc.robot.commands.shooter;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.elevator.*;
 import frc.robot.subsystems.pivot.*;
+import java.util.function.BooleanSupplier;
 
 public class ShootAmp extends Command {
   private final Pivot pivot;
   private final Elevator elevator;
   private final Shooter shooter;
   private final BooleanSupplier shoot;
+
   /** Creates a new ShootAmp. */
   public ShootAmp(Shooter shooter, Pivot pivot, Elevator elevator, BooleanSupplier shoot) {
     this.pivot = pivot;
@@ -35,9 +35,9 @@ public class ShootAmp extends Command {
   public void execute() {
     elevator.setElevatorPosition(ElevatorConstants.SHOOT_AMP_POSITION);
     pivot.setPivotAngle(PivotConstants.SHOOT_AMP_ANGLE);
-    shooter.setRPM(ShooterConstants.SHOOT_AMP_RPM);
+    shooter.setVelocity(ShooterConstants.SHOOT_AMP_RPM);
     if (shoot.getAsBoolean()) {
-      shoot.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      shooter.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     }
   }
 
@@ -46,7 +46,7 @@ public class ShootAmp extends Command {
   public void end(boolean interrupted) {
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
-    shooter.setFlywheelNeutral();
+    shooter.setVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
     shooter.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
   }
 

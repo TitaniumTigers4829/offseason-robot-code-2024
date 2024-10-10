@@ -11,6 +11,7 @@ public class ManualIntake extends Command {
 
   private final Intake intake;
   private boolean direction;
+
   // private final Shooter shooter;
 
   /** Creates a new ManualPickup. */
@@ -30,9 +31,7 @@ public class ManualIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setIntakeSpeed(
-      direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED
-    );
+    intake.setIntakeSpeed(direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
   }
 
   // Called once the command ends or is interrupted.

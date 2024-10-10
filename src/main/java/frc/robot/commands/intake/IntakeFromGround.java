@@ -18,6 +18,7 @@ public class IntakeFromGround extends Command {
   private final Pivot pivot;
   private final Elevator elevator;
   private final Shooter shooter;
+
   /** Creates a new IntakeFromGround. */
   public IntakeFromGround(Intake intake, Pivot pivot, Elevator elevator, Shooter shooter) {
     this.intake = intake;
