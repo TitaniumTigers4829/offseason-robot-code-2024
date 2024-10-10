@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
-import frc.robot.extras.SmarterDashboardRegistry;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
@@ -18,7 +17,6 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
-    SmarterDashboardRegistry.initialize();
     driveSubsystem =
         new SwerveDrive(
             new GyroIONavX(),
@@ -71,7 +69,6 @@ public class RobotContainer {
 
   public void teleopInit() {
     configureButtonBindings();
-    SmarterDashboardRegistry.initialize();
   }
 
   private void configureButtonBindings() {
@@ -100,7 +97,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    SmarterDashboardRegistry.initialize();
     return null;
   }
 }
