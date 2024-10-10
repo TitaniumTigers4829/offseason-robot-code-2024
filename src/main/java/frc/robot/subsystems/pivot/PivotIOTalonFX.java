@@ -23,7 +23,7 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
 
 /** Add your docs here. */
-public class PivotIOTalon implements PivotIO {
+public class PivotIOTalonFX implements PivotIO {
 
   private final TalonFX leaderPivotMotor;
   private final TalonFX followerPivotMotor;
@@ -56,7 +56,7 @@ public class PivotIOTalon implements PivotIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
-  public PivotIOTalon() {
+  public PivotIOTalonFX() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
     followerPivotMotor = new TalonFX(PivotConstants.FOLLOWER_PIVOT_MOTOR_ID);
     pivotEncoder = new CANcoder(PivotConstants.PIVOT_ENCODER_ID);

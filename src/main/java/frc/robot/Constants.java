@@ -286,6 +286,9 @@ public final class Constants {
     public static final double SHOOT_SPEAKER_FAR_RPM = 4800;
     public static final double SHOOT_SPEAKER_VERY_FAR_RPM = 5500;
 
+    public static final double SHOOTER_DISTANCE = 1.8;
+    public static final double SHOOTER_FAR_DISTANCE = 3.2;
+
     public static final int SHOOTER_ACCEPTABLE_RPM_ERROR = 25;
 
     public static final double SHOOT_P = 0.522;

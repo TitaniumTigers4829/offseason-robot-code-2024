@@ -106,9 +106,9 @@ public class ShootSpeaker extends Command {
         turnOutput,
         !isFieldRelative.getAsBoolean());
 
-    if (distance > 3.2) {
+    if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
       shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
-    } else if (distance > 1.8) {
+    } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
       shooter.setVelocity(4400);
     } else {
       shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
