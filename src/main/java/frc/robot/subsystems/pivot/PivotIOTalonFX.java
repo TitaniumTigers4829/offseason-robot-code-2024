@@ -7,7 +7,6 @@ package frc.robot.subsystems.pivot;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -24,7 +23,7 @@ import frc.robot.Constants.PivotConstants;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
 
 /** Add your docs here. */
-public class PivotIOTalon implements PivotIO {
+public class PivotIOTalonFX implements PivotIO {
 
   private final TalonFX leaderPivotMotor;
   private final TalonFX followerPivotMotor;
@@ -50,14 +49,13 @@ public class PivotIOTalon implements PivotIO {
   private final SingleLinearInterpolator speakerAngleLookupValues;
   private final SingleLinearInterpolator passAngleLookupValues;
 
-  private double pivotTargetAngle;
+  private double pivotTargetAngleRots; // Rotations
 
-  private final Slot0Configs controllerConfig = new Slot0Configs();
   private final VoltageOut voltageControl = new VoltageOut(0).withUpdateFreqHz(0.0);
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
-  public PivotIOTalon() {
+  public PivotIOTalonFX() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
     followerPivotMotor = new TalonFX(PivotConstants.FOLLOWER_PIVOT_MOTOR_ID);
     pivotEncoder = new CANcoder(PivotConstants.PIVOT_ENCODER_ID);
@@ -195,13 +193,13 @@ public class PivotIOTalon implements PivotIO {
    */
   @Override
   public boolean isPivotWithinAcceptableError() {
-    return Math.abs(pivotTargetAngle - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
+    return Math.abs(pivotTargetAngleRots - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
   }
 
   /**
    * Sets the output of the pivot
    *
-   * @param output output value from -1.0 to 1.9
+   * @param output output value from -1.0 to 1.0
    */
   @Override
   public void setPivotSpeed(double output) {
@@ -210,44 +208,47 @@ public class PivotIOTalon implements PivotIO {
   }
 
   /**
-   * Gets the target angle of the pivot in degrees
+   * Gets the target angle of the pivot in rotations
    *
    * @return the target angle
    */
   @Override
   public double getPivotTarget() {
-    return pivotTargetAngle;
+    return pivotTargetAngleRots;
   }
 
   /**
-   * Uses distance in meters from the speaker to set the pivot angle (degrees) of the shooter
+   * Uses distance in meters from the speaker to set the pivot angle (rotations) of the shooter
    *
    * @param speakerDistance the distance in meters from the speaker
    */
   @Override
   public void setPivotFromSpeakerDistance(double speakerDistance) {
-    double speakerAngle = speakerAngleLookupValues.getLookupValue(speakerDistance);
-    pivotTargetAngle = speakerAngle;
-    setPivotAngle(speakerAngle);
-  }
-
-  /** Sets Pivot based on Pass Distance */
-  @Override
-  public void setPivotFromPassDistance(double passDistance) {
-    double passAngle = passAngleLookupValues.getLookupValue(passDistance);
-    pivotTargetAngle = passAngle;
-    setPivotAngle(passAngle);
+    double speakerAngleRots = speakerAngleLookupValues.getLookupValue(speakerDistance);
+    pivotTargetAngleRots = speakerAngleRots;
+    setPivotAngle(speakerAngleRots);
   }
 
   /**
-   * Uses distance in meters from the passing position to set the pivot angle (degrees) of the
-   * shooter
+   * Uses distance in meters from the pass to set the pivot angle (rotations) of the shooter
    *
    * @param passDistance the distance in meters from the passing position
    */
   @Override
+  public void setPivotFromPassDistance(double passDistance) {
+    double passAngleRots = passAngleLookupValues.getLookupValue(passDistance);
+    pivotTargetAngleRots = passAngleRots;
+    setPivotAngle(passAngleRots);
+  }
+
+  /**
+   * Sets the pivot angle based on target rotations
+   *
+   * @param angle the target angle in rotations
+   */
+  @Override
   public void setPivotAngle(double angle) {
-    pivotTargetAngle = angle;
+    pivotTargetAngleRots = angle;
     leaderPivotMotor.setControl(mmPositionRequest.withPosition(angle));
     followerPivotMotor.setControl(mmPositionRequest.withPosition(angle));
   }
