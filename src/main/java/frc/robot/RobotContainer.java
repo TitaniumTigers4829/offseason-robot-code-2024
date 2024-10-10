@@ -318,4 +318,15 @@ break;
     // return autoChooser.getSelected();
     return null;
   }
+
+    public void updateSimulationField() {
+    SimulatedField.getInstance().simulationPeriodic();
+
+    Logger.recordOutput(
+        "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+
+    final List<Pose3d> notes = SimulatedField.getInstance().getGamePiecesByType("Note");
+    if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
+  }
+
 }
