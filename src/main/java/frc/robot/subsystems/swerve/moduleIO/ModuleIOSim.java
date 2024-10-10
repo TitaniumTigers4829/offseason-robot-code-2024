@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
@@ -29,18 +30,16 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
     // inputs.drivePositionRad = moduleSimulation.getDriveEncoderFinalPositionRad();
-    inputs.driveVelocityRadPerSec = moduleSimulation.getDriveWheelFinalSpeedRadPerSec();
+    inputs.driveVelocity = moduleSimulation.getDriveWheelFinalSpeedRadPerSec(); // TODO: Convert from radians to meters
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
-    inputs.driveCurrentAmps =
-        new double[] {Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps())};
+    inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 
-    inputs.turnAbsolutePosition = moduleSimulation.getSteerAbsoluteFacing();
+    inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
     inputs.turnPosition =
         Rotation2d.fromRadians(moduleSimulation.getSteerRelativeEncoderPositionRad());
     inputs.turnVelocityRadPerSec = moduleSimulation.getSteerRelativeEncoderSpeedRadPerSec();
     inputs.turnAppliedVolts = moduleSimulation.getSteerMotorAppliedVolts();
-    inputs.turnCurrentAmps =
-        new double[] {Math.abs(moduleSimulation.getSteerMotorSupplyCurrentAmps())};
+    inputs.turnCurrentAmps = Math.abs(moduleSimulation.getSteerMotorSupplyCurrentAmps());
 
     inputs.odometryTimestamps = OdometryTimestampsSim.getTimeStamps();
     inputs.odometryDrivePositionsRad = moduleSimulation.getCachedDriveWheelFinalPositionsRad();
@@ -57,7 +56,7 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void setTurnVoltage(double volts) {
-    moduleSimulation.requestSteerVoltageOut(volts);
+    moduleSimulation.requestTurnVoltageOut(volts);
   }
   
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -68,7 +67,7 @@ public class ModuleIOSim implements ModuleIO {
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       moduleSimulation.requestDriveVoltageOut(0);
-      moduleSimulation.requestSteerVoltageOut(0);
+      moduleSimulation.requestTurnVoltageOut(0);
       return;
     }
 
@@ -78,11 +77,11 @@ public class ModuleIOSim implements ModuleIO {
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
 
-    moduleSimulation.requestDriveVoltageOut(drivePID.calculate(moduleSimulation.getDriveWheelFinalSpeedRadPerSec(), desiredDriveRPS) + driveFF.calculate(desiredDriveRPS));
-    moduleSimulation.requestSteerVoltageOut(turnPID.calculate(moduleSimulation.getSteerAbsoluteFacing().getRotations(), desiredState.angle.getRotations()) + turnFF.calculate(turnPID.getSetpoint().velocity)); 
+    moduleSimulation.requestDriveVoltageOut(drivePID.calculate(Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()), desiredDriveRPS) + driveFF.calculate(desiredDriveRPS));
+    moduleSimulation.requestTurnVoltageOut(turnPID.calculate(moduleSimulation.getTurnAbsolutePosition().getRotations(), desiredState.angle.getRotations()) + turnFF.calculate(turnPID.getSetpoint().velocity)); 
   }
 
   public double getTurnRotations() {
-    return moduleSimulation.getSteerAbsoluteFacing().getRotations();
+    return moduleSimulation.getTurnAbsolutePosition().getRotations();
   }
 }

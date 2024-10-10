@@ -59,4 +59,4 @@ public class GyroIONavX implements GyroIO {
         return AllianceFlipper.flipRotation(getGyroRotation2d());
     }
 
-}
+  }

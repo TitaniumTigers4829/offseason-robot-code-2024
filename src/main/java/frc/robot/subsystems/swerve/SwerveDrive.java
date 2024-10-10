@@ -18,6 +18,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.Constants.HardwareConstants;
@@ -26,7 +27,6 @@ import frc.robot.extras.Alert;
 import frc.robot.extras.DeviceCANBus;
 import frc.robot.extras.util.AllianceFlipper;
 import frc.robot.extras.util.TimeUtil;
-import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
@@ -42,7 +42,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.*;
 import java.sql.Driver;
 import java.util.Optional;
 
-public class SwerveDrive extends VirtualSubsystem {
+public class SwerveDrive extends SubsystemBase {
 
       // This will stay the same throughout the match. These values are harder to test for and tune, so
   // assume this guess is right.
@@ -100,12 +100,12 @@ public class SwerveDrive extends VirtualSubsystem {
     }
 
 
-    
-    public void periodic(double dt, boolean enabled) {
+    @Override
+    public void periodic() {
         final double t0 = TimeUtil.getRealTimeSeconds();
         fetchOdometryInputs();
         Logger.recordOutput("SystemPerformance/OdometryFetchingTimeMS", (TimeUtil.getRealTimeSeconds() - t0)*1000);
-        modulesPeriodic(dt, enabled);
+        modulesPeriodic();
 
         for (int timeStampIndex = 0; timeStampIndex < odometryThreadInputs.measurementTimeStamps.length; timeStampIndex++)
             updateOdometry(timeStampIndex);
@@ -164,9 +164,9 @@ public class SwerveDrive extends VirtualSubsystem {
         odometryThread.unlockOdometry();
     }
 
-    private void modulesPeriodic(double dt, boolean enabled) {
+    private void modulesPeriodic() {
         for (SwerveModule module : swerveModules)
-            module.periodic(dt, enabled);
+            module.periodic();
     }
 
     private void updateOdometry(int timeStampIndex) {

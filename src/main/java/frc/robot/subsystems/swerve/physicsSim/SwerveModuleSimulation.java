@@ -65,7 +65,7 @@ public class SwerveModuleSimulation {
         this.driveMotorRequestedVolts = volts;
     }
 
-    public void requestSteerVoltageOut(double volts) {
+    public void requestTurnVoltageOut(double volts) {
         this.steerMotorAppliedVolts = volts;
         this.steerMotorSim.setInputVoltage(MathUtil.applyDeadband(
                 volts,
@@ -117,7 +117,7 @@ public class SwerveModuleSimulation {
         return steerRelativeEncoderSpeedRadPerSec;
     }
 
-    public Rotation2d getSteerAbsoluteFacing() {
+    public Rotation2d getTurnAbsolutePosition() {
         return steerAbsoluteFacing;
     }
     public double getSteerAbsoluteEncoderSpeedRadPerSec() {

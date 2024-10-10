@@ -11,16 +11,16 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
-import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveModule extends VirtualSubsystem {
+public class SwerveModule extends SubsystemBase {
     private final ModuleIO io;
     private final String name;
 
@@ -48,11 +48,11 @@ public class SwerveModule extends VirtualSubsystem {
     public void updateOdometryInputs() {
         io.updateInputs(inputs);
         Logger.processInputs("Drive/Module-" + name, inputs);
-        this.hardwareFaultAlert.setActivated(!inputs.hardwareConnected);
+        this.hardwareFaultAlert.setActivated(!inputs.isConnected);
     }
 
     @Override
-    public void periodic(double dt, boolean enabled) {
+    public void periodic() {
         updateOdometryPositions();
     }
 
@@ -60,7 +60,7 @@ public class SwerveModule extends VirtualSubsystem {
         odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
         for (int i = 0; i < odometryPositions.length; i++) {
             double positionMeters = driveWheelRevolutionsToMeters(inputs.odometryDriveWheelRevolutions[i]);
-            Rotation2d angle = inputs.odometrySteerPositions[i];
+            Rotation2d angle = inputs.odometryTurnPositions[i];
             odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
         }
     }
@@ -68,12 +68,6 @@ public class SwerveModule extends VirtualSubsystem {
     public void setDesiredState(SwerveModuleState desiredState) {
         Logger.recordOutput("Drive/Module-" + name + " desiredState", desiredState);
         io.setDesiredState(desiredState);
-    }
-
-    @Override
-    public void onDisable() {
-        io.setTurnSpeed(0);
-        io.setDriveSpeed(0);
     }
 
     public void stopModule () {
@@ -95,7 +89,7 @@ public class SwerveModule extends VirtualSubsystem {
      * Returns the current drive position of the module in meters.
      */
     public double getDrivePositionMeters() {
-        return driveWheelRevolutionsToMeters(inputs.driveWheelFinalRevolutions);
+        return driveWheelRevolutionsToMeters(inputs.drivePosition);
     }
 
     private double driveWheelRevolutionsToMeters(double driveWheelRevolutions) {
@@ -106,7 +100,7 @@ public class SwerveModule extends VirtualSubsystem {
      * Returns the current drive velocity of the module in meters per second.
      */
     public double getDriveVelocity() {
-        return driveWheelRevolutionsToMeters(inputs.driveWheelFinalVelocityRevolutionsPerSec);
+        return driveWheelRevolutionsToMeters(inputs.driveVelocity);
     }
 
     /**

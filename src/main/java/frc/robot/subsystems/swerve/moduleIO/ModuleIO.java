@@ -8,32 +8,27 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ModuleIO {
     @AutoLog
     class ModuleIOInputs {
-        public double driveWheelFinalRevolutions = 0.0;
-        public double driveWheelFinalVelocityRevolutionsPerSec = 0.0;
-        public double driveMotorAppliedVolts = 0.0;
-        public double driveMotorCurrentAmps = 0;
 
+        public boolean isConnected = false;
         public Rotation2d turnRotation = new Rotation2d();
         public double steerVelocityRadPerSec = 0.0;
         public double steerMotorAppliedVolts = 0.0;
         public double steerMotorCurrentAmps = 0.0;
 
         public double[] odometryDriveWheelRevolutions = new double[]{};
-        public Rotation2d[] odometrySteerPositions = new Rotation2d[]{};
 
-        public boolean hardwareConnected = false;
-        public double driveVelocityRadPerSec = 0.0;
+        public double driveVelocity = 0.0;
         public double driveAppliedVolts = 0.0;
-        public double[] driveCurrentAmps = new double[]{};
+        public double driveCurrentAmps = 0.0;
+        public double drivePosition = 0.0;
         public Rotation2d turnAbsolutePosition = new Rotation2d();
         public Rotation2d turnPosition = new Rotation2d();
         public double turnVelocityRadPerSec = 0.0;
         public double turnAppliedVolts = 0.0;
-        public double[] turnCurrentAmps = new double[]{};
+        public double turnCurrentAmps = 0.0;
         public double[] odometryTimestamps = new double[]{};
         public double[] odometryDrivePositionsRad = new double[]{};
         public Rotation2d[] odometryTurnPositions = new Rotation2d[]{};
-        public Rotation2d[] odometryturnPositions = new Rotation2d[]{};
         public double driveWheelFinalVelocityPerSec = 0.0;
         public double turnMotorAppliedVolts = 0.0;
         public double turnMotorCurrentAmps = 0.0;
