@@ -1,7 +1,8 @@
 package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import frc.robot.extras.DeviceCANBus;
+
+import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import java.util.Queue;
