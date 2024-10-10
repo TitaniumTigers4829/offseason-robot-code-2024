@@ -1,20 +1,11 @@
 package frc.robot;
 
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import frc.robot.subsystems.swerve.SwerveConstants.*;
 import edu.wpi.first.math.util.Units;
-
-import frc.robot.extras.Alert;
-import frc.robot.extras.Alert.AlertType;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.swerve.SwerveConstants.*;
 
 public final class Constants {
 
@@ -50,11 +41,9 @@ public final class Constants {
     public static final String SYSTEM_PERFORMANCE_PATH = "SystemPerformance/";
     public static final String PHYSICS_SIMULATION_PATH = "MaplePhysicsSimulation/";
     public static final String APRIL_TAGS_VISION_PATH = "Vision/AprilTags/";
-}
+  }
 
   public static final class HardwareConstants {
-
-    
 
     public static final double TIMEOUT_S = 0.05;
 

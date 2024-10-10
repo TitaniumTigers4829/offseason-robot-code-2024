@@ -10,18 +10,17 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
-
 import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} that implements ModuleIO */
 public class ModuleIOSim implements ModuleIO {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(0,0,0);
-  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0,0,0);
-  private final Constraints turnConstraints = new Constraints(0,0);
-  private final ProfiledPIDController turnPID = new ProfiledPIDController(0,0,0, turnConstraints);
-  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0,0,0);
+  private final PIDController drivePID = new PIDController(0, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0, 0, 0);
+  private final Constraints turnConstraints = new Constraints(0, 0);
+  private final ProfiledPIDController turnPID = new ProfiledPIDController(0, 0, 0, turnConstraints);
+  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0, 0, 0);
 
   public ModuleIOSim(SwerveModuleSimulation moduleSimulation) {
     this.moduleSimulation = moduleSimulation;
@@ -30,7 +29,8 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
     // inputs.drivePositionRad = moduleSimulation.getDriveEncoderFinalPositionRad();
-    inputs.driveVelocity = moduleSimulation.getDriveWheelFinalSpeedRadPerSec(); // TODO: Convert from radians to meters
+    inputs.driveVelocity =
+        moduleSimulation.getDriveWheelFinalSpeedRadPerSec(); // TODO: Convert from radians to meters
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
     inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 
@@ -58,7 +58,7 @@ public class ModuleIOSim implements ModuleIO {
   public void setTurnVoltage(double volts) {
     moduleSimulation.requestTurnVoltageOut(volts);
   }
-  
+
   public void setDesiredState(SwerveModuleState desiredState) {
     double turnRotations = getTurnRotations();
     // Optimize the reference state to avoid spinning further than 90 degrees
@@ -77,8 +77,16 @@ public class ModuleIOSim implements ModuleIO {
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
 
-    moduleSimulation.requestDriveVoltageOut(drivePID.calculate(Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()), desiredDriveRPS) + driveFF.calculate(desiredDriveRPS));
-    moduleSimulation.requestTurnVoltageOut(turnPID.calculate(moduleSimulation.getTurnAbsolutePosition().getRotations(), desiredState.angle.getRotations()) + turnFF.calculate(turnPID.getSetpoint().velocity)); 
+    moduleSimulation.requestDriveVoltageOut(
+        drivePID.calculate(
+                Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()),
+                desiredDriveRPS)
+            + driveFF.calculate(desiredDriveRPS));
+    moduleSimulation.requestTurnVoltageOut(
+        turnPID.calculate(
+                moduleSimulation.getTurnAbsolutePosition().getRotations(),
+                desiredState.angle.getRotations())
+            + turnFF.calculate(turnPID.getSetpoint().velocity));
   }
 
   public double getTurnRotations() {

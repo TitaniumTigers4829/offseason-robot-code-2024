@@ -1,8 +1,7 @@
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.XboxController;
@@ -11,16 +10,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
-import frc.robot.extras.simulation.CrescendoFieldSimulation;
 import frc.robot.extras.simulation.SimulatedField;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
+import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
@@ -31,11 +27,13 @@ import frc.robot.subsystems.swerve.physicsSim.GyroSimulation;
 import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;
 import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+import java.util.List;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
- // Simulation, we store them here in the robot container
-  private final SimulatedField simulatedArena;
+  // Simulation, we store them here in the robot container
+  // private final SimulatedField simulatedArena;
   private final SwerveDriveSimulation swerveDriveSimulation;
   private final GyroSimulation gyroSimulation;
 
@@ -50,18 +48,18 @@ public class RobotContainer {
         /* Real robot, instantiate hardware IO implementations */
 
         /* Disable Simulations */
-        this.simulatedArena = null;
+        // this.simulatedArena = null;
         this.gyroSimulation = null;
         this.swerveDriveSimulation = null;
 
-      
-        driveSubsystem = new SwerveDrive(
-          new GyroIONavX(), 
-          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]), 
-          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]), 
-          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]), 
-          new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
-             break;
+        driveSubsystem =
+            new SwerveDrive(
+                new GyroIONavX(),
+                new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]),
+                new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]),
+                new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]),
+                new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
+        break;
 
       case SIM:
         /* Sim robot, instantiate physics sim IO implementations */
@@ -89,10 +87,8 @@ public class RobotContainer {
                     3,
                     3,
                     new Rotation2d())); // initial starting pose on field, set it to where-ever you
-        // arena simulation (the simulation world)
-        this.simulatedArena = new CrescendoFieldSimulation(swerveDriveSimulation);
-        // reset the field for auto (placing game-pieces in positions)
-        this.simulatedArena.resetFieldForAuto();
+        SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
+        SimulatedField.getInstance().resetFieldForAuto();
         driveSubsystem =
             new SwerveDrive(
                 new GyroIOSim(
@@ -103,7 +99,7 @@ public class RobotContainer {
                 new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
                 new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
                 new ModuleIOSim(swerveDriveSimulation.getModules()[3]));
-break;
+        break;
 
       default:
         /* Replayed robot, disable IO implementations */
@@ -111,7 +107,7 @@ break;
         /* physics simulations are also not needed */
         this.gyroSimulation = null;
         this.swerveDriveSimulation = null;
-        this.simulatedArena = null;
+        // this.simulatedArena = null;
         driveSubsystem =
             new SwerveDrive(
                 new GyroIO() {},
@@ -121,7 +117,6 @@ break;
                 new ModuleIO() {});
         break;
     }
-
   }
 
   private static double deadband(double value, double deadband) {
@@ -320,14 +315,13 @@ break;
     return null;
   }
 
-    public void updateSimulationField() {
-    SimulatedField.simulationPeriodic();
+  public void updateSimulationField() {
+    SimulatedField.getInstance().simulationPeriodic();
 
     Logger.recordOutput(
         "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
 
-    final List<Pose3d> notes = SimulatedField.getGamePiecesByType("Note");
+    final List<Pose3d> notes = SimulatedField.getInstance().getGamePiecesByType("Note");
     if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
   }
-
 }
