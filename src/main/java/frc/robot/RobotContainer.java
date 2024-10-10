@@ -31,6 +31,7 @@ import frc.robot.subsystems.swerve.physicsSim.GyroSimulation;
 import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;
 import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
  // Simulation, we store them here in the robot container
@@ -320,12 +321,12 @@ break;
   }
 
     public void updateSimulationField() {
-    SimulatedField.getInstance().simulationPeriodic();
+    SimulatedField.simulationPeriodic();
 
     Logger.recordOutput(
         "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
 
-    final List<Pose3d> notes = SimulatedField.getInstance().getGamePiecesByType("Note");
+    final List<Pose3d> notes = SimulatedField.getGamePiecesByType("Note");
     if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
   }
 
