@@ -128,12 +128,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     public void updateInputs(ModuleIOInputs inputs) {
         inputs.hardwareConnected = BaseStatusSignal.refreshAll(periodicallyRefreshedSignals).isOK();
 
-        inputs.odometryDriveWheel = driveEncoderUngeared.stream()
-                .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
-                .toArray();
+        // inputs.odometryDriveWheel = driveEncoderUngeared.stream()
+        //         .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
+        //         .toArray();
         driveEncoderUngeared.clear();
-        if (inputs.odometryDriveWheelRevolutions.length > 0)
-            inputs.driveWheelFinal = inputs.odometryDriveWheelRevolutions[inputs.odometryDriveWheelRevolutions.length-1];
+        // if (inputs.odometryDriveWheelRevolutions.length > 0)
+            // inputs.driveWheelFinal = inputs.odometryDriveWheelRevolutions[inputs.odometryDriveWheelRevolutions.length-1];
 
         inputs.odometryturnPositions = turnEncoderAbsolutePosition.stream()
                 .map(this::getturnFacingFromCANCoderReading)

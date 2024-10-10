@@ -16,15 +16,15 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.Alert;
 import frc.robot.extras.VirtualSubsystem;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
+
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule extends VirtualSubsystem {
     private final ModuleIO io;
     private final String name;
-    private final ModuleIO
 
-    // private final PIDController turnCloseLoop, driveCloseLoop;
-    private SwerveModuleState setPoint;
+    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
     private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[]{};
 
     private final Alert hardwareFaultAlert;
@@ -40,8 +40,6 @@ public class SwerveModule extends VirtualSubsystem {
         this.hardwareFaultAlert.setActivated(false);
 
         CommandScheduler.getInstance().unregisterSubsystem(this);
-
-        setPoint = new SwerveModuleState();
 
         io.setDriveBrake(true);
         io.setTurnBrake(true);

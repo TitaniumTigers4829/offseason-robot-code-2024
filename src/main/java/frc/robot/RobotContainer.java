@@ -20,6 +20,7 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
@@ -80,7 +81,7 @@ public class RobotContainer {
                     DCMotor.getFalcon500(1), // steer motor is falcon 500
                     80, // current limit: 80 Amps
                     DRIVE_WHEEL_TYPE.RUBBER, // wheels are rubbers
-                    ModuleConstants.DRIVE_GEAR_RATIO // l3 gear ratio
+                    ModuleConstants.DRIVE_GEAR_RATIO // gear ratio
                     ),
                 gyroSimulation,
                 new Pose2d(
@@ -110,8 +111,8 @@ break;
         this.gyroSimulation = null;
         this.swerveDriveSimulation = null;
         this.simulatedArena = null;
-        drive =
-            new Drive(
+        driveSubsystem =
+            new SwerveDrive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
