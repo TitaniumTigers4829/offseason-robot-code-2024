@@ -21,7 +21,6 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
-    SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
     driveSubsystem =
         new SwerveDrive(
@@ -75,7 +74,6 @@ public class RobotContainer {
 
   public void teleopInit() {
     configureButtonBindings();
-    SmarterDashboardRegistry.initialize();
   }
 
   // public void intakeCallback(boolean hasNote) {
@@ -218,7 +216,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    SmarterDashboardRegistry.initialize();
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
     // driveSubsystem.resetOdometry(new Pose2d(driveSubsystem.getPose().getX(),
