@@ -16,11 +16,11 @@ import java.util.Arrays;
 public class ModuleIOSim implements ModuleIO {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(0, 0, 0);
-  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0, 0, 0);
-  private final Constraints turnConstraints = new Constraints(0, 0);
-  private final ProfiledPIDController turnPID = new ProfiledPIDController(0, 0, 0, turnConstraints);
-  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0, 0, 0);
+  private final PIDController drivePID = new PIDController(5, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(5, 0, 0);
+  private final Constraints turnConstraints = new Constraints(5, 0);
+  private final ProfiledPIDController turnPID = new ProfiledPIDController(5, 0, 0, turnConstraints);
+  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(5, 0, 0);
 
   public ModuleIOSim(SwerveModuleSimulation moduleSimulation) {
     this.moduleSimulation = moduleSimulation;
