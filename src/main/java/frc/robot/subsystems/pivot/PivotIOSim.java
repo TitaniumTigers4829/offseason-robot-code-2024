@@ -10,6 +10,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.Constants.HardwareConstants;
 
 public class PivotIOSim implements PivotIO {
   private final double pivotGearing = PivotConstants.PIVOT_GEARING;
@@ -37,7 +38,7 @@ public class PivotIOSim implements PivotIO {
    */
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    pivotSim.update(PivotConstants.RIO_FREQUENCY);
+    pivotSim.update(HardwareConstants.RIO_UPDATE_SECONDS);
 
     inputs.leaderPosition = Units.radiansToRotations(pivotSim.getAngleRads());
     inputs.leaderVelocity = Units.radiansToRotations(pivotSim.getVelocityRadPerSec());
@@ -71,6 +72,6 @@ public class PivotIOSim implements PivotIO {
   public void setPivotAngle(double angleRots) {
     double currentPivotAngleRots = Units.radiansToRotations(pivotSim.getAngleRads());
     double armFF = armFeedforward.calculate(angleRots, pivotController.getSetpoint().velocity);
-    setVoltage(pivotController.calculate(angleRots, (currentPivotAngleRots + armFF)));
+    setVoltage(pivotController.calculate(angleRots, currentPivotAngleRots) + armFF);
   }
 }
