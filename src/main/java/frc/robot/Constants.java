@@ -30,18 +30,18 @@ public final class Constants {
   //   }
   //   return robotType;
   // }
-  public static final Mode currentMode = Mode.SIM;
+    public static final Mode currentMode = Mode.SIM;
 
-  public static enum Mode {
-    /** Running on a real robot. */
-    REAL,
+    public static enum Mode {
+      /** Running on a real robot. */
+      REAL,
 
-    /** Running a physics simulator. */
-    SIM,
+      /** Running a physics simulator. */
+      SIM,
 
-    /** Replaying from a log file. */
-    REPLAY
-  }
+      /** Replaying from a log file. */
+      REPLAY
+    }
 
     public static final double TIMEOUT_S = 0.05;
 
@@ -164,6 +164,9 @@ public final class Constants {
     public static final double FLYWHEEL_P = 0.0;
     public static final double FLYWHEEL_I = 0.0;
     public static final double FLYWHEEL_D = 0.0;
+    public static final double FLYWHEEL_S = 0.0;
+    public static final double FLYWHEEL_V = 0.0;
+    public static final double FLYWHEEL_A = 0.0;
 
     public static final double FLYWHEEL_SUPPLY_LIMIT = 60.0;
     public static final boolean FLYWHEEL_SUPPLY_ENABLE = true;

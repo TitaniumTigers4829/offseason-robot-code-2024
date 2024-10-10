@@ -15,14 +15,18 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Constants.FlywheelConstants;
 
 public class FlywheelIOSim implements FlywheelIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
-  private PIDController pid = new PIDController(0.0, 0.0, 0.0);
+  private FlywheelSim sim = new FlywheelSim(DCMotor.getKrakenX60(2), FlywheelConstants.GEAR_RATIO, 0.004);
+  private PIDController pid = new PIDController(FlywheelConstants.FLYWHEEL_P, FlywheelConstants.FLYWHEEL_I, FlywheelConstants.FLYWHEEL_D);
 
-  private boolean closedLoop = false; //closed loop is pid
+  private boolean closedLoop = false; // closed loop is pid
   private double ffVolts = 0.0;
   private double appliedVolts = 0.0;
 
@@ -36,7 +40,7 @@ public class FlywheelIOSim implements FlywheelIO {
 
     sim.update(0.02);
 
-    inputs.positionRotaions = 0.0;
+    inputs.positionRotations = 0.0;
     inputs.velocityRPM = sim.getAngularVelocityRPM();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
@@ -59,10 +63,5 @@ public class FlywheelIOSim implements FlywheelIO {
   @Override
   public void stop() {
     setVoltage(0.0);
-  }
-
-  @Override
-  public void configurePID(double kP, double kI, double kD) {
-    pid.setPID(kP, kI, kD);
   }
 }
