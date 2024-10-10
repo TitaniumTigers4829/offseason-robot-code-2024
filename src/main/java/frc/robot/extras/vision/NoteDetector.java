@@ -1,6 +1,6 @@
 // Copyright (c) LukeLib
 
-package frc.robot.extras;
+package frc.robot.extras.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
