@@ -53,7 +53,7 @@ public class ShootSpeaker extends Command {
   public ShootSpeaker(
       SwerveDrive swerveDrive,
       Flywheel flywheel,
-      Indexer indexer,,
+      Indexer indexer,
       Pivot pivot,
       Elevator elevator,
       Vision vision,

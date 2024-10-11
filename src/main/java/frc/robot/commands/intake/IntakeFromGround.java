@@ -37,11 +37,13 @@ public class IntakeFromGround extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
-    pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
-    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
-    indexer.setIndexerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
-    intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
+    if (!indexer.hasNote()) {
+      elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
+      pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
+      intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
+      indexer.setIndexerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
+      intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -55,6 +57,7 @@ public class IntakeFromGround extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    // Returns if indexer has note
+    return indexer.hasNote();
   }
 }
