@@ -25,7 +25,8 @@ import java.util.function.DoubleSupplier;
 
 public class ShootOverDefenseSpeaker extends Command {
   private final SwerveDrive swerveDrive;
-  private final Shooter shooter;
+  private final Flywheel flywheel;
+  private final Roller roller;
   private final Pivot pivot;
   private final Elevator elevator;
   private final Vision vision;
@@ -50,7 +51,8 @@ public class ShootOverDefenseSpeaker extends Command {
   /** Creates a new ShootOverDefenseSpeaker. */
   public ShootOverDefenseSpeaker(
       SwerveDrive swerveDrive,
-      Shooter shooter,
+      Flywheel flywheel,
+      Roller roller,
       Pivot pivot,
       Elevator elevator,
       Vision vision,
@@ -59,7 +61,8 @@ public class ShootOverDefenseSpeaker extends Command {
       BooleanSupplier isFieldRelative) {
     super(swerveDrive, vision);
     this.swerveDrive = swerveDrive;
-    this.shooter = shooter;
+    this.flywheel = flywheel;
+    this.roller = roller;
     this.pivot = pivot;
     this.elevator = elevator;
     this.leftX = leftX;
@@ -68,7 +71,7 @@ public class ShootOverDefenseSpeaker extends Command {
     speakerOverDefenseAngleLookupValues =
         new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
 
-    addRequirements(swerveDrive, shooter, pivot, elevator, vision);
+    addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -114,18 +117,18 @@ public class ShootOverDefenseSpeaker extends Command {
         !isFieldRelative.getAsBoolean());
 
     if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
-      shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
+      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
     } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
-      shooter.setVelocity(4400);
+      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
     } else {
-      shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
     }
 
     pivot.setPivotAngle(speakerAngle);
     elevator.setElevatorPosition(ElevatorConstants.ELEVATOR_OVER_DEFENSE);
 
     if (isReadyToShoot()) {
-      shooter.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      roller.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     } else {
     }
   }
@@ -133,8 +136,8 @@ public class ShootOverDefenseSpeaker extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setFlywheelNeutral();
-    shooter.setRollerSpeed(0);
+    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
+    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
   }
@@ -147,9 +150,8 @@ public class ShootOverDefenseSpeaker extends Command {
 
   public boolean isReadyToShoot() {
     // TODO: heading
-    return shooter.isShooterWithinAcceptableError()
+    return flywheel.isShooterWithinAcceptableError()
         && pivot.isPivotWithinAcceptableError()
-        && elevator.isWithin
         && (Math.abs(headingError) < DriveConstants.HEADING_ACCEPTABLE_ERROR_RADIANS);
   }
 

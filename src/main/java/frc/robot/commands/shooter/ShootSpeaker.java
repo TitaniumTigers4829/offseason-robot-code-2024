@@ -25,7 +25,8 @@ import java.util.function.DoubleSupplier;
 
 public class ShootSpeaker extends Command {
   private final SwerveDrive swerveDrive;
-  private final Shooter shooter;
+  private final Flywheel flywheel;
+  private final Roller roller;
   private final Pivot pivot;
   private final Elevator elevator;
   private final Vision vision;
@@ -50,7 +51,8 @@ public class ShootSpeaker extends Command {
   /** Creates a new ShootSpeaker. */
   public ShootSpeaker(
       SwerveDrive swerveDrive,
-      Shooter shooter,
+      Flywheel flywheel,
+      Roller roller,
       Pivot pivot,
       Elevator elevator,
       Vision vision,
@@ -59,7 +61,8 @@ public class ShootSpeaker extends Command {
       BooleanSupplier isFieldRelative) {
     super(swerveDrive, vision);
     this.swerveDrive = swerveDrive;
-    this.shooter = shooter;
+    this.flywheel = flywheel;
+    this.roller = roller;
     this.pivot = pivot;
     this.elevator = elevator;
     this.leftX = leftX;
@@ -68,7 +71,7 @@ public class ShootSpeaker extends Command {
 
     speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
 
-    addRequirements(swerveDrive, shooter, pivot, elevator, vision);
+    addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -116,11 +119,11 @@ public class ShootSpeaker extends Command {
 
     // Sets flywheel speed based on distance
     if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
-      shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
+      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
     } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
-      shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
+      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
     } else {
-      shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
     }
 
     // Sets Pivot and Elevator
@@ -129,7 +132,7 @@ public class ShootSpeaker extends Command {
 
     if (isReadyToShoot()) {
       // Pushes note to flywheels once robot is ready
-      shooter.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      roller.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     } else {
       // Don't shoot
     }
@@ -138,8 +141,8 @@ public class ShootSpeaker extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setFlywheelNeutral();
-    shooter.setRollerSpeed(0);
+    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
+    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
   }
@@ -152,7 +155,7 @@ public class ShootSpeaker extends Command {
 
   public boolean isReadyToShoot() {
     // TODO: heading and elevator?
-    return shooter.isShooterWithinAcceptableError()
+    return flywheel.isShooterWithinAcceptableError()
         && pivot.isPivotWithinAcceptableError()
         && (Math.abs(headingError) < DriveConstants.HEADING_ACCEPTABLE_ERROR_RADIANS);
   }

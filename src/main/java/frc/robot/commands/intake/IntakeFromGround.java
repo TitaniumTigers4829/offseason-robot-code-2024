@@ -17,15 +17,15 @@ public class IntakeFromGround extends Command {
   private final Intake intake;
   private final Pivot pivot;
   private final Elevator elevator;
-  private final Shooter shooter;
+  private final Roller roller;
 
   /** Creates a new IntakeFromGround. */
-  public IntakeFromGround(Intake intake, Pivot pivot, Elevator elevator, Shooter shooter) {
+  public IntakeFromGround(Intake intake, Pivot pivot, Elevator elevator, Roller roller) {
     this.intake = intake;
     this.pivot = pivot;
     this.elevator = elevator;
-    this.shooter = shooter;
-    addRequirements(intake, pivot, elevator, shooter);
+    this.roller = roller;
+    addRequirements(intake, pivot, elevator, roller);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -39,7 +39,7 @@ public class IntakeFromGround extends Command {
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
-    shooter.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
+    roller.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
   }
 
@@ -48,6 +48,7 @@ public class IntakeFromGround extends Command {
   public void end(boolean interrupted) {
     intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_NEUTRAL_SPEED);
+    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
   }
 
   // Returns true when the command should end.
