@@ -13,6 +13,16 @@ public class Flywheel extends SubsystemBase {
   public void setFlywheelVoltage(double desiredVoltage) {}
 
   public void setFlywheelVelocity(double desiredRPM) {}
+  
+  public void setRollerSpeed(double speed) {}
+
+  public boolean hasNote() {
+    return false;
+  }
+  
+  public boolean isShooterWithinAcceptableError() {
+    return false;
+  }
 
   @Override
   public void periodic() {

@@ -16,7 +16,6 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.Roller;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
@@ -27,7 +26,6 @@ import java.util.function.DoubleSupplier;
 public class ShootOverDefenseSpeaker extends Command {
   private final SwerveDrive swerveDrive;
   private final Flywheel flywheel;
-  private final Roller roller;
   private final Pivot pivot;
   private final Elevator elevator;
   private final Vision vision;
@@ -52,7 +50,6 @@ public class ShootOverDefenseSpeaker extends Command {
   public ShootOverDefenseSpeaker(
       SwerveDrive swerveDrive,
       Flywheel flywheel,
-      Roller roller,
       Pivot pivot,
       Elevator elevator,
       Vision vision,
@@ -63,13 +60,12 @@ public class ShootOverDefenseSpeaker extends Command {
     this.swerveDrive = swerveDrive;
     this.flywheel = flywheel;
     this.pivot = pivot;
-    this.roller = roller;
     this.elevator = elevator;
     this.leftX = leftX;
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
 
-    addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
+    addRequirements(swerveDrive, flywheel, pivot, elevator, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -124,7 +120,7 @@ public class ShootOverDefenseSpeaker extends Command {
     elevator.setElevatorPosition(ElevatorConstants.ELEVATOR_OVER_DEFENSE);
 
     if (isReadyToShoot()) {
-      roller.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     } else {
     }
   }
@@ -133,7 +129,7 @@ public class ShootOverDefenseSpeaker extends Command {
   @Override
   public void end(boolean interrupted) {
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
   }

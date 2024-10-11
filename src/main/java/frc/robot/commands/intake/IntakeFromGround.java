@@ -13,25 +13,25 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
-import frc.robot.subsystems.shooter.Roller;
+import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class IntakeFromGround extends Command {
   private final Intake intake;
   private final Pivot pivot;
   private final Elevator elevator;
-  private final Roller roller;
+  private final Flywheel flywheel;
   private final Indexer indexer;
 
   /** Creates a new IntakeFromGround. */
   public IntakeFromGround(
-      Intake intake, Roller roller, Pivot pivot, Elevator elevator, Indexer indexer) {
+      Intake intake, Flywheel flywheel, Pivot pivot, Elevator elevator, Indexer indexer) {
     this.intake = intake;
     this.pivot = pivot;
     this.elevator = elevator;
-    this.roller = roller;
+    this.flywheel = flywheel;
     this.indexer = indexer;
-    addRequirements(intake, pivot, roller, elevator, indexer);
+    addRequirements(intake, pivot, flywheel, elevator, indexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -47,18 +47,10 @@ public class IntakeFromGround extends Command {
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
 
     // If there is no note in the robot extend the otb and run the rollers
-    if (!indexer.hasNote() && !roller.hasNote()) {
+    if (!flywheel.hasNote()) {
       intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
       indexer.setIndexerSpeed(IndexerConstants.INTAKE_SPEED);
       intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
-    }
-
-    // If the note is in the indexer
-    if (indexer.hasNote() && !roller.hasNote()) {
-      // Set roller speed to pass through(intake speed is too fast for sensor)
-      roller.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
-      // Set indexer speed to pass through so we don't break the note or jam the system
-      indexer.setIndexerSpeed(IndexerConstants.INDEXER_PASS_SPEED);
     }
   }
 
@@ -67,7 +59,7 @@ public class IntakeFromGround extends Command {
   public void end(boolean interrupted) {
     // Ends once the note is in the shooter
     // Sets roller, intake, and indexer speeds to zero
-    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_NEUTRAL_SPEED);
     indexer.setIndexerSpeed(IndexerConstants.INDEXER_NEUTRAL_SPEED);
     // Puts the intake back in the robot
@@ -78,6 +70,6 @@ public class IntakeFromGround extends Command {
   @Override
   public boolean isFinished() {
     // Returns whether or not the shooter has a note
-    return roller.hasNote();
+    return flywheel.hasNote();
   }
 }

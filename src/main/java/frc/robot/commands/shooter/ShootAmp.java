@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.*;
 import frc.robot.subsystems.pivot.*;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.Roller;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import java.util.function.BooleanSupplier;
 
@@ -16,18 +15,16 @@ public class ShootAmp extends Command {
   private final Pivot pivot;
   private final Elevator elevator;
   private final Flywheel flywheel;
-  private final Roller roller;
   private final BooleanSupplier shoot;
 
   /** Creates a new ShootAmp. */
   public ShootAmp(
-      Flywheel flywheel, Roller roller, Pivot pivot, Elevator elevator, BooleanSupplier shoot) {
+      Flywheel flywheel, Pivot pivot, Elevator elevator, BooleanSupplier shoot) {
     this.pivot = pivot;
     this.elevator = elevator;
     this.flywheel = flywheel;
     this.shoot = shoot;
-    this.roller = roller;
-    addRequirements(pivot, elevator, roller, flywheel);
+    addRequirements(pivot, elevator, flywheel);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -42,7 +39,7 @@ public class ShootAmp extends Command {
     pivot.setPivotAngle(PivotConstants.SHOOT_AMP_ANGLE);
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_AMP_RPM);
     if (shoot.getAsBoolean()) {
-      roller.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     }
   }
 
@@ -52,7 +49,7 @@ public class ShootAmp extends Command {
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
   }
 
   // Returns true when the command should end.

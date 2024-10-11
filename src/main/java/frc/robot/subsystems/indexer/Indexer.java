@@ -20,10 +20,6 @@ public class Indexer extends SubsystemBase {
     io.stop();
   }
 
-  public boolean hasNote() {
-    return false;
-  }
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
