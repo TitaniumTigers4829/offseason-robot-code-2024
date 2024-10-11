@@ -29,6 +29,18 @@ public class Pivot extends SubsystemBase {
     io.setPivotAngle(angle);
   }
 
+  public void setPivotFromSpeakerDistance(double distance) {
+    io.setPivotFromSpeakerDistance(distance);
+  }
+
+  public void setPivotFromPassDistance(double distance) {
+    io.setPivotFromSpeakerDistance(distance);
+  }
+
+  public void setPivotFromSpeakerDistanceOverDefense(double distance) {
+    io.setPivotFromSpeakerDistanceOverDefense(distance);
+  }
+
   public void setPivotSpeed(double output) {
     io.setPivotSpeed(output);
   }

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.extras.interpolators.SingleLinearInterpolator;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.pivot.Pivot;
@@ -35,7 +34,6 @@ public class ShootOverDefenseSpeaker extends Command {
 
   private DoubleSupplier leftX, leftY;
   private final BooleanSupplier isFieldRelative;
-  private final SingleLinearInterpolator speakerOverDefenseAngleLookupValues;
 
   private double headingError = 0;
 
@@ -70,8 +68,6 @@ public class ShootOverDefenseSpeaker extends Command {
     this.leftX = leftX;
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
-    speakerOverDefenseAngleLookupValues =
-        new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
 
     addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
 
@@ -109,8 +105,6 @@ public class ShootOverDefenseSpeaker extends Command {
         desiredHeading - swerveDrive.getOdometryAllianceRelativeRotation2d().getRadians();
 
     double turnOutput = deadband(turnController.calculate(headingError, 0));
-    // Gets Angle for Speaker
-    double speakerAngle = speakerOverDefenseAngleLookupValues.getLookupValue(distance);
 
     swerveDrive.drive(
         deadband(leftY.getAsDouble()) * 0.5,
@@ -126,7 +120,7 @@ public class ShootOverDefenseSpeaker extends Command {
       flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
     }
 
-    pivot.setPivotAngle(speakerAngle);
+    pivot.setPivotFromSpeakerDistanceOverDefense(distance);
     elevator.setElevatorPosition(ElevatorConstants.ELEVATOR_OVER_DEFENSE);
 
     if (isReadyToShoot()) {

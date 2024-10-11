@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.extras.interpolators.SingleLinearInterpolator;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.pivot.Pivot;
@@ -48,7 +47,6 @@ public class ShootSpeaker extends Command {
   private boolean isRed = false;
   private double desiredHeading = 0;
   private Translation2d speakerPos;
-  private final SingleLinearInterpolator speakerAngleLookupValues;
 
   /** Creates a new ShootSpeaker. */
   public ShootSpeaker(
@@ -70,8 +68,6 @@ public class ShootSpeaker extends Command {
     this.leftX = leftX;
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
-
-    speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
 
     addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
 
@@ -110,9 +106,6 @@ public class ShootSpeaker extends Command {
 
     double turnOutput = deadband(turnController.calculate(headingError, 0));
 
-    // Gets angle for pivot
-    double speakerAngle = speakerAngleLookupValues.getLookupValue(distance);
-
     swerveDrive.drive(
         deadband(leftY.getAsDouble()) * 0.5,
         deadband(leftX.getAsDouble()) * 0.5,
@@ -129,7 +122,7 @@ public class ShootSpeaker extends Command {
     }
 
     // Sets Pivot and Elevator
-    pivot.setPivotAngle(speakerAngle);
+    pivot.setPivotAngleFromSpeakerDistance(distance);
     elevator.setElevatorPosition(ElevatorConstants.SHOOT_SPEAKER_POSITION);
 
     if (isReadyToShoot()) {
