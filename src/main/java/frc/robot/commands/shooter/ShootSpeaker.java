@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.extras.interpolators.SingleLinearInterpolator;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.pivot.Pivot;
@@ -69,6 +70,7 @@ public class ShootSpeaker extends Command {
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
 
+
     addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -122,7 +124,7 @@ public class ShootSpeaker extends Command {
     }
 
     // Sets Pivot and Elevator
-    pivot.setPivotAngleFromSpeakerDistance(distance);
+    pivot.setPivotFromSpeakerDistance(distance);
     elevator.setElevatorPosition(ElevatorConstants.SHOOT_SPEAKER_POSITION);
 
     if (isReadyToShoot()) {
