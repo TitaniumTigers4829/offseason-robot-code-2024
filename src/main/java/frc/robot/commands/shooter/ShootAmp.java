@@ -18,8 +18,7 @@ public class ShootAmp extends Command {
   private final BooleanSupplier shoot;
 
   /** Creates a new ShootAmp. */
-  public ShootAmp(
-      Flywheel flywheel, Pivot pivot, Elevator elevator, BooleanSupplier shoot) {
+  public ShootAmp(Flywheel flywheel, Pivot pivot, Elevator elevator, BooleanSupplier shoot) {
     this.pivot = pivot;
     this.elevator = elevator;
     this.flywheel = flywheel;
