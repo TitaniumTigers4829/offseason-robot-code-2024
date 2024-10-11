@@ -16,6 +16,7 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
@@ -70,16 +71,15 @@ public class RobotContainer {
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
                 45,
-                5,
-                5,
-                5,
-                5,
+                DriveConstants.TRACK_WIDTH,
+                DriveConstants.WHEEL_BASE,
+                DriveConstants.TRACK_WIDTH,
+                DriveConstants.WHEEL_BASE,
                 SwerveModuleSimulation.getModule(
                     DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1), 0, DRIVE_WHEEL_TYPE.TIRE, 0),
                 gyroSimulation,
-                new Pose2d(3, 3, new Rotation2d(3)));
+                new Pose2d(3, 3, new Rotation2d()));
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
-        SimulatedField.getInstance().resetFieldForAuto();
         driveSubsystem =
             new SwerveDrive(
                 new GyroIOSim(
@@ -90,6 +90,9 @@ public class RobotContainer {
                 new ModuleIOSim(swerveDriveSimulation.getModules()[1]),
                 new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
                 new ModuleIOSim(swerveDriveSimulation.getModules()[3]));
+
+                        SimulatedField.getInstance().resetFieldForAuto();
+
         break;
 
       default:

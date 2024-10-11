@@ -184,7 +184,7 @@ public class SwerveDrive extends SubsystemBase {
     final SwerveModulePosition[] modulePositions = getModulesPosition(timeStampIndex),
         moduleDeltas = getModulesDelta(modulePositions);
 
-    if (!isGyroConnected(timeStampIndex)) updateRotationWithOdometry(moduleDeltas);
+    if (!isGyroConnected(timeStampIndex)) updateRotationWithTwist(moduleDeltas);
 
     odometry.updateWithTime(
         odometryThreadInputs.measurementTimeStamps[timeStampIndex],
@@ -228,7 +228,7 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @param modulesDelta the delta of the swerve modules calculated from the odometry
    */
-  private void updateRotationWithOdometry(SwerveModulePosition[] modulesDelta) {
+  private void updateRotationWithTwist(SwerveModulePosition[] modulesDelta) {
     Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(modulesDelta);
     getRawGyroYaw().plus(new Rotation2d(twist.dtheta));
   }
