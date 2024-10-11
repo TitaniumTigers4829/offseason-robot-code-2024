@@ -15,6 +15,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
@@ -26,7 +27,7 @@ import java.util.function.DoubleSupplier;
 public class ShootSpeaker extends Command {
   private final SwerveDrive swerveDrive;
   private final Flywheel flywheel;
-  private final Roller roller;
+  private final Indexer indexer;
   private final Pivot pivot;
   private final Elevator elevator;
   private final Vision vision;
@@ -52,7 +53,7 @@ public class ShootSpeaker extends Command {
   public ShootSpeaker(
       SwerveDrive swerveDrive,
       Flywheel flywheel,
-      Roller roller,
+      Indexer indexer,,
       Pivot pivot,
       Elevator elevator,
       Vision vision,
@@ -62,7 +63,7 @@ public class ShootSpeaker extends Command {
     super(swerveDrive, vision);
     this.swerveDrive = swerveDrive;
     this.flywheel = flywheel;
-    this.roller = roller;
+    this.indexer = indexer;
     this.pivot = pivot;
     this.elevator = elevator;
     this.leftX = leftX;
@@ -71,7 +72,7 @@ public class ShootSpeaker extends Command {
 
     speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
 
-    addRequirements(swerveDrive, flywheel, roller, pivot, elevator, vision);
+    addRequirements(swerveDrive, flywheel, indexer, pivot, elevator, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -132,7 +133,7 @@ public class ShootSpeaker extends Command {
 
     if (isReadyToShoot()) {
       // Pushes note to flywheels once robot is ready
-      roller.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      indexer.setIndexerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     } else {
       // Don't shoot
     }
@@ -142,7 +143,7 @@ public class ShootSpeaker extends Command {
   @Override
   public void end(boolean interrupted) {
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    indexer.setIndexerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
   }

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.pivot.Pivot;
@@ -17,15 +18,15 @@ public class IntakeFromGround extends Command {
   private final Intake intake;
   private final Pivot pivot;
   private final Elevator elevator;
-  private final Roller roller;
+  private final Indexer indexer;
 
   /** Creates a new IntakeFromGround. */
-  public IntakeFromGround(Intake intake, Pivot pivot, Elevator elevator, Roller roller) {
+  public IntakeFromGround(Intake intake, Pivot pivot, Elevator elevator, Indexer indexer) {
     this.intake = intake;
     this.pivot = pivot;
     this.elevator = elevator;
-    this.roller = roller;
-    addRequirements(intake, pivot, elevator, roller);
+    this.indexer = indexer;
+    addRequirements(intake, pivot, elevator, indexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -39,7 +40,7 @@ public class IntakeFromGround extends Command {
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
-    roller.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
+    indexer.setIndexerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
   }
 
@@ -48,7 +49,7 @@ public class IntakeFromGround extends Command {
   public void end(boolean interrupted) {
     intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_NEUTRAL_SPEED);
-    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    indexer.setIndexerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
   }
 
   // Returns true when the command should end.
