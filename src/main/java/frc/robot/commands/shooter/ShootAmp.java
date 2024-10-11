@@ -5,11 +5,11 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.elevator.*;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.pivot.*;
 import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import java.util.function.BooleanSupplier;
 
 public class ShootAmp extends Command {
