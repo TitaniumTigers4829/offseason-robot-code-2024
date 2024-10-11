@@ -59,6 +59,12 @@ public class PivotConstants {
     {4.9, 0.1135}
   };
 
+  public static double[][] SPEAKER_OVER_DEFENSE_PIVOT_POSITION = {
+    // Distance, Angle (rotations)
+    {0.0, 0.0},
+    {0.0, 0.0}
+  };
+
   public static double[][] PASS_PIVOT_POSITION = {
     // Distance, Angle (rotations)
     {10.680643009839416, 0.037400390625},

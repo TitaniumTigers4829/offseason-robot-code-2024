@@ -25,14 +25,6 @@ public class Pivot extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setPivotFromSpeakerDistance(double speakerDistance) {
-    io.setPivotFromSpeakerDistance(speakerDistance);
-  }
-
-  public void setPivotFromPassDistance(double passDistance) {
-    io.setPivotFromPassDistance(passDistance);
-  }
-
   public void setPivotAngle(double angle) {
     io.setPivotAngle(angle);
   }

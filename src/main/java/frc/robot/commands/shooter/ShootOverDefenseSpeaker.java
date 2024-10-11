@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-public class ShootSpeaker extends Command {
+public class ShootOverDefenseSpeaker extends Command {
   private final SwerveDrive swerveDrive;
   private final Shooter shooter;
   private final Pivot pivot;
@@ -32,6 +32,7 @@ public class ShootSpeaker extends Command {
 
   private DoubleSupplier leftX, leftY;
   private final BooleanSupplier isFieldRelative;
+  private final SingleLinearInterpolator speakerOverDefenseAngleLookupValues;
 
   private double headingError = 0;
 
@@ -45,10 +46,9 @@ public class ShootSpeaker extends Command {
   private boolean isRed = false;
   private double desiredHeading = 0;
   private Translation2d speakerPos;
-  private final SingleLinearInterpolator speakerAngleLookupValues;
 
-  /** Creates a new ShootSpeaker. */
-  public ShootSpeaker(
+  /** Creates a new ShootOverDefenseSpeaker. */
+  public ShootOverDefenseSpeaker(
       SwerveDrive swerveDrive,
       Shooter shooter,
       Pivot pivot,
@@ -65,8 +65,8 @@ public class ShootSpeaker extends Command {
     this.leftX = leftX;
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
-
-    speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
+    speakerOverDefenseAngleLookupValues =
+        new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
 
     addRequirements(swerveDrive, shooter, pivot, elevator, vision);
 
@@ -104,9 +104,8 @@ public class ShootSpeaker extends Command {
         desiredHeading - swerveDrive.getOdometryAllianceRelativeRotation2d().getRadians();
 
     double turnOutput = deadband(turnController.calculate(headingError, 0));
-
-    // Gets angle for pivot
-    double speakerAngle = speakerAngleLookupValues.getLookupValue(distance);
+    // Gets Angle for Speaker
+    double speakerAngle = speakerOverDefenseAngleLookupValues.getLookupValue(distance);
 
     swerveDrive.drive(
         deadband(leftY.getAsDouble()) * 0.5,
@@ -114,7 +113,6 @@ public class ShootSpeaker extends Command {
         turnOutput,
         !isFieldRelative.getAsBoolean());
 
-    // Sets flywheel speed based on distance
     if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
       shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
     } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
@@ -123,15 +121,12 @@ public class ShootSpeaker extends Command {
       shooter.setVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
     }
 
-    // Sets Pivot and Elevator
     pivot.setPivotAngle(speakerAngle);
-    elevator.setElevatorPosition(ElevatorConstants.SHOOT_SPEAKER_POSITION);
+    elevator.setElevatorPosition(ElevatorConstants.ELEVATOR_OVER_DEFENSE);
 
     if (isReadyToShoot()) {
-      // Pushes note to flywheels once robot is ready
       shooter.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     } else {
-      // Don't shoot
     }
   }
 
@@ -151,9 +146,10 @@ public class ShootSpeaker extends Command {
   }
 
   public boolean isReadyToShoot() {
-    // TODO: heading and elevator?
+    // TODO: heading
     return shooter.isShooterWithinAcceptableError()
         && pivot.isPivotWithinAcceptableError()
+        && elevator.isWithin
         && (Math.abs(headingError) < DriveConstants.HEADING_ACCEPTABLE_ERROR_RADIANS);
   }
 
