@@ -12,21 +12,25 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
+import frc.robot.subsystems.shooter.Roller;
 import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class IntakeFromGround extends Command {
   private final Intake intake;
   private final Pivot pivot;
   private final Elevator elevator;
+  private final Roller roller;
   private final Indexer indexer;
 
   /** Creates a new IntakeFromGround. */
-  public IntakeFromGround(Intake intake, Pivot pivot, Elevator elevator, Indexer indexer) {
+  public IntakeFromGround(
+      Intake intake, Roller roller, Pivot pivot, Elevator elevator, Indexer indexer) {
     this.intake = intake;
     this.pivot = pivot;
     this.elevator = elevator;
+    this.roller = roller;
     this.indexer = indexer;
-    addRequirements(intake, pivot, elevator, indexer);
+    addRequirements(intake, pivot, roller, elevator, indexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -37,9 +41,13 @@ public class IntakeFromGround extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!indexer.hasNote()) {
+    if (!roller.hasNote()) {
       elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
       pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
+      roller.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
+    }
+
+    if (!indexer.hasNote()) {
       intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
       indexer.setIndexerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
       intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
@@ -58,6 +66,6 @@ public class IntakeFromGround extends Command {
   @Override
   public boolean isFinished() {
     // Returns if indexer has note
-    return indexer.hasNote();
+    return roller.hasNote();
   }
 }
