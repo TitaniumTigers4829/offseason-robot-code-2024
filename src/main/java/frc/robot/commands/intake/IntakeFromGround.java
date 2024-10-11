@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.pivot.Pivot;
@@ -41,31 +42,42 @@ public class IntakeFromGround extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!roller.hasNote()) {
-      elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
-      pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
-      roller.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
+    // set the elevator and pivot to intake position
+    elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
+    pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
+
+    // If there is no note in the robot extend the otb and run the rollers
+    if (!indexer.hasNote() && !roller.hasNote()) {
+      intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
+      indexer.setIndexerSpeed(IndexerConstants.INTAKE_SPEED);
+      intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
     }
 
-    if (!indexer.hasNote()) {
-      intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
-      indexer.setIndexerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
-      intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
+    // If the note is in the indexer
+    if (indexer.hasNote() && !roller.hasNote()) {
+      // Set roller speed to pass through(intake speed is too fast for sensor)
+      roller.setRollerSpeed(ShooterConstants.ROLLER_INTAKE_BEFORE_LATCH_SPEED);
+      // Set indexer speed to pass through so we don't break the note or jam the system
+      indexer.setIndexerSpeed(IndexerConstants.INDEXER_PASS_SPEED);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
+    // Ends once the note is in the shooter
+    // Sets roller, intake, and indexer speeds to zero
+    roller.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_NEUTRAL_SPEED);
-    indexer.setIndexerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    indexer.setIndexerSpeed(IndexerConstants.INDEXER_NEUTRAL_SPEED);
+    // Puts the intake back in the robot
+    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // Returns if indexer has note
+    // Returns whether or not the shooter has a note
     return roller.hasNote();
   }
 }
