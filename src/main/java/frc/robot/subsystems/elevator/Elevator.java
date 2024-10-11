@@ -17,6 +17,10 @@ public class Elevator extends VirtualSubsystem {
     io.setElevatorPosition(position);
   }
 
+  public void setElevatorSpeed(double speed) {
+    io.setElevatorSpeed(speed);
+  }
+
   @Override
   public void periodic(double dt, boolean enabled) {
     io.updateInputs(inputs);

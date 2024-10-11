@@ -128,6 +128,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     followerElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
   }
 
+  /**
+   * Sets the output of the elevator
+   *
+   * @param output output value from -1.0 to 1.9
+   */
+  @Override
+  public void setElevatorSpeed(double speed) {
+    leaderElevatorMotor.set(speed);
+    followerElevatorMotor.set(speed);
+  }
+
   private double metersToRotations(double value) {
     return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
   }
