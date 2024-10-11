@@ -10,4 +10,5 @@ public class ElevatorConstants {
   public static final double SHOOT_AMP_POSITION = 0.0;
   public static final double SHOOT_SPEAKER_POSITION = 0.0;
   public static final double SHOOT_PASS_POSITION = 0.0;
+  public static final double ELEVATOR_OVER_DEFENSE = 0.0;
 }
