@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.DeviceCANBus;
+import frc.robot.extras.simulation.SwerveStateProjection;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
@@ -180,6 +181,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
         SwerveModuleState.optimize(desiredState, new Rotation2d(Units.rotationsToRadians(turnRotations)));
+
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       driveMotor.set(0);

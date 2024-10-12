@@ -11,6 +11,10 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
 import frc.robot.extras.simulation.SimulatedField;
+import frc.robot.extras.simulation.physicsSim.GyroSimulation;
+import frc.robot.extras.simulation.physicsSim.SwerveDriveSimulation;
+import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation;
+import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
@@ -23,10 +27,7 @@ import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
-import frc.robot.subsystems.swerve.physicsSim.GyroSimulation;
-import frc.robot.subsystems.swerve.physicsSim.SwerveDriveSimulation;
-import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
-import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -76,7 +77,7 @@ public class RobotContainer {
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1), 0, DRIVE_WHEEL_TYPE.TIRE, 0),
+                    DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1), 60, DRIVE_WHEEL_TYPE.TIRE, 7.36),
                 gyroSimulation,
                 new Pose2d(3, 3, new Rotation2d()));
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
@@ -310,8 +311,6 @@ public class RobotContainer {
   }
 
   public void updateSimulationField() {
-    SimulatedField.getInstance().simulationPeriodic();
-
     Logger.recordOutput(
         "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
 

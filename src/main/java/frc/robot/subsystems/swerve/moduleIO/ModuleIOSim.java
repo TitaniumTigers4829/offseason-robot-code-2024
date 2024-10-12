@@ -8,8 +8,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
+import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import frc.robot.subsystems.swerve.physicsSim.SwerveModuleSimulation;
+
 import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} that implements ModuleIO */
