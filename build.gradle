@@ -2,9 +2,10 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.3.2"
     id "com.peterabeles.gversion" version "1.10"
-    // id "com.diffplug.spotless" version "6.25.0"
+    id "com.diffplug.spotless" version "6.25.0"
     id "io.freefair.lombok" version "8.4"
     id "com.google.protobuf" version "0.9.4"
+    id "pmd"
 }
 
 def grpcVersion = '1.61.0' // CURRENT_GRPC_VERSION
@@ -44,7 +45,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-def ROBOT_MAIN_CLASS = "org.littletonrobotics.frc2024.Main"
+def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -115,12 +116,12 @@ compileJava.finalizedBy checkAkitInstall
 // compileJava.finalizedBy generateDriveTrajectories
 
 // Check robot type when deploying
-task(checkRobot, dependsOn: "classes", type: JavaExec) {
-    main = "org.littletonrobotics.frc2024.Constants"
-    classpath = sourceSets.main.runtimeClasspath
-}
+// task(checkRobot, dependsOn: "classes", type: JavaExec) {
+//     main = "frc.robot.Constants"
+//     classpath = sourceSets.main.runtimeClasspath
+// }
 
-deployroborio.dependsOn(checkRobot)
+// deployroborio.dependsOn(checkRobot)
 
 // Create commit with working changes on event branches
 task(eventDeploy) {
@@ -198,7 +199,7 @@ test {
 }
 
 // Simulation configuration (e.g. environment variables).
-wpi.sim.addGui()
+wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
@@ -235,46 +236,58 @@ gversion {
     timeZone     = "America/New_York"
     indent       = "  "
 }
+// Spotless formatting
+spotless {
+    enforceCheck = false
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
 
-// // Spotless formatting
-// project.compileJava.dependsOn(spotlessApply)
-// spotless {
-//     java {
-//         target fileTree(".") {
-//             include "src/**/*.java"
-//             exclude "**/build/**", "**/build-*/**", "src/main/java/org/littletonrobotics/frc2024/BuildConstants.java"
-//         }
-//         toggleOffOn()
-//         googleJavaFormat()
-//         removeUnusedImports()
-//         trimTrailingWhitespace()
-//         endWithNewline()
-//         licenseHeader("// Copyright (c) 2024 FRC 6328\n// http://github.com/Mechanical-Advantage\n//\n// Use of this source code is governed by an MIT-style\n// license that can be found in the LICENSE file at\n// the root directory of this project.\n\n")
-//     }
-//     groovyGradle {
-//         target fileTree(".") {
-//             include "**/*.gradle"
-//             exclude "**/build/**", "**/build-*/**"
-//         }
-//         greclipse()
-//         indentWithSpaces(4)
-//         trimTrailingWhitespace()
-//         endWithNewline()
-//     }
-//     json {
-//         target fileTree(".") {
-//             include "**/*.json"
-//             exclude "**/build/**", "**/build-*/**"
-//         }
-//         gson().indentWithSpaces(2)
-//     }
-//     format "misc", {
-//         target fileTree(".") {
-//             include "**/*.md", "**/.gitignore"
-//             exclude "**/build/**", "**/build-*/**"
-//         }
-//         trimTrailingWhitespace()
-//         indentWithSpaces(2)
-//         endWithNewline()
-//     }
-// }
+// PMD configuration
+pmd {
+    ignoreFailures = true
+    toolVersion = "7.3.0"
+    consoleOutput = true
+    sourceSets = [project.sourceSets["main"]]
+    reportsDir = file("${project.buildDir}/reports/pmd")
+    ruleSetFiles = files(file("$rootDir/pmd-ruleset.xml"))
+    ruleSets = []
+}
