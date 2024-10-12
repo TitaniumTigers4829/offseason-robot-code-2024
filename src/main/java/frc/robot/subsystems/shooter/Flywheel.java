@@ -15,26 +15,18 @@ public class Flywheel extends SubsystemBase {
   
   public Flywheel(FlywheelIO io) {
     this.io = io;
-    // switch (HardwareConstants.currentMode) {
-    //   case REAL:
-    //   case REPLAY:
-    //     ffModel = new SimpleMotorFeedforward(0.1, 0.05);
-    //     break;
-    //   case SIM:
-    //     ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-    //     break;
-    //   default:
-    //     ffModel = new SimpleMotorFeedforward(0.0, 0.0);
-    //     break;
-    // }
   }
 
   public void setFlywheelVoltage(double desiredVoltage) {
-    io.setVoltage(desiredVoltage);
+    io.setVoltage(desiredVoltage); ///io calls the functions
   }
 
-  public void setFlywheelVelocity(double desiredRPM, double ffVolts) {
-    io.setVelocity(desiredRPM, ffVolts);
+  public void setFlywheelVelocity(double desiredRPM) {
+    io.setVelocity(desiredRPM);
+  }
+
+  public boolean hasNote(){
+    return inputs.isNoteDetected;
   }
 
   @Override
@@ -47,5 +39,6 @@ public class Flywheel extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    io.updateInputs(inputs);
   }
 }

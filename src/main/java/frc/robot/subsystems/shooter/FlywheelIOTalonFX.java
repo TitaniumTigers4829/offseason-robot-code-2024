@@ -22,13 +22,18 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.HardwareConstants;
 
-public class FlywheelIOTalonFX implements FlywheelIO {
+public class FlywheelIOTalonFX implements FlywheelIO { // FlywheelIOTalonFX makes Advantagekit log physical hardware movement
   private final TalonFX leaderFlywheelMotor = new TalonFX(FlywheelConstants.LEADER_FLYWHEEL_MOTOR_ID); // Leader=left motor
   private final TalonFX followerFlywheelMotor = new TalonFX(FlywheelConstants.FOLLOWER_FLYWHEEL_MOTOR_ID); // follower = right motor
-  
+  private final DigitalInput noteSensor = new DigitalInput(FlywheelConstants.NOTE_SENSOR_ID); // Note sensor
+
+  private final VelocityVoltage velocityRequest;
+  private final VoltageOut voltageRequest;
   // gives values for each thing that is set. 
   private final StatusSignal<Double> leaderPosition = leaderFlywheelMotor.getPosition(); 
   private final StatusSignal<Double> leaderVelocity = leaderFlywheelMotor.getVelocity();
@@ -38,13 +43,13 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   public FlywheelIOTalonFX() {  // Object to set different flywheel configs 
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
-    flywheelConfig.CurrentLimits.SupplyCurrentLimit = FlywheelConstants.FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits
+    flywheelConfig.CurrentLimits.SupplyCurrentLimit = FlywheelConstants.FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in CONSTANTS file
     flywheelConfig.CurrentLimits.StatorCurrentLimit = FlywheelConstants.FLYWHEEL_STATOR_LIMIT;
     flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = FlywheelConstants.FLYWHEEL_SUPPLY_ENABLE;
     flywheelConfig.CurrentLimits.StatorCurrentLimitEnable = FlywheelConstants.FLYWHEEL_STATOR_ENABLE;
     flywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast; // This is used to ensure maximum power efficiency, to ensure flywheels keep spinning after power off.
 
-    flywheelConfig.Slot0.kP = FlywheelConstants.FLYWHEEL_P;
+    flywheelConfig.Slot0.kP = FlywheelConstants.FLYWHEEL_P; //everything tuned in Flywheel Constants file
     flywheelConfig.Slot0.kI = FlywheelConstants.FLYWHEEL_I;
     flywheelConfig.Slot0.kP = FlywheelConstants.FLYWHEEL_D;
     flywheelConfig.Slot0.kS = FlywheelConstants.FLYWHEEL_S;
@@ -61,44 +66,45 @@ public class FlywheelIOTalonFX implements FlywheelIO {
         HardwareConstants.SIGNAL_FREQUENCY, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
     leaderFlywheelMotor.optimizeBusUtilization(); // updates frequency based on how often the bus communicates with the motor
     followerFlywheelMotor.optimizeBusUtilization();
-  }
 
+    velocityRequest = new VelocityVoltage(0.0);
+    voltageRequest = new VoltageOut(0.0);
+  }
+/**
+ * @param inputs has all the inputs, updates and logs them
+ */
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {// gets current values for motors and puts them into a log
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
-    inputs.positionRotations = leaderPosition.getValueAsDouble() / FlywheelConstants.GEAR_RATIO; //converted to radians to gear ratio math
+    inputs.positionRotations = leaderPosition.getValueAsDouble() / FlywheelConstants.GEAR_RATIO; // converted to radians to gear ratio math
     inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * 60.0) / FlywheelConstants.GEAR_RATIO;
     inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
-        new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()}; //puts current values into an array as doubles
+        new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()}; // puts current values into an array as doubles
+    inputs.isNoteDetected = hasNote();
   }
 
   @Override
   public void setVoltage(double volts) { // some method to set voltage for motor
-    leaderFlywheelMotor.setControl(new VoltageOut(volts));
+    leaderFlywheelMotor.setControl(voltageRequest.withOutput(volts));
   }
-
+/**
+ * @param velocityRPM Recieve desired input in rounds per minute, and the method will convert to RPS to match requirements for VelocityVoltage * 
+ */
   @Override
-  public void setVelocity(double velocityRPM, double ffVolts) {// updating voltage to alter velocity of the motor
-    leaderFlywheelMotor.setControl(
-        new VelocityVoltage(
-            velocityRPM / 60.0,
-            0.0,
-            true,
-            ffVolts,
-            0,
-            false,
-            false,
-            false));
+  public void setVelocity(double velocityRPM) {
+    leaderFlywheelMotor.setControl(velocityRequest.withVelocity(velocityRPM / 60.0));
   }
 
   @Override
   public void stop() { // stops the motor
     leaderFlywheelMotor.stopMotor();
   }
-
-  private double RPMtoRPS(double RPM) {
-    return RPM / 60.0;
+  /**
+   * @return Whether the sensor can detect a note in there
+   */
+  public boolean hasNote() {
+    return !noteSensor.get();
   }
 }
