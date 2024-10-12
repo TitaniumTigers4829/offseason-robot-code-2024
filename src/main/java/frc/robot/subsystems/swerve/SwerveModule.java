@@ -11,13 +11,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 import frc.robot.extras.Alert;
 import frc.robot.extras.simulation.SwerveStateProjection;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
-import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
-import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -46,8 +44,8 @@ public class SwerveModule extends SubsystemBase {
         CommandScheduler.getInstance().unregisterSubsystem(this);
 
         setPoint = new SwerveModuleState();
-        // turnCloseLoop.calculate(getSteerFacing().getRadians()); // activate close loop controller
         io.setDriveBrake(true);
+        io.setTurnBrake(true);
     }
 
     public void updateOdometryInputs() {
@@ -70,25 +68,17 @@ public class SwerveModule extends SubsystemBase {
         }
     }
 
-  
     /**
      * Runs the module with the specified setpoint state. Returns the optimized state.
      */
-    public SwerveModuleState runSetPoint(SwerveModuleState desiredState) {
-        this.setPoint = SwerveModuleState.optimize(desiredState, getSteerFacing());
-      // final double adjustSpeedSetpointMetersPerSec = SwerveStateProjection.project(desiredState, Rotation2d.fromRotations(io.getTurnRotations()));
-
+    public SwerveModuleState runSetPoint(SwerveModuleState state) {
+        this.setPoint = SwerveModuleState.optimize(state, getSteerFacing());
 
         io.setDesiredState(setPoint);
 
         return this.setPoint;
     }
 
-    // @Override
-    // public void onDisable() {
-    //     // io.setSteerPowerPercent(0);
-    //     io.setDriveVoltage(0);
-    // }
 
     /**
      * Returns the current turn angle of the module.
@@ -109,7 +99,7 @@ public class SwerveModule extends SubsystemBase {
     }
 
     private double driveWheelRevolutionsToMeters(double driveWheelRevolutions) {
-        return Units.rotationsToRadians(driveWheelRevolutions) * ModuleConstants.WHEEL_DIAMETER_METERS;
+        return Units.rotationsToRadians(driveWheelRevolutions) * DriveTrainConstants.WHEEL_RADIUS_METERS;
     }
 
     /**
