@@ -31,7 +31,7 @@ public class ModuleIOSim implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
     inputs.drivePosition = Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
     inputs.driveVelocity =
-        moduleSimulation.getDriveWheelFinalSpeedRadPerSec(); // TODO: Convert from radians to meters
+        Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec());
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
     inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 

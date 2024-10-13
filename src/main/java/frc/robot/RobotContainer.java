@@ -7,6 +7,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.SmarterDashboardRegistry;
@@ -93,6 +94,7 @@ public class RobotContainer {
                 new ModuleIOSim(swerveDriveSimulation.getModules()[3]));
 
                         SimulatedField.getInstance().resetFieldForAuto();
+                        resetFieldAndOdometryForAuto(new Pose2d(3,3, new Rotation2d()));
 
         break;
 
@@ -113,6 +115,19 @@ public class RobotContainer {
         break;
     }
   }
+
+   private void resetFieldAndOdometryForAuto(Pose2d robotStartingPoseAtBlueAlliance) {
+        final Pose2d startingPose = robotStartingPoseAtBlueAlliance;
+
+        if (swerveDriveSimulation != null) {
+            swerveDriveSimulation.setSimulationWorldPose(startingPose);
+            SimulatedField.getInstance().resetFieldForAuto();
+            updateFieldSimAndDisplay();
+        }
+
+        driveSubsystem.periodic();
+        driveSubsystem.setPose(startingPose);
+    }
 
   private static double deadband(double value, double deadband) {
     if (Math.abs(value) > deadband) {
