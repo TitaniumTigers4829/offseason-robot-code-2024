@@ -29,7 +29,7 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    // inputs.drivePositionRad = moduleSimulation.getDriveEncoderFinalPositionRad();
+    inputs.drivePosition = Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
     inputs.driveVelocity =
         moduleSimulation.getDriveWheelFinalSpeedRadPerSec(); // TODO: Convert from radians to meters
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();

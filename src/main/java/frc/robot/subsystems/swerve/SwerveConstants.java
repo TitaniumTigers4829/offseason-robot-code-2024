@@ -149,7 +149,7 @@ public class SwerveConstants {
         STEER_MOTOR = DCMotor.getFalcon500(1);
 
     public static final double
-        WHEEL_RADIUS_METERS = Units.inchesToMeters(ModuleConstants.WHEEL_DIAMETER_METERS / 2),
+        WHEEL_RADIUS_METERS = ModuleConstants.WHEEL_DIAMETER_METERS / 2,
         DRIVE_GEAR_RATIO = ModuleConstants.DRIVE_GEAR_RATIO,
         STEER_GEAR_RATIO = 16.0,
         TIME_ROBOT_STOP_ROTATING_SECONDS = 0.06,
