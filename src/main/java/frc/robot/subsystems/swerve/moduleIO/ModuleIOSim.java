@@ -44,10 +44,7 @@ public class ModuleIOSim implements ModuleIO {
 
     inputs.odometryTimestamps = OdometryTimestampsSim.getTimeStamps();
     inputs.odometryDrivePositionsRad = moduleSimulation.getCachedDriveWheelFinalPositionsRad();
-    inputs.odometryTurnPositions =
-        Arrays.stream(moduleSimulation.getCachedSteerRelativeEncoderPositions())
-            .mapToObj(Rotation2d::fromRadians)
-            .toArray(Rotation2d[]::new);
+    inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
 
             inputs.odometryDriveWheelRevolutions = Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
             .map(Units::radiansToRotations)
