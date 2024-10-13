@@ -12,7 +12,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
-import frc.robot.extras.Alert;
+import frc.robot.extras.debug.Alert;
 import frc.robot.extras.simulation.SwerveStateProjection;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;

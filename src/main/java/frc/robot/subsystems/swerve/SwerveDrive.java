@@ -27,7 +27,7 @@ import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged
 import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.extras.Alert;
+import frc.robot.extras.debug.Alert;
 import frc.robot.extras.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
