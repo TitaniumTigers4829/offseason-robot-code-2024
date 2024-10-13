@@ -155,6 +155,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationPeriodic() {
     SimulatedField.getInstance().simulationPeriodic();
-    m_robotContainer.updateSimulationField();
+    m_robotContainer.updateFieldSimAndDisplay();
   }
 }

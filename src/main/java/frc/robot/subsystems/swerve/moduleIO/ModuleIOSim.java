@@ -48,6 +48,11 @@ public class ModuleIOSim implements ModuleIO {
         Arrays.stream(moduleSimulation.getCachedSteerRelativeEncoderPositions())
             .mapToObj(Rotation2d::fromRadians)
             .toArray(Rotation2d[]::new);
+
+            inputs.odometryDriveWheelRevolutions = Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
+            .map(Units::radiansToRotations)
+            .toArray();
+
   }
 
   @Override

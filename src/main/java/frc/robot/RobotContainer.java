@@ -310,11 +310,10 @@ public class RobotContainer {
     return null;
   }
 
-  public void updateSimulationField() {
-    Logger.recordOutput(
-        "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
-
-    final List<Pose3d> notes = SimulatedField.getInstance().getGamePiecesByType("Note");
-    if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
-  }
+  public void updateFieldSimAndDisplay() {
+    if (swerveDriveSimulation == null)
+        return;
+    Logger.recordOutput("FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput("FieldSimulation/Notes", SimulatedField.getInstance().getGamePiecesByType("Note").toArray(Pose3d[]::new));
+}
 }

@@ -90,10 +90,6 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
         for (int timeStampIndex = 0; timeStampIndex < odometryThreadInputs.measurementTimeStamps.length; timeStampIndex++)
             feedSingleOdometryDataToPositionEstimator(timeStampIndex);
-
-        final double timeNotVisionResultSeconds = TimeUtil.getLogTimeSeconds() - previousMeasurementTimeStamp;
-        visionNoResultAlert.setText(String.format("AprilTag Vision No Result For %.2f (s)", timeNotVisionResultSeconds));
-        visionNoResultAlert.setActivated(timeNotVisionResultSeconds > 4);
     }
 
     private void fetchOdometryInputs() {
@@ -239,6 +235,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
+    
     @Override
     public Rotation2d getRawGyroYaw() {return gyroInputs.yawPosition; }
 
