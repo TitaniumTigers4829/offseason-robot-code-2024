@@ -6,8 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.extras.simulation.physicsSim.AbstractDriveTrainSimulation;
 import frc.robot.extras.util.GeomUtil;
-
-// import frc.robot.extras.simulation.GamePieceProjectile;
 import java.util.*;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
@@ -123,7 +121,6 @@ public abstract class SimulatedField {
   protected final World<Body> physicsWorld;
   protected final Set<AbstractDriveTrainSimulation> driveTrainSimulations;
   protected final Set<GamePieceSimulation> gamePieces;
-  // protected final Set<GamePieceProjectile> gamePieceProjectile;
   protected final List<Runnable> simulationSubTickActions;
   private final List<IntakeSimulation> intakeSimulations;
 
@@ -148,7 +145,6 @@ public abstract class SimulatedField {
     this.driveTrainSimulations = new HashSet<>();
     simulationSubTickActions = new ArrayList<>();
     this.gamePieces = new HashSet<>();
-    // this.gamePieceProjectile = new HashSet<>();
     this.intakeSimulations = new ArrayList<>();
   }
 
@@ -222,19 +218,6 @@ public abstract class SimulatedField {
     this.physicsWorld.addBody(gamePiece);
     this.gamePieces.add(gamePiece);
   }
-
-  // /**
-  //  * <h2>Registers a {@link GamePieceProjectile} to the Simulation and Launches It.</h2>
-  //  *
-  //  * <p>Calls to {@link GamePieceProjectile#launch()}, which will launch the game piece
-  // immediately.</p>
-  //  *
-  //  * @param gamePieceProjectile the projectile to be registered and launched in the simulation
-  //  */
-  // public void addGamePieceProjectile(GamePieceProjectile gamePieceProjectile) {
-  //     this.gamePieceProjectile.add(gamePieceProjectile);
-  //     gamePieceProjectile.launch();
-  // }
 
   /**
    *
@@ -310,8 +293,6 @@ public abstract class SimulatedField {
     for (AbstractDriveTrainSimulation driveTrainSimulation : driveTrainSimulations)
       driveTrainSimulation.simulationSubTick();
 
-    // GamePieceProjectile.updateGamePieceProjectiles(this, this.gamePieceProjectile);
-
     this.physicsWorld.step(1, SIMULATION_DT);
 
     for (IntakeSimulation intakeSimulation : intakeSimulations)
@@ -350,10 +331,6 @@ public abstract class SimulatedField {
     final List<Pose3d> gamePiecesPoses = new ArrayList<>();
     for (GamePieceSimulation gamePiece : gamePieces)
       if (Objects.equals(gamePiece.type, type)) gamePiecesPoses.add(gamePiece.getPose3d());
-
-    // for (GamePieceSimulation gamePiece:gamePieceProjectile)
-    //     if (Objects.equals(gamePiece.gamePieceType, type))
-    //         gamePiecesPoses.add(gamePiece.getPose3d());
 
     return gamePiecesPoses;
   }

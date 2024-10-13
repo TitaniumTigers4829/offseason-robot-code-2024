@@ -10,7 +10,6 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-
 import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} that implements ModuleIO */
@@ -29,7 +28,8 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.drivePosition = Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
+    inputs.drivePosition =
+        Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
     inputs.driveVelocity =
         Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec());
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
@@ -46,10 +46,10 @@ public class ModuleIOSim implements ModuleIO {
     inputs.odometryDrivePositionsRad = moduleSimulation.getCachedDriveWheelFinalPositionsRad();
     inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
 
-            inputs.odometryDriveWheelRevolutions = Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
+    inputs.odometryDriveWheelRevolutions =
+        Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
             .map(Units::radiansToRotations)
             .toArray();
-
   }
 
   @Override

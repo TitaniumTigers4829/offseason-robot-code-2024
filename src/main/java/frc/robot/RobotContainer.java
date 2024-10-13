@@ -7,7 +7,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.simulation.SimulatedField;
@@ -19,16 +18,14 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
 // import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
 import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
 import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
-
-import java.util.List;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -76,7 +73,11 @@ public class RobotContainer {
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1), 60, DRIVE_WHEEL_TYPE.TIRE, 7.36),
+                    DCMotor.getKrakenX60(1),
+                    DCMotor.getFalcon500(1),
+                    60,
+                    DRIVE_WHEEL_TYPE.TIRE,
+                    7.36),
                 gyroSimulation,
                 new Pose2d(3, 3, new Rotation2d()));
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
@@ -91,8 +92,8 @@ public class RobotContainer {
                 new ModuleIOSim(swerveDriveSimulation.getModules()[2]),
                 new ModuleIOSim(swerveDriveSimulation.getModules()[3]));
 
-                        SimulatedField.getInstance().resetFieldForAuto();
-                        resetFieldAndOdometryForAuto(new Pose2d(3,3, new Rotation2d()));
+        SimulatedField.getInstance().resetFieldForAuto();
+        resetFieldAndOdometryForAuto(new Pose2d(3, 3, new Rotation2d()));
 
         break;
 
@@ -114,18 +115,18 @@ public class RobotContainer {
     }
   }
 
-   private void resetFieldAndOdometryForAuto(Pose2d robotStartingPoseAtBlueAlliance) {
-        final Pose2d startingPose = robotStartingPoseAtBlueAlliance;
+  private void resetFieldAndOdometryForAuto(Pose2d robotStartingPoseAtBlueAlliance) {
+    final Pose2d startingPose = robotStartingPoseAtBlueAlliance;
 
-        if (swerveDriveSimulation != null) {
-            swerveDriveSimulation.setSimulationWorldPose(startingPose);
-            SimulatedField.getInstance().resetFieldForAuto();
-            updateFieldSimAndDisplay();
-        }
-
-        driveSubsystem.periodic();
-        driveSubsystem.setPose(startingPose);
+    if (swerveDriveSimulation != null) {
+      swerveDriveSimulation.setSimulationWorldPose(startingPose);
+      SimulatedField.getInstance().resetFieldForAuto();
+      updateFieldSimAndDisplay();
     }
+
+    driveSubsystem.periodic();
+    driveSubsystem.setPose(startingPose);
+  }
 
   private static double deadband(double value, double deadband) {
     if (Math.abs(value) > deadband) {
@@ -202,9 +203,11 @@ public class RobotContainer {
   }
 
   public void updateFieldSimAndDisplay() {
-    if (swerveDriveSimulation == null)
-        return;
-    Logger.recordOutput("FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
-    Logger.recordOutput("FieldSimulation/Notes", SimulatedField.getInstance().getGamePiecesByType("Note").toArray(Pose3d[]::new));
-}
+    if (swerveDriveSimulation == null) return;
+    Logger.recordOutput(
+        "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput(
+        "FieldSimulation/Notes",
+        SimulatedField.getInstance().getGamePiecesByType("Note").toArray(Pose3d[]::new));
+  }
 }

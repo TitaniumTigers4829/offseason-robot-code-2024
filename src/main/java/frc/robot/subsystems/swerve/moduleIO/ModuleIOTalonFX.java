@@ -18,13 +18,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.DeviceCANBus;
-import frc.robot.extras.simulation.SwerveStateProjection;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import java.util.Queue;
-
-import org.littletonrobotics.junction.Logger;
 
 public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFX driveMotor;
@@ -180,8 +177,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     double turnRotations = getTurnRotations();
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(desiredState, new Rotation2d(Units.rotationsToRadians(turnRotations)));
-
+        SwerveModuleState.optimize(
+            desiredState, new Rotation2d(Units.rotationsToRadians(turnRotations)));
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       driveMotor.set(0);
@@ -194,7 +191,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         optimizedDesiredState.speedMetersPerSecond
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
-            
+
     driveMotor.setControl(velocityRequest.withVelocity(desiredDriveRPS));
     turnMotor.setControl(
         mmPositionRequest.withPosition(optimizedDesiredState.angle.getRotations()));
