@@ -131,7 +131,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   /**
    * Sets the output of the elevator
    *
-   * @param output output value from -1.0 to 1.9
+   * @param speed output value from -1.0 to 1.o
    */
   @Override
   public void setElevatorSpeed(double speed) {
