@@ -121,18 +121,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.followerMotorAppliedVolts = followerAppliedVolts.getValueAsDouble();
     inputs.followerMotorCurrentAmps = followerCurrentAmps.getValueAsDouble();
   }
-
+  
   @Override
   public void setElevatorPosition(double position) {
     leaderElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
     followerElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
   }
 
-  /**
-   * Sets the output of the elevator
-   *
-   * @param speed output value from -1.0 to 1.o
-   */
   @Override
   public void setElevatorSpeed(double speed) {
     leaderElevatorMotor.set(speed);

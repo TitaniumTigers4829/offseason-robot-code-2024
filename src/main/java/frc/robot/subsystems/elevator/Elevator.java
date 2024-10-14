@@ -12,11 +12,21 @@ public class Elevator extends VirtualSubsystem {
     this.io = io;
   }
 
+  /** 
+   * sets the position of the elevator
+   * 
+   * @param position position of elevator, from -1.0 to 1.0
+  */
   public void setElevatorPosition(double position) {
     Logger.recordOutput("Elevator", position);
     io.setElevatorPosition(position);
   }
 
+  /**
+   * Sets the speed of the elevator
+   *
+   * @param speed output value from -1.0 to 1.0
+   */
   public void setElevatorSpeed(double speed) {
     io.setElevatorSpeed(speed);
   }
