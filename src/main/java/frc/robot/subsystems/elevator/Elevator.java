@@ -15,7 +15,7 @@ public class Elevator extends VirtualSubsystem {
   /** 
    * sets the position of the elevator
    * 
-   * @param position position of elevator, from -1.0 to 1.0
+   * @param position position of elevator, in meters from minimum elevator height to max height 
   */
   public void setElevatorPosition(double position) {
     Logger.recordOutput("Elevator", position);

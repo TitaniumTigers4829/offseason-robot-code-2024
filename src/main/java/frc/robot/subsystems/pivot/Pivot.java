@@ -54,7 +54,7 @@ passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_P
   public void setPivotFromSpeakerDistance(double speakerDistance) {
     double speakerAngle = speakerAngleLookupValues.getLookupValue(speakerDistance);
     pivotTargetAngle = speakerAngle;
-    io.setPivotAngle(speakerAngle);
+    setPivotAngle(speakerAngle);
   }
 
   /**
@@ -66,7 +66,7 @@ passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_P
   public void setPivotFromPassDistance(double passDistance) {
     double passAngle = passAngleLookupValues.getLookupValue(passDistance);
     pivotTargetAngle = passAngle;
-    io.setPivotAngle(passAngle);
+    setPivotAngle(passAngle);
   }
 
   /**
@@ -78,7 +78,7 @@ passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_P
   public void setPivotFromSpeakerDistanceOverDefense(double speakerDistance) {
     double speakerAngle = speakerOverDefenseAngleLookupValues.getLookupValue(speakerDistance);
     pivotTargetAngle = speakerAngle;
-    io.setPivotAngle(speakerAngle);
+    setPivotAngle(speakerAngle);
   }
 
   
