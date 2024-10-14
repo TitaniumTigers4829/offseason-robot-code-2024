@@ -1,7 +1,7 @@
-
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.net.PortForwarder;
+import frc.robot.extras.util.TimeUtil;
 import org.photonvision.PhotonCamera;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class VisionIOPhoton implements VisionIO {
                         cameras[i].isConnected()
                 );
             else inputs.camerasInputs[i].clear();
-        inputs.inputsFetchedRealTimeStampSeconds = TimeUtils.getRealTimeSeconds();
+        inputs.inputsFetchedRealTimeStampSeconds = TimeUtil.getRealTimeSeconds();
     }
 
     @Override
