@@ -23,8 +23,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.extras.DeviceCANBus;
 import frc.robot.extras.debug.Alert;
+import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
@@ -111,6 +111,21 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
         timeStampIndex++) feedSingleOdometryDataToPositionEstimator(timeStampIndex);
   }
 
+  public void runCharacterization(double volts) {
+    for (SwerveModule module : swerveModules) {
+      module.setVoltage(volts);
+    }
+  }
+
+  /** Returns the average drive velocity in radians/sec. */
+  public double getCharacterizationVelocity() {
+    double driveVelocityAverage = 0.0;
+    for (SwerveModule module : swerveModules) {
+      driveVelocityAverage += module.getCharacterizationVelocity();
+    }
+    return driveVelocityAverage / 4.0;
+  }
+
   private void fetchOdometryInputs() {
     odometryThread.lockOdometry();
     odometryThread.updateInputs(odometryThreadInputs);
@@ -120,7 +135,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    gyroDisconnectedAlert.setActivated(!gyroInputs.connected);
+    gyroDisconnectedAlert.setActivated(!gyroInputs.isConnected);
 
     odometryThread.unlockOdometry();
   }
@@ -180,7 +195,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
    * @return whether the update is success
    */
   private boolean updateRobotFacingWithGyroReading(int timeStampIndex) {
-    if (!gyroInputs.connected) return false;
+    if (!gyroInputs.isConnected) return false;
     rawGyroRotation = gyroInputs.odometryYawPositions[timeStampIndex];
     return true;
   }
@@ -253,7 +268,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   @Override
   public Rotation2d getRawGyroYaw() {
-    return gyroInputs.yawPosition;
+    return gyroInputs.yawDegrees;
   }
 
   @Override
