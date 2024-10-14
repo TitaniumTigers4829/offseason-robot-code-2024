@@ -75,4 +75,8 @@ public interface ModuleIO {
   default double getTurnRotations() {
     return 0.0;
   }
+
+  default double getDriveVoltage() {
+    return 0.0;
+  }
 }

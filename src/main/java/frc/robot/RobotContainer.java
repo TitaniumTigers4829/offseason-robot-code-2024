@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.extras.simulation.SimulatedField;
 import frc.robot.extras.simulation.physicsSim.GyroSimulation;
 import frc.robot.extras.simulation.physicsSim.SwerveDriveSimulation;
@@ -199,7 +200,10 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    return new FeedForwardCharacterization(
+        driveSubsystem,
+        driveSubsystem::runCharacterization,
+        driveSubsystem::getCharacterizationVelocity);
   }
 
   public void updateFieldSimAndDisplay() {
