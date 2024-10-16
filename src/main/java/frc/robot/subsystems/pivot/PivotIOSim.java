@@ -45,7 +45,6 @@ public class PivotIOSim implements PivotIO {
     inputs.followerSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
   }
 
-  /** Sets Voltage */
   @Override
   public void setVoltage(double volts) {
     leaderAppliedVolts = volts;

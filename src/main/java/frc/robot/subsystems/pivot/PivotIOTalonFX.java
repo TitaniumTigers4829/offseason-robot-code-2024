@@ -20,7 +20,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.extras.interpolators.SingleLinearInterpolator;
 
 /** Add your docs here. */
 public class PivotIOTalonFX implements PivotIO {
@@ -46,10 +45,6 @@ public class PivotIOTalonFX implements PivotIO {
 
   private final MotionMagicVoltage mmPositionRequest;
 
-  private final SingleLinearInterpolator speakerAngleLookupValues;
-  private final SingleLinearInterpolator speakerOverDefenseAngleLookupValues;
-  private final SingleLinearInterpolator passAngleLookupValues;
-
   private double pivotTargetAngle;
 
   private final Slot0Configs controllerConfig = new Slot0Configs();
@@ -63,10 +58,6 @@ public class PivotIOTalonFX implements PivotIO {
     pivotEncoder = new CANcoder(PivotConstants.PIVOT_ENCODER_ID);
     mmPositionRequest = new MotionMagicVoltage(0);
 
-    speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
-    speakerOverDefenseAngleLookupValues =
-        new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
-    passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_POSITION);
 
     CANcoderConfiguration pivotEncoderConfig = new CANcoderConfiguration();
     pivotEncoderConfig.MagnetSensor.MagnetOffset = -PivotConstants.ANGLE_ZERO;
@@ -169,106 +160,38 @@ public class PivotIOTalonFX implements PivotIO {
     inputs.followerSupplyCurrentAmps = followerPivotMotor.getSupplyCurrent().getValueAsDouble();
   }
 
-  /**
-   * Sets the voltage of the pivot motors
-   *
-   * @param volts the voltage
-   */
   @Override
   public void setVoltage(double volts) {
     leaderPivotMotor.setControl(new VoltageOut(volts));
     followerPivotMotor.setControl(new VoltageOut(volts));
   }
 
-  /**
-   * Gets the angle of the pivot
-   *
-   * @return angle of pivot in rotations
-   */
   @Override
   public double getAngle() {
     pivotPos.refresh();
     return pivotPos.getValueAsDouble();
   }
 
-  /**
-   * Returns if the pivot is within an acceptable rotation in relation to the target position
-   *
-   * @return pivot error between desired and actual state in rotations
-   */
   @Override
   public boolean isPivotWithinAcceptableError() {
     return Math.abs(pivotTargetAngle - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
   }
 
-  /**
-   * Sets the output of the pivot
-   *
-   * @param output output value from -1.0 to 1.9
-   */
   @Override
   public void setPivotSpeed(double output) {
     leaderPivotMotor.set(output);
     followerPivotMotor.set(output);
   }
 
-  /**
-   * Gets the target angle of the pivot in degrees
-   *
-   * @return the target angle
-   */
   @Override
   public double getPivotTarget() {
     return pivotTargetAngle;
   }
 
-  /**
-   * sets the pivot angle(rotations) shooter
-   *
-   * @param angle the desired angle in rotations
-   */
   @Override
   public void setPivotAngle(double angle) {
     pivotTargetAngle = angle;
     leaderPivotMotor.setControl(mmPositionRequest.withPosition(angle));
     followerPivotMotor.setControl(mmPositionRequest.withPosition(angle));
-  }
-
-  /**
-   * Uses distance in meters from the speaker to set the pivot angle (degrees) of the shooter
-   *
-   * @param speakerDistance the distance in meters from the speaker
-   */
-  @Override
-  public void setPivotFromSpeakerDistance(double speakerDistance) {
-    double speakerAngle = speakerAngleLookupValues.getLookupValue(speakerDistance);
-    pivotTargetAngle = speakerAngle;
-    setPivotAngle(speakerAngle);
-  }
-
-  /**
-   * Uses distance in meters from the passing position to set the pivot angle (degrees) of the
-   * shooter
-   *
-   * @param passDistance the distance in meters from the passing position
-   */
-  @Override
-  public void setPivotFromPassDistance(double passDistance) {
-    double passAngle = passAngleLookupValues.getLookupValue(passDistance);
-    pivotTargetAngle = passAngle;
-    setPivotAngle(passAngle);
-  }
-
-  /**
-   * Uses distance in meters from the speaker to set the pivot angle (degrees) of the shooter with
-   * elevator at max height
-   *
-   * @param speakerDistance the distance in meters from the speaker
-   */
-  @Override
-  public void setPivotFromSpeakerDistanceOverDefense(double speakerDistance) {
-    double speakerAngle = speakerOverDefenseAngleLookupValues.getLookupValue(speakerDistance);
-    pivotTargetAngle = speakerAngle;
-    setPivotAngle(speakerAngle);
   }
 }

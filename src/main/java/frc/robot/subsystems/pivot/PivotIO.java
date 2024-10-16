@@ -42,12 +42,6 @@ public interface PivotIO {
 
   public default void setPivotAngle(double angle) {}
 
-  public default void setPivotFromPassDistance(double distance) {}
-
-  public default void setPivotFromSpeakerDistance(double distance) {}
-
-  public default void setPivotFromSpeakerDistanceOverDefense(double distance) {}
-
   public default double getPivotTarget() {
     return 0.0;
   }
