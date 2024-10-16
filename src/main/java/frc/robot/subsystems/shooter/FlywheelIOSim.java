@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants.FlywheelConstants;
 
 public class FlywheelIOSim implements FlywheelIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getKrakenX60(2), FlywheelConstants.GEAR_RATIO, 0.004);
+  private FlywheelSim flywheelSim = new FlywheelSim(DCMotor.getKrakenX60(2), FlywheelConstants.GEAR_RATIO, 0.004);
   private PIDController pid = new PIDController(FlywheelConstants.FLYWHEEL_P, FlywheelConstants.FLYWHEEL_I, FlywheelConstants.FLYWHEEL_D);
 
   private boolean closedLoop = false; // closed loop is pid
@@ -32,25 +32,19 @@ public class FlywheelIOSim implements FlywheelIO {
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
-    if (closedLoop) {
-      appliedVolts =
-          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
-      sim.setInputVoltage(appliedVolts);
-    }
-
-    sim.update(0.02);
+    flywheelSim.update(0.02);
 
     inputs.positionRotations = 0.0;
-    inputs.velocityRPM = sim.getAngularVelocityRPM();
+    inputs.velocityRPM = flywheelSim.getAngularVelocityRPM();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
+    inputs.currentAmps = new double[] {flywheelSim.getCurrentDrawAmps()};
   }
 
   @Override
   public void setVoltage(double volts) {
     closedLoop = false;
     appliedVolts = volts;
-    sim.setInputVoltage(volts);
+    flywheelSim.setInputVoltage(volts);
   }
 
   @Override
