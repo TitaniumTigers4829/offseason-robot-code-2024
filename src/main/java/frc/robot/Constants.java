@@ -155,9 +155,11 @@ public final class Constants {
     public static final double DRIVE_V = 1.73 * WHEEL_CIRCUMFERENCE_METERS / DRIVE_GEAR_RATIO; // = 0.1203 V*s/m 
     public static final double DRIVE_A = 0.32 * WHEEL_CIRCUMFERENCE_METERS / DRIVE_GEAR_RATIO; // = 0.02225 V*s^2/m
   }
+
   public static final class FlywheelConstants {
     public static final int LEADER_FLYWHEEL_MOTOR_ID = 4;
     public static final int FOLLOWER_FLYWHEEL_MOTOR_ID = 12;
+    public static final int NOTE_SENSOR_ID = 0-9;
 
     public static final double GEAR_RATIO = 1.0;
 
@@ -172,7 +174,11 @@ public final class Constants {
     public static final boolean FLYWHEEL_SUPPLY_ENABLE = true;
     public static final double FLYWHEEL_STATOR_LIMIT = 60.0;
     public static final boolean FLYWHEEL_STATOR_ENABLE = true;
+
+    public static final double LOW_VOLTAGE_BOUNDARY = 12.0;
+    public static final double HIGH_VOLTAGE_BOUNDARY = -12.0;
   }
+  
   public static final class VisionConstants {
     public static final double VISION_X_POS_TRUST = 0.5; // meters
     public static final double VISION_Y_POS_TRUST = 0.5; // meters
