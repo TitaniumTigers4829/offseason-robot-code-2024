@@ -15,6 +15,10 @@ public interface IndexerIO {
 
   default void updateInputs(IndexerIOInputs inputs) {}
 
+  default boolean hasNote() {
+    return false;
+  }
+
   default boolean isIndexing() {
     return false;
   }

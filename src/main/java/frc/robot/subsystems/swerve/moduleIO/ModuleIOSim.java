@@ -1,109 +1,98 @@
 package frc.robot.subsystems.swerve.moduleIO;
 
-import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.*;
-
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.extras.simulation.OdometryTimestampsSim;
+import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import java.util.Arrays;
 
-/**
- * Physics sim implementation of module IO.
- *
- * <p>Uses two flywheel sims for the drive and turn motors, with the absolute position initialized
- * to a random value. The flywheel sims are not physically accurate, but provide a decent
- * approximation for the behavior of the module.
- */
+/** Wrapper class around {@link SwerveModuleSimulation} that implements ModuleIO */
 public class ModuleIOSim implements ModuleIO {
-  public final SwerveModulePhysicsSimulationResults physicsSimulationResults;
-  private final DCMotorSim steerSim;
-  private double driveAppliedVolts = 0.0, steerAppliedVolts = 0.0;
+  private final SwerveModuleSimulation moduleSimulation;
 
-  public ModuleIOSim() {
-    this.steerSim = new DCMotorSim(STEER_MOTOR, STEER_GEAR_RATIO, STEER_INERTIA);
+  private final PIDController drivePID = new PIDController(5, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(5, 0, 0);
+  private final Constraints turnConstraints = new Constraints(5, 0);
+  private final ProfiledPIDController turnPID = new ProfiledPIDController(5, 0, 0, turnConstraints);
+  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(5, 0, 0);
 
-    this.physicsSimulationResults = new SwerveModulePhysicsSimulationResults();
+  public ModuleIOSim(SwerveModuleSimulation moduleSimulation) {
+    this.moduleSimulation = moduleSimulation;
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.driveWheelFinalRevolutions = physicsSimulationResults.driveWheelFinalRevolutions;
-    inputs.driveWheelFinalVelocityRevolutionsPerSec =
-        Units.radiansToRotations(physicsSimulationResults.driveWheelFinalVelocityRadPerSec);
-    inputs.driveMotorAppliedVolts = driveAppliedVolts;
-    inputs.driveMotorCurrentAmps =
-        Math.abs(
-            DRIVE_MOTOR.getCurrent(
-                physicsSimulationResults.driveWheelFinalVelocityRadPerSec, driveAppliedVolts));
+    inputs.drivePosition =
+        Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
+    inputs.driveVelocity =
+        Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec());
+    inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
+    inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 
-    inputs.turnRotation = Rotation2d.fromRadians(steerSim.getAngularPositionRad());
-    inputs.steerVelocityRadPerSec = steerSim.getAngularVelocityRadPerSec();
-    inputs.steerMotorAppliedVolts = steerAppliedVolts;
-    inputs.steerMotorCurrentAmps = Math.abs(steerSim.getCurrentDrawAmps());
+    inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
+    inputs.turnPosition =
+        Rotation2d.fromRadians(moduleSimulation.getSteerRelativeEncoderPositionRad());
+    inputs.turnVelocityRadPerSec = moduleSimulation.getSteerRelativeEncoderSpeedRadPerSec();
+    inputs.turnAppliedVolts = moduleSimulation.getSteerMotorAppliedVolts();
+    inputs.turnCurrentAmps = Math.abs(moduleSimulation.getSteerMotorSupplyCurrentAmps());
+
+    inputs.odometryTimestamps = OdometryTimestampsSim.getTimeStamps();
+    inputs.odometryDrivePositionsRad = moduleSimulation.getCachedDriveWheelFinalPositionsRad();
+    inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
 
     inputs.odometryDriveWheelRevolutions =
-        Arrays.copyOf(
-            physicsSimulationResults.odometryDriveWheelRevolutions, SIMULATION_TICKS_IN_1_PERIOD);
-    inputs.odometrySteerPositions =
-        Arrays.copyOf(
-            physicsSimulationResults.odometrySteerPositions, SIMULATION_TICKS_IN_1_PERIOD);
-
-    inputs.hardwareConnected = true;
+        Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
+            .map(Units::radiansToRotations)
+            .toArray();
   }
 
   @Override
   public void setDriveVoltage(double volts) {
-    driveAppliedVolts = volts;
+    moduleSimulation.requestDriveVoltageOut(volts);
   }
 
   @Override
-  public void setSteerPowerPercent(double powerPercent) {
-    steerAppliedVolts = (powerPercent * 12);
-    steerSim.setInputVoltage(
-        Math.abs(steerAppliedVolts) > STEER_FRICTION_VOLTAGE ? steerAppliedVolts : 0);
+  public void setTurnVoltage(double volts) {
+    moduleSimulation.requestTurnVoltageOut(volts);
   }
 
-  public void updateSim(double periodSecs) {
-    steerSim.update(periodSecs);
-  }
+  public void setDesiredState(SwerveModuleState desiredState) {
+    double turnRotations = getTurnRotations();
+    // Optimize the reference state to avoid spinning further than 90 degrees
+    SwerveModuleState optimizedDesiredState =
+        SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(turnRotations));
 
-  public double getSimulationTorque() {
-    return DRIVE_MOTOR.getTorque(
-        DRIVE_MOTOR.getCurrent(
-            physicsSimulationResults.driveWheelFinalVelocityRadPerSec * DRIVE_GEAR_RATIO,
-            driveAppliedVolts));
-  }
-
-  public double getAppliedVolts() {
-    return driveAppliedVolts;
-  }
-
-  public Rotation2d getSimulationSteerFacing() {
-    return Rotation2d.fromRadians(steerSim.getAngularPositionRad());
-  }
-
-  public SwerveModuleState getSimulationSwerveState() {
-    return new SwerveModuleState(
-        physicsSimulationResults.driveWheelFinalVelocityRadPerSec * WHEEL_RADIUS_METERS,
-        getSimulationSteerFacing());
-  }
-
-  public SwerveModuleState getDesiredSwerveState() {
-    return new SwerveModuleState(
-        driveAppliedVolts * CHASSIS_MAX_VELOCITY, getSimulationSteerFacing());
-  }
-
-  /** this replaces DC Motor Sim for drive wheels */
-  public static class SwerveModulePhysicsSimulationResults {
-    public double driveWheelFinalRevolutions = 0, driveWheelFinalVelocityRadPerSec = 0;
-
-    public final double[] odometryDriveWheelRevolutions = new double[SIMULATION_TICKS_IN_1_PERIOD];
-    public final Rotation2d[] odometrySteerPositions = new Rotation2d[SIMULATION_TICKS_IN_1_PERIOD];
-
-    public SwerveModulePhysicsSimulationResults() {
-      Arrays.fill(odometrySteerPositions, new Rotation2d());
-      Arrays.fill(odometryDriveWheelRevolutions, 0);
+    if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
+      moduleSimulation.requestDriveVoltageOut(0);
+      moduleSimulation.requestTurnVoltageOut(0);
+      return;
     }
+
+    // Converts meters per second to rotations per second
+    double desiredDriveRPS =
+        optimizedDesiredState.speedMetersPerSecond
+            * ModuleConstants.DRIVE_GEAR_RATIO
+            / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
+
+    moduleSimulation.requestDriveVoltageOut(
+        drivePID.calculate(
+                Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()),
+                desiredDriveRPS)
+            + driveFF.calculate(desiredDriveRPS));
+    moduleSimulation.requestTurnVoltageOut(
+        turnPID.calculate(
+                moduleSimulation.getTurnAbsolutePosition().getRotations(),
+                desiredState.angle.getRotations())
+            + turnFF.calculate(turnPID.getSetpoint().velocity));
+  }
+
+  public double getTurnRotations() {
+    return moduleSimulation.getTurnAbsolutePosition().getRotations();
   }
 }
