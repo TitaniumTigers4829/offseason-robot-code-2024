@@ -24,13 +24,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.FlywheelConstants;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.Constants.HardwareConstants;
 
 public class FlywheelIOTalonFX implements FlywheelIO { // FlywheelIOTalonFX makes Advantagekit log physical hardware movement
-  private final TalonFX leaderFlywheelMotor = new TalonFX(FlywheelConstants.LEADER_FLYWHEEL_MOTOR_ID); // Leader=left motor
-  private final TalonFX followerFlywheelMotor = new TalonFX(FlywheelConstants.FOLLOWER_FLYWHEEL_MOTOR_ID); // follower = right motor
-  private final DigitalInput noteSensor = new DigitalInput(FlywheelConstants.NOTE_SENSOR_ID); // Note sensor
+  private final TalonFX leaderFlywheelMotor = new TalonFX(ShooterConstants.LEADER_FLYWHEEL_MOTOR_ID); // Leader=left motor
+  private final TalonFX followerFlywheelMotor = new TalonFX(ShooterConstants.FOLLOWER_FLYWHEEL_MOTOR_ID); // follower = right motor
+  private final DigitalInput noteSensor = new DigitalInput(ShooterConstants.NOTE_SENSOR_ID); // Note sensor
 
   private final VelocityVoltage velocityRequest;
   private final VoltageOut voltageRequest;
@@ -43,18 +43,18 @@ public class FlywheelIOTalonFX implements FlywheelIO { // FlywheelIOTalonFX make
 
   public FlywheelIOTalonFX() {  // Object to set different flywheel configs 
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
-    flywheelConfig.CurrentLimits.SupplyCurrentLimit = FlywheelConstants.FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in CONSTANTS file
-    flywheelConfig.CurrentLimits.StatorCurrentLimit = FlywheelConstants.FLYWHEEL_STATOR_LIMIT;
-    flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = FlywheelConstants.FLYWHEEL_SUPPLY_ENABLE;
-    flywheelConfig.CurrentLimits.StatorCurrentLimitEnable = FlywheelConstants.FLYWHEEL_STATOR_ENABLE;
+    flywheelConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in CONSTANTS file
+    flywheelConfig.CurrentLimits.StatorCurrentLimit = ShooterConstants.FLYWHEEL_STATOR_LIMIT;
+    flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = ShooterConstants.FLYWHEEL_SUPPLY_ENABLE;
+    flywheelConfig.CurrentLimits.StatorCurrentLimitEnable = ShooterConstants.FLYWHEEL_STATOR_ENABLE;
     flywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast; // This is used to ensure maximum power efficiency, to ensure flywheels keep spinning after power off.
 
-    flywheelConfig.Slot0.kP = FlywheelConstants.FLYWHEEL_P; //everything tuned in Flywheel Constants file
-    flywheelConfig.Slot0.kI = FlywheelConstants.FLYWHEEL_I;
-    flywheelConfig.Slot0.kP = FlywheelConstants.FLYWHEEL_D;
-    flywheelConfig.Slot0.kS = FlywheelConstants.FLYWHEEL_S;
-    flywheelConfig.Slot0.kV = FlywheelConstants.FLYWHEEL_V;
-    flywheelConfig.Slot0.kA = FlywheelConstants.FLYWHEEL_A;
+    flywheelConfig.Slot0.kP = ShooterConstants.FLYWHEEL_P; //everything tuned in Flywheel Constants file
+    flywheelConfig.Slot0.kI = ShooterConstants.FLYWHEEL_I;
+    flywheelConfig.Slot0.kP = ShooterConstants.FLYWHEEL_D;
+    flywheelConfig.Slot0.kS = ShooterConstants.FLYWHEEL_S;
+    flywheelConfig.Slot0.kV = ShooterConstants.FLYWHEEL_V;
+    flywheelConfig.Slot0.kA = ShooterConstants.FLYWHEEL_A;
  
     leaderFlywheelMotor.getConfigurator().apply(flywheelConfig); // Apply the flywheel config defined above
     flywheelConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // invert one so that they can go in the same direction
@@ -77,8 +77,8 @@ public class FlywheelIOTalonFX implements FlywheelIO { // FlywheelIOTalonFX make
   public void updateInputs(FlywheelIOInputs inputs) {// gets current values for motors and puts them into a log
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
-    inputs.positionRotations = leaderPosition.getValueAsDouble() / FlywheelConstants.GEAR_RATIO; // converted to radians to gear ratio math
-    inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * 60.0) / FlywheelConstants.GEAR_RATIO;
+    inputs.positionRotations = leaderPosition.getValueAsDouble() / ShooterConstants.GEAR_RATIO; // converted to radians to gear ratio math
+    inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * 60.0) / ShooterConstants.GEAR_RATIO;
     inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
         new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()}; // puts current values into an array as doubles

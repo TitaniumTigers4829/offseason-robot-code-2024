@@ -23,13 +23,13 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.robot.Constants.FlywheelConstants;
+import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class FlywheelIOSim implements FlywheelIO { //FlywheelIOSim makes Advantage kit log simulated movements using physics 
-  private FlywheelSim flywheelSim = new FlywheelSim(DCMotor.getKrakenX60(2), FlywheelConstants.GEAR_RATIO, 0.004); //initiates virtual
-  private DIOSim noteSensorSim = new DIOSim(new DigitalInput(FlywheelConstants.NOTE_SENSOR_ID));
-  private PIDController pid = new PIDController(FlywheelConstants.FLYWHEEL_P, FlywheelConstants.FLYWHEEL_I, FlywheelConstants.FLYWHEEL_D);
-  private SimpleMotorFeedforward feedFoward = new SimpleMotorFeedforward(FlywheelConstants.FLYWHEEL_S, FlywheelConstants.FLYWHEEL_V, FlywheelConstants.FLYWHEEL_A);
+  private FlywheelSim flywheelSim = new FlywheelSim(DCMotor.getKrakenX60(2), ShooterConstants.GEAR_RATIO, 0.004); //initiates virtual
+  private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
+  private PIDController pid = new PIDController(ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D);
+  private SimpleMotorFeedforward feedFoward = new SimpleMotorFeedforward(ShooterConstants.FLYWHEEL_S, ShooterConstants.FLYWHEEL_V, ShooterConstants.FLYWHEEL_A);
   
   private double appliedVolts = 0.0;
 
