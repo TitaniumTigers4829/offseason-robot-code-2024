@@ -2,80 +2,78 @@
 
 // package frc.robot.commands.drive;
 
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
 // import edu.wpi.first.wpilibj.Timer;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj2.command.Command;
-// import frc.robot.Constants.FieldConstants;
-// import frc.robot.Constants.VisionConstants;
+// import frc.robot.subsystems.vision.Vision;
+// import frc.robot.subsystems.vision.VisionConstants;
 // import frc.robot.extras.interpolators.MultiLinearInterpolator;
-// import frc.robot.subsystems.swerve.Drive;
-// // import frc.robot.subsystems.vision.VisionSubsystem;
+// import frc.robot.subsystems.swerve.SwerveDrive;
+// import frc.robot.subsystems.vision.Vision;
 
 // public abstract class DriveCommandBase extends Command {
 
 //   private final MultiLinearInterpolator oneAprilTagLookupTable =
-//     new MultiLinearInterpolator(VisionConstants.ONE_APRIL_TAG_LOOKUP_TABLE);
+//       new MultiLinearInterpolator(VisionConstants.ONE_APRIL_TAG_LOOKUP_TABLE);
 //   private final MultiLinearInterpolator twoAprilTagLookupTable =
-//     new MultiLinearInterpolator(VisionConstants.TWO_APRIL_TAG_LOOKUP_TABLE);
+//       new MultiLinearInterpolator(VisionConstants.TWO_APRIL_TAG_LOOKUP_TABLE);
 
-//   Pose2d middleField = new Pose2d(FieldConstants.FIELD_LENGTH_METERS / 2.0,
-// FieldConstants.FIELD_WIDTH_METERS / 2.0, new Rotation2d());
-
-//   private final VisionSubsystem visionSubsystem;
-//   private final Drive Drive;
+//   private final Vision vision;
+//   private final SwerveDrive swerveDrive;
 
 //   private double lastTimeStampSeconds = 0;
-//   // private int ticksAfterSeeing = 0;
 
 //   /**
 //    * An abstract class that handles pose estimation while driving.
-//    * @param Drive The subsystem for the swerve drive
-//    * @param visionSubsystem The subsystem for vision measurements
+//    *
+//    * @param driveSubsystem The subsystem for the swerve drive
+//    * @param vision The subsystem for vision measurements
 //    */
-//   public DriveCommandBase(Drive Drive, VisionSubsystem visionSubsystem) {
-//     this.Drive = Drive;
-//     this.visionSubsystem = visionSubsystem;
-//     // It is important that you do addRequirements(Drive, visionSubsystem) in whatever command
-// extends this
+//   public DriveCommandBase(SwerveDrive swerveDrive, Vision vision) {
+//     this.swerveDrive = swerveDrive;
+//     this.vision = vision;
+//     // It is important that you do addRequirements(driveSubsystem, vision) in whatever
+//     // command extends this
 //   }
 
 //   @Override
 //   public void execute() {
-//     // Updates the pose estimator using the swerve modules
-//     Drive.addPoseEstimatorSwerveMeasurement();
+//     swerveDrive.addPoseEstimatorSwerveMeasurement();
+//     vision.setHeadingInfo(
+//         swerveDrive.getOdometryAllianceRelativeRotation2d().getDegrees(),
+// swerveDrive.getGyroRate());
+//     calculatePoseFromLimelight(VisionConstants.SHOOTER_LIMELIGHT_NUMBER);
+//     calculatePoseFromLimelight(VisionConstants.FRONT_LEFT_LIMELIGHT_NUMBER);
+//     calculatePoseFromLimelight(VisionConstants.FRONT_RIGHT_LIMELIGHT_NUMBER);
+//   }
 
-//     // Updates the robot's odometry with april tags
+//   public void calculatePoseFromLimelight(int limelightNumber) {
 //     double currentTimeStampSeconds = lastTimeStampSeconds;
 
-//     if (visionSubsystem.canSeeAprilTags()) {
-//       currentTimeStampSeconds = visionSubsystem.getTimeStampSeconds();
+//     // Updates the robot's odometry with april tags
+//     if (vision.canSeeAprilTags(limelightNumber)) {
+//       currentTimeStampSeconds = vision.getTimeStampSeconds(limelightNumber);
 
-//       double distanceFromClosestAprilTag = visionSubsystem.getDistanceFromClosestAprilTag();
+//       double distanceFromClosestAprilTag =
+//           vision.getLimelightAprilTagDistance(limelightNumber);
 //       // Sets the pose estimator confidence in vision based off of number of april tags and
 // distance
-//       if (visionSubsystem.getNumberOfAprilTags() == 1) {
+//       if (vision.getNumberOfAprilTags(limelightNumber) == 1) {
 //         double[] standardDeviations =
-// oneAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
-//         Drive.setPoseEstimatorVisionConfidence(standardDeviations[0], standardDeviations[1],
-// standardDeviations[2]);
-//       } else if (visionSubsystem.getNumberOfAprilTags() > 1) {
+//             oneAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
+//         ((SwerveDrive) swerveDrive).setPoseEstimatorVisionConfidence(
+//             standardDeviations[0], standardDeviations[1], standardDeviations[2]);
+//       } else if (vision.getNumberOfAprilTags(limelightNumber) > 1) {
 //         double[] standardDeviations =
-// twoAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
-//         Drive.setPoseEstimatorVisionConfidence(standardDeviations[0], standardDeviations[1],
-// standardDeviations[2]);
+//             twoAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
+//         swerveDrive.setPoseEstimatorVisionConfidence(
+//             standardDeviations[0], standardDeviations[1], standardDeviations[2]);
 //       }
 
-//       if (visionSubsystem.canSeeAprilTags()) {
-//         Pose2d limelightVisionMeasurement = visionSubsystem.getPoseFromAprilTags();
-
-//         Drive.addPoseEstimatorVisionMeasurement(limelightVisionMeasurement,
-// Timer.getFPGATimestamp() - visionSubsystem.getLatencySeconds());
-//       }
+//       swerveDrive.addPoseEstimatorVisionMeasurement(
+//           vision.getPoseFromAprilTags(limelightNumber),
+//           Timer.getFPGATimestamp() - vision.getLatencySeconds(limelightNumber));
 //     }
 
 //     lastTimeStampSeconds = currentTimeStampSeconds;
 //   }
-
 // }

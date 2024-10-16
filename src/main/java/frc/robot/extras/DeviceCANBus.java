@@ -1,4 +1,4 @@
-package frc.robot.extras.util;
+package frc.robot.extras;
 
 import frc.robot.Constants.HardwareConstants;
 

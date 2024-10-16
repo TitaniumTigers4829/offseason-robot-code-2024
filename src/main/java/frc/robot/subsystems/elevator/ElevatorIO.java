@@ -26,6 +26,8 @@ public interface ElevatorIO {
 
   public default void setElevatorPosition(double position) {}
 
+  public default void setElevatorSpeed(double speed) {}
+
   public default void setVolts(double volts) {}
 
   public default double getVolts() {

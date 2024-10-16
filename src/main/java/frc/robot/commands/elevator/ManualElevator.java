@@ -2,22 +2,22 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.pivot;
+package frc.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.pivot.*;
+import frc.robot.subsystems.elevator.Elevator;
 import java.util.function.DoubleSupplier;
 
-public class ManualPivot extends Command {
+public class ManualElevator extends Command {
+  private final Elevator elevator;
+  private DoubleSupplier speed;
 
-  private final Pivot pivot;
-  private final DoubleSupplier speed;
-
-  /** Creates a new ManualPivot. */
-  public ManualPivot(Pivot pivot, DoubleSupplier speed) {
-    this.pivot = pivot;
+  /** Creates a new ManualElevator. */
+  public ManualElevator(Elevator elevator, DoubleSupplier speed) {
+    this.elevator = elevator;
     this.speed = speed;
-    addRequirements(pivot);
+
+    addRequirements(elevator);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -28,13 +28,13 @@ public class ManualPivot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivot.setPivotSpeed(speed.getAsDouble());
+    elevator.setElevatorSpeed(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    pivot.setPivotSpeed(PivotConstants.PIVOT_NEUTRAL_SPEED);
+    elevator.setElevatorSpeed(0);
   }
 
   // Returns true when the command should end.

@@ -49,8 +49,4 @@ public class GeomUtil {
     return new ChassisSpeeds(
         dyn4jLinearVelocity.x, dyn4jLinearVelocity.y, angularVelocityRadPerSec);
   }
-
-  public static Translation2d getChassisSpeedsTranslationalComponent(ChassisSpeeds chassisSpeeds) {
-    return new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
-  }
 }
