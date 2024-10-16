@@ -7,8 +7,8 @@ package frc.robot.subsystems.pivot;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.Logger;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
+import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
   private final PivotIO io;
@@ -18,15 +18,13 @@ public class Pivot extends SubsystemBase {
   private final SingleLinearInterpolator speakerOverDefenseAngleLookupValues;
   private final SingleLinearInterpolator passAngleLookupValues;
 
-
   /** Creates a new Pivot. */
   public Pivot(PivotIO io) {
     this.io = io;
     speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
-speakerOverDefenseAngleLookupValues =
-    new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
-passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_POSITION);
-
+    speakerOverDefenseAngleLookupValues =
+        new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
+    passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_POSITION);
   }
 
   @Override
@@ -44,7 +42,6 @@ passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_P
   public void setPivotAngle(double angle) {
     io.setPivotAngle(angle);
   }
-
 
   /**
    * Uses distance in meters from the speaker to set the pivot angle (degrees) of the shooter
@@ -78,7 +75,6 @@ passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_P
     setPivotAngle(speakerAngle);
   }
 
-  
   /**
    * Sets the output of the pivot
    *

@@ -58,7 +58,6 @@ public class PivotIOTalonFX implements PivotIO {
     pivotEncoder = new CANcoder(PivotConstants.PIVOT_ENCODER_ID);
     mmPositionRequest = new MotionMagicVoltage(0);
 
-
     CANcoderConfiguration pivotEncoderConfig = new CANcoderConfiguration();
     pivotEncoderConfig.MagnetSensor.MagnetOffset = -PivotConstants.ANGLE_ZERO;
     pivotEncoderConfig.MagnetSensor.SensorDirection = PivotConstants.ENCODER_REVERSED;

@@ -57,7 +57,8 @@ public class ShootSpeaker extends Command {
       DoubleSupplier leftX,
       DoubleSupplier leftY,
       BooleanSupplier isFieldRelative) {
-    super(swerveDrive, vision);
+    // super(swerveDrive, vision);
+    this.vision = vision; // TODO: figure out why super() is buggy
     this.swerveDrive = swerveDrive;
     this.flywheel = flywheel;
     this.pivot = pivot;

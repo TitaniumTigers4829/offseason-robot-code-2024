@@ -46,7 +46,7 @@ public class AutoAlignWithAmp extends Command {
 
   /** Creates a new AutoAlignWithAmp. */
   public AutoAlignWithAmp(SwerveDrive swerveDrive, Vision vision) {
-    super(swerveDrive, vision);
+    // super(swerveDrive, vision);
     this.swerveDrive = swerveDrive;
 
     addRequirements(swerveDrive, vision);

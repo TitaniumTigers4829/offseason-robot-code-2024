@@ -12,11 +12,11 @@ public class Elevator extends VirtualSubsystem {
     this.io = io;
   }
 
-  /** 
+  /**
    * sets the position of the elevator
-   * 
-   * @param position position of elevator, in meters from minimum elevator height to max height 
-  */
+   *
+   * @param position position of elevator, in meters from minimum elevator height to max height
+   */
   public void setElevatorPosition(double position) {
     Logger.recordOutput("Elevator", position);
     io.setElevatorPosition(position);

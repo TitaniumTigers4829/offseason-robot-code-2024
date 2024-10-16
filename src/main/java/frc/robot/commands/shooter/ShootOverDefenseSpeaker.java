@@ -57,7 +57,8 @@ public class ShootOverDefenseSpeaker extends Command {
       DoubleSupplier leftX,
       DoubleSupplier leftY,
       BooleanSupplier isFieldRelative) {
-    super(swerveDrive, vision);
+    // super(swerveDrive, vision);
+    this.vision = vision; // TODO: figure out why super() is buggy
     this.swerveDrive = swerveDrive;
     this.flywheel = flywheel;
     this.pivot = pivot;
@@ -66,7 +67,7 @@ public class ShootOverDefenseSpeaker extends Command {
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
 
-    addRequirements(swerveDrive, flywheel, pivot, elevator, vision);
+    addRequirements(flywheel, pivot, elevator, swerveDrive, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
