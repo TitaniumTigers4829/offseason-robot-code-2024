@@ -7,7 +7,6 @@ package frc.robot.subsystems.pivot;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -22,6 +21,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.HardwareConstants;
 
 /** Add your docs here. */
+public class PivotIOTalonFX implements PivotIO {
 public class PivotIOTalonFX implements PivotIO {
 
   private final TalonFX leaderPivotMotor;
@@ -47,11 +47,11 @@ public class PivotIOTalonFX implements PivotIO {
 
   private double pivotTargetAngle;
 
-  private final Slot0Configs controllerConfig = new Slot0Configs();
   private final VoltageOut voltageControl = new VoltageOut(0).withUpdateFreqHz(0.0);
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
+  public PivotIOTalonFX() {
   public PivotIOTalonFX() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
     followerPivotMotor = new TalonFX(PivotConstants.FOLLOWER_PIVOT_MOTOR_ID);
@@ -173,7 +173,7 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public boolean isPivotWithinAcceptableError() {
-    return Math.abs(pivotTargetAngle - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
+    return Math.abs(pivotTargetAngleRots - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
   }
 
   @Override
@@ -184,12 +184,12 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public double getPivotTarget() {
-    return pivotTargetAngle;
+    return pivotTargetAngleRots;
   }
 
   @Override
   public void setPivotAngle(double angle) {
-    pivotTargetAngle = angle;
+    pivotTargetAngleRots = angle;
     leaderPivotMotor.setControl(mmPositionRequest.withPosition(angle));
     followerPivotMotor.setControl(mmPositionRequest.withPosition(angle));
   }
