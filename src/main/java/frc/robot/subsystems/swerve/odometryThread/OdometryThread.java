@@ -2,9 +2,9 @@ package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import frc.robot.Constants.HardwareConstants;
 import frc.robot.Robot;
-import frc.robot.extras.util.DeviceCANBus;
-import frc.robot.extras.util.TimeUtil;
+import frc.robot.extras.DeviceCANBus;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public interface OdometryThread {
     private final Supplier<Double> supplier;
     private final Queue<Double> queue;
 
-    public OdometryDoubleInput(Supplier<Double> signal) {
+    public OdometryDoubleInput(HardwareConstants.Mode mode, Supplier<Double> signal) {
       this.supplier = signal;
       this.queue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
     }
@@ -39,7 +39,8 @@ public interface OdometryThread {
   }
 
   static Queue<Double> registerInput(Supplier<Double> supplier) {
-    final OdometryDoubleInput odometryDoubleInput = new OdometryDoubleInput(supplier);
+    final OdometryDoubleInput odometryDoubleInput =
+        new OdometryDoubleInput(Robot.CURRENT_ROBOT_MODE, supplier);
     registeredInputs.add(odometryDoubleInput);
     return odometryDoubleInput.queue;
   }
@@ -68,16 +69,4 @@ public interface OdometryThread {
   default void lockOdometry() {}
 
   default void unlockOdometry() {}
-
-  final class OdometryThreadSim implements OdometryThread {
-    @Override
-    public void updateInputs(OdometryThreadInputs inputs) {
-      inputs.measurementTimeStamps = new double[DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD];
-      final double robotStartingTimeStamps = TimeUtil.getLogTimeSeconds(),
-          iterationPeriodSeconds =
-              Robot.defaultPeriodSecs / DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD;
-      for (int i = 0; i < DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD; i++)
-        inputs.measurementTimeStamps[i] = robotStartingTimeStamps + i * iterationPeriodSeconds;
-    }
-  }
 }

@@ -36,13 +36,9 @@ public interface PivotIO {
     return false;
   }
 
-  public default void setPivotFromSpeakerDistance(double speakerDistance) {}
-
   public default void setPivotSpeed(double output) {}
 
   public default void setVoltage(double volts) {}
-
-  public default void setPivotFromPassDistance(double passDistance) {}
 
   public default void setPivotAngle(double angle) {}
 

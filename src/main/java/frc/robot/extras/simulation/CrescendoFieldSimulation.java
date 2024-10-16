@@ -6,10 +6,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.extras.util.AllianceFlipper;
+import frc.robot.subsystems.swerve.physicsSim.AbstractDriveTrainSimulation;
 
 public class CrescendoFieldSimulation extends SimulatedField {
   /** the obstacles on the 2024 competition field */
-  public static final class CrescendoFieldObstaclesMap extends FieldMap {
+  public static final class CrescendoFieldObstaclesMap extends FieldObstaclesMap {
     private static final double FIELD_WIDTH = 16.54;
 
     public CrescendoFieldObstaclesMap() {
@@ -79,8 +80,8 @@ public class CrescendoFieldSimulation extends SimulatedField {
         new Translation2d(13.64, 7),
       };
 
-  public CrescendoFieldSimulation() {
-    super(new CrescendoFieldObstaclesMap());
+  public CrescendoFieldSimulation(AbstractDriveTrainSimulation mainRobot) {
+    super(mainRobot, new CrescendoFieldObstaclesMap());
   }
 
   @Override
