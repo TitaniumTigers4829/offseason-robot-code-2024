@@ -99,8 +99,7 @@ public class ShootOverDefenseSpeaker extends Command {
     desiredHeading =
         Math.atan2((robotPos.getY() - speakerPos.getY()), (robotPos.getX() - speakerPos.getX()));
 
-    headingError =
-        desiredHeading - swerveDrive.getOdometryAllianceRelativeRotation2d().getRadians();
+    headingError = desiredHeading - swerveDrive.getPose().getRotation().getRadians();
 
     double turnOutput = deadband(turnController.calculate(headingError, 0));
 

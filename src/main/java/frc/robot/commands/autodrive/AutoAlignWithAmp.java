@@ -91,7 +91,7 @@ public class AutoAlignWithAmp extends Command {
     // Gets the chassis speeds for the robot using the odometry rotation (not alliance relative)
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            xOutput, yOutput, turnOutput, swerveDrive.getOdometryAllianceRelativeRotation2d());
+            xOutput, yOutput, turnOutput, swerveDrive.getPose().getRotation());
 
     // Drives the robot towards the amp
     swerveDrive.drive(

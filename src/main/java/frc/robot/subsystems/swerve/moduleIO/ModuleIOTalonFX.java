@@ -35,15 +35,13 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
   private final MotionMagicVoltage mmPositionRequest = new MotionMagicVoltage(0.0);
 
-  private final Queue<Double> driveEncoderUngearedRevolutions;
-  private final StatusSignal<Double> driveEncoderUngearedRevolutionsPerSecond,
-      driveMotorAppliedVoltage,
-      driveMotorCurrent;
+  private final Queue<Double> drivePosition;
+  private final StatusSignal<Double> driveVelocity, driveMotorAppliedVoltage, driveMotorCurrent;
 
-  private final Queue<Double> steerEncoderAbsolutePositionRevolutions;
-  private final StatusSignal<Double> steerEncoderVelocityRevolutionsPerSecond,
-      steerMotorAppliedVolts,
-      steerMotorCurrent;
+  private final Queue<Double> turnEncoderAbsolutePosition;
+  private final StatusSignal<Double> turnEncoderVelocityPerSecond,
+      turnMotorAppliedVolts,
+      turnMotorCurrent;
 
   private final BaseStatusSignal[] periodicallyRefreshedSignals;
 
@@ -94,25 +92,25 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turnMotor.getConfigurator().apply(turnConfig, HardwareConstants.TIMEOUT_S);
 
-    driveEncoderUngearedRevolutions = OdometryThread.registerSignalInput(driveMotor.getPosition());
-    driveEncoderUngearedRevolutionsPerSecond = driveMotor.getVelocity();
+    drivePosition = OdometryThread.registerSignalInput(driveMotor.getPosition());
+    driveVelocity = driveMotor.getVelocity();
     driveMotorAppliedVoltage = driveMotor.getMotorVoltage();
     driveMotorCurrent = driveMotor.getSupplyCurrent();
 
-    steerEncoderAbsolutePositionRevolutions =
+    turnEncoderAbsolutePosition =
         OdometryThread.registerSignalInput(turnEncoder.getAbsolutePosition());
-    steerEncoderVelocityRevolutionsPerSecond = turnEncoder.getVelocity();
-    steerMotorAppliedVolts = turnMotor.getMotorVoltage();
-    steerMotorCurrent = turnMotor.getSupplyCurrent();
+    turnEncoderVelocityPerSecond = turnEncoder.getVelocity();
+    turnMotorAppliedVolts = turnMotor.getMotorVoltage();
+    turnMotorCurrent = turnMotor.getSupplyCurrent();
 
     periodicallyRefreshedSignals =
         new BaseStatusSignal[] {
-          driveEncoderUngearedRevolutionsPerSecond,
+          driveVelocity,
           driveMotorAppliedVoltage,
           driveMotorCurrent,
-          steerEncoderVelocityRevolutionsPerSecond,
-          steerMotorAppliedVolts,
-          steerMotorCurrent
+          turnEncoderVelocityPerSecond,
+          turnMotorAppliedVolts,
+          turnMotorCurrent
         };
 
     driveMotor.setPosition(0.0);
@@ -125,38 +123,37 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.hardwareConnected = BaseStatusSignal.refreshAll(periodicallyRefreshedSignals).isOK();
+    inputs.isConnected = BaseStatusSignal.refreshAll(periodicallyRefreshedSignals).isOK();
 
     inputs.odometryDriveWheelRevolutions =
-        driveEncoderUngearedRevolutions.stream()
+        drivePosition.stream()
             .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
             .toArray();
-    driveEncoderUngearedRevolutions.clear();
+    drivePosition.clear();
     if (inputs.odometryDriveWheelRevolutions.length > 0)
-      inputs.driveWheelFinalRevolutions =
+      inputs.drivePosition =
           inputs.odometryDriveWheelRevolutions[inputs.odometryDriveWheelRevolutions.length - 1];
 
-    inputs.odometrySteerPositions =
-        steerEncoderAbsolutePositionRevolutions.stream()
-            .map(this::getSteerFacingFromCANCoderReading)
+    inputs.odometryTurnPositions =
+        turnEncoderAbsolutePosition.stream()
+            .map(this::getTurnAbsolutePosition)
             .toArray(Rotation2d[]::new);
-    steerEncoderAbsolutePositionRevolutions.clear();
-    if (inputs.odometrySteerPositions.length > 0)
-      inputs.turnRotation = inputs.odometrySteerPositions[inputs.odometrySteerPositions.length - 1];
+    turnEncoderAbsolutePosition.clear();
+    if (inputs.odometryTurnPositions.length > 0)
+      inputs.turnRotation = inputs.odometryTurnPositions[inputs.odometryTurnPositions.length - 1];
 
-    inputs.driveWheelFinalVelocityRevolutionsPerSec =
-        driveEncoderUngearedRevolutionsPerSecond.getValueAsDouble()
-            / ModuleConstants.DRIVE_GEAR_RATIO;
-    inputs.driveMotorAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
-    inputs.driveMotorCurrentAmps = driveMotorCurrent.getValueAsDouble();
+    inputs.driveWheelFinalVelocityPerSec =
+        driveVelocity.getValueAsDouble() / ModuleConstants.DRIVE_GEAR_RATIO;
+    inputs.driveAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
+    inputs.driveCurrentAmps = driveMotorCurrent.getValueAsDouble();
 
-    inputs.steerVelocityRadPerSec =
-        Units.rotationsToRadians(steerEncoderVelocityRevolutionsPerSecond.getValueAsDouble());
-    inputs.steerMotorAppliedVolts = steerMotorAppliedVolts.getValueAsDouble();
-    inputs.steerMotorCurrentAmps = steerMotorCurrent.getValueAsDouble();
+    inputs.turnVelocityRadPerSec =
+        Units.rotationsToRadians(turnEncoderVelocityPerSecond.getValueAsDouble());
+    inputs.turnMotorAppliedVolts = turnMotorAppliedVolts.getValueAsDouble();
+    inputs.turnMotorCurrentAmps = turnMotorCurrent.getValueAsDouble();
   }
 
-  private Rotation2d getSteerFacingFromCANCoderReading(double canCoderReadingRotations) {
+  private Rotation2d getTurnAbsolutePosition(double canCoderReadingRotations) {
     return Rotation2d.fromRotations(canCoderReadingRotations);
   }
 
@@ -166,8 +163,13 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setSteerPowerPercent(double powerPercent) {
-    turnMotor.setControl(percentOut.withOutput(powerPercent));
+  public void setTurnVoltage(double volts) {
+    turnMotor.setControl(voltageOut.withOutput(volts));
+  }
+
+  @Override
+  public double getDriveVoltage() {
+    return driveMotorAppliedVoltage.refresh().getValueAsDouble();
   }
 
   /**
@@ -177,9 +179,11 @@ public class ModuleIOTalonFX implements ModuleIO {
    */
   @Override
   public void setDesiredState(SwerveModuleState desiredState) {
+    double turnRotations = getTurnRotations();
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(desiredState, desiredState.angle);
+        SwerveModuleState.optimize(
+            desiredState, new Rotation2d(Units.rotationsToRadians(turnRotations)));
 
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
       driveMotor.set(0);
@@ -203,8 +207,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveMotor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 
+  public double getTurnRotations() {
+    turnEncoder.getAbsolutePosition().refresh();
+    return turnEncoder.getAbsolutePosition().getValueAsDouble();
+  }
+
   @Override
-  public void setSteerBrake(boolean enable) {
+  public void setTurnBrake(boolean enable) {
     turnMotor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 

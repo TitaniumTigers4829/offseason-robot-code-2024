@@ -1,3 +1,4 @@
+// By 5516 Iron Maple https://github.com/Shenzhen-Robotics-Alliance/
 package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -10,7 +11,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class OdometryThreadReal extends Thread implements OdometryThread {
-  private final DeviceCANBus canBus;
+  DeviceCANBus canBus;
+
   private final OdometryDoubleInput[] odometryDoubleInputs;
   private final BaseStatusSignal[] statusSignals;
   private final Queue<Double> timeStampsQueue;
@@ -20,8 +22,8 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
       DeviceCANBus canBus,
       OdometryDoubleInput[] odometryDoubleInputs,
       BaseStatusSignal[] statusSignals) {
-    this.timeStampsQueue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
     this.canBus = canBus;
+    this.timeStampsQueue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
     this.odometryDoubleInputs = odometryDoubleInputs;
     this.statusSignals = statusSignals;
 
@@ -31,7 +33,7 @@ public class OdometryThreadReal extends Thread implements OdometryThread {
 
   @Override
   public synchronized void start() {
-    if (odometryDoubleInputs.length > 0 || statusSignals.length > 0) super.start();
+    if (odometryDoubleInputs.length > 0) super.start();
   }
 
   @Override

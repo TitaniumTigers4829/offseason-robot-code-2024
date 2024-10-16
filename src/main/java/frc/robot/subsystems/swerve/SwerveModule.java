@@ -38,15 +38,14 @@ public class SwerveModule extends SubsystemBase {
     CommandScheduler.getInstance().unregisterSubsystem(this);
 
     setPoint = new SwerveModuleState();
-
     io.setDriveBrake(true);
-    io.setSteerBrake(true);
+    io.setTurnBrake(true);
   }
 
   public void updateOdometryInputs() {
     io.updateInputs(inputs);
     Logger.processInputs("Drive/Module-" + name, inputs);
-    this.hardwareFaultAlert.setActivated(!inputs.hardwareConnected);
+    this.hardwareFaultAlert.setActivated(!inputs.isConnected);
   }
 
   @Override
@@ -54,28 +53,41 @@ public class SwerveModule extends SubsystemBase {
     updateOdometryPositions();
   }
 
+  public void setVoltage(double volts) {
+    io.setDriveVoltage(volts);
+    io.setTurnVoltage(0.0);
+  }
+
+  public double getDriveVoltage() {
+    return io.getDriveVoltage();
+  }
+
+  public double getCharacterizationVelocity() {
+    return inputs.driveVelocity;
+  }
+
   private void updateOdometryPositions() {
     odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
     for (int i = 0; i < odometryPositions.length; i++) {
       double positionMeters =
           driveWheelRevolutionsToMeters(inputs.odometryDriveWheelRevolutions[i]);
-      Rotation2d angle = inputs.odometrySteerPositions[i];
+      Rotation2d angle = inputs.odometryTurnPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
   }
 
-  public void setDesiredState(SwerveModuleState desiredState) {
-    Logger.recordOutput("Drive/Module-" + name + " desiredState", desiredState);
-    io.setDesiredState(desiredState);
-  }
+  /** Runs the module with the specified setpoint state. Returns the optimized state. */
+  public SwerveModuleState runSetPoint(SwerveModuleState state) {
+    this.setPoint = SwerveModuleState.optimize(state, getSteerFacing());
 
-  public void stopModule() {
-    io.stopModule();
+    io.setDesiredState(setPoint);
+
+    return this.setPoint;
   }
 
   /** Returns the current turn angle of the module. */
-  public Rotation2d getTurnRotation() {
-    return inputs.turnRotation;
+  public Rotation2d getSteerFacing() {
+    return inputs.turnAbsolutePosition;
   }
 
   public double getSteerVelocityRadPerSec() {
@@ -84,7 +96,7 @@ public class SwerveModule extends SubsystemBase {
 
   /** Returns the current drive position of the module in meters. */
   public double getDrivePositionMeters() {
-    return driveWheelRevolutionsToMeters(inputs.driveWheelFinalRevolutions);
+    return driveWheelRevolutionsToMeters(inputs.drivePosition);
   }
 
   private double driveWheelRevolutionsToMeters(double driveWheelRevolutions) {
@@ -93,18 +105,18 @@ public class SwerveModule extends SubsystemBase {
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
-  public double getDriveVelocity() {
-    return driveWheelRevolutionsToMeters(inputs.driveWheelFinalVelocityRevolutionsPerSec);
+  public double getDriveVelocityMetersPerSec() {
+    return driveWheelRevolutionsToMeters(inputs.driveVelocity);
   }
 
   /** Returns the module position (turn angle and drive position). */
   public SwerveModulePosition getLatestPosition() {
-    return new SwerveModulePosition(getDrivePositionMeters(), getTurnRotation());
+    return new SwerveModulePosition(getDrivePositionMeters(), getSteerFacing());
   }
 
   /** Returns the module state (turn angle and drive velocity). */
   public SwerveModuleState getMeasuredState() {
-    return new SwerveModuleState(getDriveVelocity(), getTurnRotation());
+    return new SwerveModuleState(getDriveVelocityMetersPerSec(), getSteerFacing());
   }
 
   /** Returns the module positions received this cycle. */
