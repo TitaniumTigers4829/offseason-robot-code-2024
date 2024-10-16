@@ -22,7 +22,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.extras.debug.Alert;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
@@ -32,6 +31,7 @@ import frc.robot.subsystems.swerve.gyroIO.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
+import frc.robot.subsystems.vision.VisionConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
