@@ -40,7 +40,7 @@ public class FlywheelIOSim implements FlywheelIO { //FlywheelIOSim makes Advanta
     inputs.positionRotations = 0.0;
     inputs.velocityRPM = flywheelSim.getAngularVelocityRPM();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
+    inputs.currentAmps = new double[] {flywheelSim.getCurrentDrawAmps()};
     inputs.isNoteDetected = hasNote();
   }
 
