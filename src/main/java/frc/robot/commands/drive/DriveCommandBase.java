@@ -12,6 +12,7 @@
 // import frc.robot.extras.interpolators.MultiLinearInterpolator;
 // import frc.robot.subsystems.swerve.Drive;
 // // import frc.robot.subsystems.vision.VisionSubsystem;
+// import frc.robot.subsystems.swerve.SwerveDrive;
 
 // public abstract class DriveCommandBase extends Command {
 
@@ -24,7 +25,7 @@
 // FieldConstants.FIELD_WIDTH_METERS / 2.0, new Rotation2d());
 
 //   private final VisionSubsystem visionSubsystem;
-//   private final Drive Drive;
+//   private final SwerveDrive driveSubsystem;
 
 //   private double lastTimeStampSeconds = 0;
 //   // private int ticksAfterSeeing = 0;
@@ -34,17 +35,17 @@
 //    * @param Drive The subsystem for the swerve drive
 //    * @param visionSubsystem The subsystem for vision measurements
 //    */
-//   public DriveCommandBase(Drive Drive, VisionSubsystem visionSubsystem) {
-//     this.Drive = Drive;
+//   public DriveCommandBase(SwerveDrive driveSubsystem, VisionSubsystem visionSubsystem) {
+//     this.driveSubsystem = driveSubsystem;
 //     this.visionSubsystem = visionSubsystem;
 //     // It is important that you do addRequirements(Drive, visionSubsystem) in whatever command
-// extends this
+// // extends this
 //   }
 
 //   @Override
 //   public void execute() {
 //     // Updates the pose estimator using the swerve modules
-//     Drive.addPoseEstimatorSwerveMeasurement();
+//     driveSubsystem.addPoseEstimatorSwerveMeasurement();
 
 //     // Updates the robot's odometry with april tags
 //     double currentTimeStampSeconds = lastTimeStampSeconds;
@@ -53,8 +54,7 @@
 //       currentTimeStampSeconds = visionSubsystem.getTimeStampSeconds();
 
 //       double distanceFromClosestAprilTag = visionSubsystem.getDistanceFromClosestAprilTag();
-//       // Sets the pose estimator confidence in vision based off of number of april tags and
-// distance
+//       // Sets the pose estimator confidence in vision based off of number of april tags and distance
 //       if (visionSubsystem.getNumberOfAprilTags() == 1) {
 //         double[] standardDeviations =
 // oneAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);

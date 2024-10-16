@@ -154,6 +154,11 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     runRawChassisSpeeds(sChassisSpeeds);
   }
 
+  public void drive(ChassisSpeeds speeds) {
+    drive(
+        -speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond, -speeds.omegaRadiansPerSecond, false);
+  }
+
   private void feedSingleOdometryDataToPositionEstimator(int timeStampIndex) {
     final SwerveModulePosition[] modulePositions = getModulesPosition(timeStampIndex),
         moduleDeltas = getModulesDelta(modulePositions);

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.commands.auto.BlueFourNote;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.extras.simulation.SimulatedField;
@@ -94,7 +95,8 @@ public class RobotContainer {
                 new ModuleIOSim(swerveDriveSimulation.getModules()[3]));
 
         SimulatedField.getInstance().resetFieldForAuto();
-        resetFieldAndOdometryForAuto(new Pose2d(3, 3, new Rotation2d()));
+        resetFieldAndOdometryForAuto(new Pose2d(
+          1.3980597257614136, 5.493067741394043, Rotation2d.fromRadians(3.1415)));
 
         break;
 
@@ -200,10 +202,11 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new FeedForwardCharacterization(
-        driveSubsystem,
-        driveSubsystem::runCharacterization,
-        driveSubsystem::getCharacterizationVelocity);
+    return new BlueFourNote(driveSubsystem);
+    // new FeedForwardCharacterization(
+    //     driveSubsystem,
+    //     driveSubsystem::runCharacterization,
+    //     driveSubsystem::getCharacterizationVelocity);
   }
 
   public void updateFieldSimAndDisplay() {
