@@ -19,10 +19,10 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.extras.Alert;
-import frc.robot.extras.DeviceCANBus;
-import frc.robot.extras.VirtualSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.extras.debug.Alert;
 import frc.robot.extras.util.AllianceFlipper;
+import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.gyroIO.GyroIO;
@@ -35,7 +35,7 @@ import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveDrive extends VirtualSubsystem {
+public class SwerveDrive extends SubsystemBase {
 
   // This will stay the same throughout the match. These values are harder to test for and tune, so
   // assume this guess is right.
@@ -109,12 +109,13 @@ public class SwerveDrive extends VirtualSubsystem {
     startDashboardDisplay();
   }
 
-  public void periodic(double dt, boolean enabled) {
+  @Override
+  public void periodic() {
     final double t0 = TimeUtil.getRealTimeSeconds();
     fetchOdometryInputs();
     Logger.recordOutput(
         "SystemPerformance/OdometryFetchingTimeMS", (TimeUtil.getRealTimeSeconds() - t0) * 1000);
-    modulesPeriodic(dt, enabled);
+    modulesPeriodic();
 
     for (int timeStampIndex = 0;
         timeStampIndex < odometryThreadInputs.measurementTimeStamps.length;
@@ -175,8 +176,8 @@ public class SwerveDrive extends VirtualSubsystem {
     odometryThread.unlockOdometry();
   }
 
-  private void modulesPeriodic(double dt, boolean enabled) {
-    for (SwerveModule module : swerveModules) module.periodic(dt, enabled);
+  private void modulesPeriodic() {
+    for (SwerveModule module : swerveModules) module.periodic();
   }
 
   private void updateOdometry(int timeStampIndex) {

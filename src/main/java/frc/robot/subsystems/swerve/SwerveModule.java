@@ -9,14 +9,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.extras.Alert;
-import frc.robot.extras.VirtualSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.extras.debug.Alert;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveModule extends VirtualSubsystem {
+public class SwerveModule extends SubsystemBase {
   private final ModuleIO io;
   private final String name;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -50,7 +50,7 @@ public class SwerveModule extends VirtualSubsystem {
   }
 
   @Override
-  public void periodic(double dt, boolean enabled) {
+  public void periodic() {
     updateOdometryPositions();
   }
 
@@ -67,12 +67,6 @@ public class SwerveModule extends VirtualSubsystem {
   public void setDesiredState(SwerveModuleState desiredState) {
     Logger.recordOutput("Drive/Module-" + name + " desiredState", desiredState);
     io.setDesiredState(desiredState);
-  }
-
-  @Override
-  public void onDisable() {
-    io.setSteerPowerPercent(0);
-    io.setDriveVoltage(0);
   }
 
   public void stopModule() {

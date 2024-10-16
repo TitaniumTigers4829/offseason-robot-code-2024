@@ -1,9 +1,10 @@
 package frc.robot.subsystems.elevator;
 
-import frc.robot.extras.VirtualSubsystem;
 import org.littletonrobotics.junction.Logger;
 
-public class Elevator extends VirtualSubsystem {
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
@@ -32,7 +33,7 @@ public class Elevator extends VirtualSubsystem {
   }
 
   @Override
-  public void periodic(double dt, boolean enabled) {
+  public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
   }

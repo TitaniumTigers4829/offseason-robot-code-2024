@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
-import frc.robot.extras.SmarterDashboardRegistry;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
@@ -22,7 +21,6 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
-    SmarterDashboardRegistry.initialize();
     // visionSubsystem = new Vision();
     driveSubsystem =
         new SwerveDrive(
@@ -76,7 +74,6 @@ public class RobotContainer {
 
   public void teleopInit() {
     configureButtonBindings();
-    SmarterDashboardRegistry.initialize();
   }
 
   // public void intakeCallback(boolean hasNote) {
@@ -219,7 +216,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    SmarterDashboardRegistry.initialize();
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
     // driveSubsystem.resetOdometry(new Pose2d(driveSubsystem.getPose().getX(),
