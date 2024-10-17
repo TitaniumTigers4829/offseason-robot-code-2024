@@ -21,6 +21,10 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("OTBIntake/Intake", speed);
   }
 
+  public void setPivotSpeed(double speed) {
+    io.setPivotSpeed(speed);
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
