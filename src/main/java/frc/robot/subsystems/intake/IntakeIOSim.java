@@ -7,11 +7,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import frc.robot.subsystems.pivot.PivotConstants;
 
 public class IntakeIOSim implements IntakeIO {
   DCMotorSim intakeSim = new DCMotorSim(null, 0, 0);
   SingleJointedArmSim pivotSim =
-      new SingleJointedArmSim(DCMotor.getFalcon500(2), 0, 0, 0, 0, 0, false, 0);
+      new SingleJointedArmSim(DCMotor.getFalcon500(2), PivotConstants.PIVOT_GEARING, 0, 0, 0, 0, false, 0);
   private final Constraints pivotConstraints = new Constraints(0, 0);
   private final ProfiledPIDController pivotController =
       new ProfiledPIDController(0, 0, 0, pivotConstraints);

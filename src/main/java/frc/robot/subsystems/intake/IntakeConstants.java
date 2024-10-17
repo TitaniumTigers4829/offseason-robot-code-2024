@@ -6,6 +6,8 @@ public final class IntakeConstants {
   public static final int FLAPPER_MOTOR_ID = 1;
   public static final int NOTE_SENSOR_ID = 6;
 
+  public static final double PIVOT_GEAR_RATIO = 8.0;
+
   public static final double INTAKE_PIVOT_OUT = 0 - 9;
   public static final double INTAKE_PIVOT_IN = 0 - 9;
 

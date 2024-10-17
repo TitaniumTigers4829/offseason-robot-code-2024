@@ -3,9 +3,10 @@ package frc.robot.subsystems.pivot;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class PivotConstants {
-  public static final double PIVOT_MASS = 0.0;
-  public static final double PIVOT_LENGTH = 0.0;
-  public static final double PIVOT_GEARING = 0.0;
+  public static final double PIVOT_MASS = 0 - 9;
+  public static final double PIVOT_LENGTH = 0 - 9;
+
+  public static final double PIVOT_GEARING = 8.0;
 
   public static final int LEADER_PIVOT_MOTOR_ID = 9;
   public static final int FOLLOWER_PIVOT_MOTOR_ID = 10;
