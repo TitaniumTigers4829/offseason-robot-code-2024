@@ -24,6 +24,10 @@ public class Intake extends SubsystemBase {
   public void setPivotSpeed(double speed) {
     io.setPivotSpeed(speed);
   }
+  
+  public void getPivotPosition() {
+    io.getPivotPosition();
+  }
 
   public void getPivotPosition() {
     io.getPivotPosition();
