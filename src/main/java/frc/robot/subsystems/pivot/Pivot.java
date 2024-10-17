@@ -27,13 +27,6 @@ public class Pivot extends SubsystemBase {
     passAngleLookupValues = new SingleLinearInterpolator(PivotConstants.PASS_PIVOT_POSITION);
   }
 
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Pivot", inputs);
-    // This method will be called once per scheduler run
-  }
-
   /**
    * sets the pivot angle(rotations) shooter
    *
@@ -118,5 +111,18 @@ public class Pivot extends SubsystemBase {
    */
   public void runVolts(double volts) {
     io.setVoltage(volts);
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Pivot", inputs);
+    // This method will be called once per scheduler run
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+    io.updateInputs(inputs);
   }
 }
