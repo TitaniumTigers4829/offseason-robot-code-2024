@@ -14,29 +14,20 @@ public final class Constants {
     public static final String APRIL_TAGS_VISION_PATH = "Vision/AprilTags/";
   }
 
+  public static final Mode currentMode = Mode.SIM;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   public static final class HardwareConstants {
-
-    // public static RobotType getRobot() {
-    //   if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
-    //     new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
-    //         .set(true);
-    //     robotType = RobotType.COMPBOT;
-    //   }
-    //   return robotType;
-    // }
-    public static final Mode currentMode = Mode.SIM;
-
-    public static enum Mode {
-      /** Running on a real robot. */
-      REAL,
-
-      /** Running a physics simulator. */
-      SIM,
-
-      /** Replaying from a log file. */
-      REPLAY
-    }
-
     public static final double TIMEOUT_S = 0.05;
 
     public static final double SIGNAL_FREQUENCY = 250;
