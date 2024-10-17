@@ -14,7 +14,6 @@ public final class ShooterConstants {
   public static final int FOLLOWER_FLYWHEEL_ID = 12;
   public static final int ROLLER_MOTOR_ID = 2;
 
-  public static final double SHOOTER_GEARING = 1;
   public static final double SHOOTER_SUPPLY_LIMIT = 60;
   public static final double SHOOTER_STATOR_LIMIT = 60;
   public static final boolean SHOOTER_STATOR_ENABLE = true;

@@ -2,7 +2,7 @@ package frc.robot.subsystems.elevator;
 
 public class ElevatorConstants {
   public static final double DRUM_RADIUS = 0 - 9;
-  public static final double GEAR_RATIO = 2;
+  public static final double ELEVATOR_GEAR_RATIO = 2;
   public static final double ENCODER_CONVERSION_FACTOR = 71.81;
   public static final double MIN_HEIGHT = 0;
   public static final double MAX_HEIGHT = 0 - 9;
