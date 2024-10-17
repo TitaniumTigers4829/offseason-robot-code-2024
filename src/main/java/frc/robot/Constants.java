@@ -151,4 +151,4 @@ public final class Constants {
     public static final int RIGHT_TRIGGER_ID = 3;
     public static final int RIGHT_STICK_Y_ID = 5;
   }
-  }
+}
