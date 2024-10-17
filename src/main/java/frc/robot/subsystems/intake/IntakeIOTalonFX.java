@@ -12,9 +12,10 @@ import frc.robot.Constants.HardwareConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
-  private final TalonFX intakeMotor = new TalonFX(0);
-  private final TalonFX leaderPivotMotor = new TalonFX(0);
-  private final TalonFX followerPivotMotor = new TalonFX(0);
+  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+  private final TalonFX leaderPivotMotor = new TalonFX(IntakeConstants.LEFT_INTAKE_PIVOT_MOTOR_ID);
+  private final TalonFX followerPivotMotor =
+      new TalonFX(IntakeConstants.RIGHT_INTAKE_PIVOT_MOTOR_ID);
 
   private final MotionMagicVoltage mmPositionRequest = new MotionMagicVoltage(0);
 
@@ -90,6 +91,12 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void setPivotPosition(double position) {
     leaderPivotMotor.setControl(mmPositionRequest.withPosition(position));
     followerPivotMotor.setControl(mmPositionRequest.withPosition(position));
+  }
+
+  @Override
+  public void setPivotSpeed(double speed) {
+    leaderPivotMotor.set(speed);
+    followerPivotMotor.set(speed);
   }
 
   @Override

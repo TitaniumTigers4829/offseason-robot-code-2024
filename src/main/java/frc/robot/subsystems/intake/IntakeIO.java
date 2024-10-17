@@ -31,6 +31,8 @@ public interface IntakeIO {
     return 0.0;
   }
 
+  default void setPivotSpeed(double speed) {}
+
   default double getPivotPosition() {
     return 0.0;
   }
