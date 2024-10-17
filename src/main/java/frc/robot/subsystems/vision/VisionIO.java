@@ -1,30 +1,47 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
+
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 public interface VisionIO {
-  default void updateInputs(VisionIOInputs inputs) {}
 
-  default void setLeds(boolean on) {}
+    @AutoLog
+    class VisionIOInputs {
+        public boolean cameraConnected = false;
+        public double latency = 0.0;
+        public double fiducialMarksID = 0.0;
+        
+        public int camerasAmount = 0;
+        public Pose2d currentPose = new Pose2d();
+        public int targetsCount = 0;
+    }
 
-  @AutoLog
-  class VisionIOInputs {
-    /** Last timestamp of photo taken from LL */
-    public double lastTimeStamp = 0.0;
+    void updateInputs(VisionIOInputs inputs);
 
-    /** True if limelight sees target in its frame */
-    public boolean hasTargets = false;
+    String getLimelightName(int limelightNumber);
 
-    /** Vertical angle from center of lens to target. */
-    public double verticalAngleRadians = 0.0;
+    double getLatencySeconds(int limelightNumber);
+    
+    double getTimeStampSeconds(int limelightNumber);
 
-    /** Horizontal angle from center of lens to target. */
-    public double horizontalAngleRadians = 0.0;
+    boolean canSeeAprilTags(int limelightNumber);
 
-    /** Botpose taken from LL. */
-    public double[] botpose = new double[6];
+    double getLimelightAprilTagDistance(int limelightNumber);
 
-    /** TagID of target fiducial marker. */
-    public int tagId = -1;
-  }
+    int getNumberOfAprilTags(int limelightNumber);
+
+    Pose2d getPoseFromAprilTags(int limelightNumber);
+
+    void setHeadingInfo(double headingDegrees, double headingRateDegrees);
 }
