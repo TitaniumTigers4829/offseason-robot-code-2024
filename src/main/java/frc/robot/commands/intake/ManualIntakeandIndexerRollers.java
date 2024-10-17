@@ -11,13 +11,13 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import java.util.function.DoubleSupplier;
 
-public class ManualIntakeRollers extends Command {
+public class ManualIntakeandIndexerRollers extends Command {
   private final Intake intake;
   private final Indexer indexer;
   private DoubleSupplier speed;
 
   /** Creates a new ManualIntakeRollers. */
-  public ManualIntakeRollers(Intake intake, Indexer indexer, DoubleSupplier speed) {
+  public ManualIntakeandIndexerRollers(Intake intake, Indexer indexer, DoubleSupplier speed) {
     this.intake = intake;
     this.indexer = indexer;
     this.speed = speed;
