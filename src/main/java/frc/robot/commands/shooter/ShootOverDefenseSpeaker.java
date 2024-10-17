@@ -17,7 +17,6 @@ import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
 import java.util.Optional;
@@ -114,7 +113,7 @@ public class ShootOverDefenseSpeaker extends Command {
     // } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
     //   flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
     // } else {
-      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
     // }
 
     pivot.setPivotFromSpeakerDistanceOverDefense(distance);

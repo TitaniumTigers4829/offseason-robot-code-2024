@@ -3,23 +3,22 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.shooter;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lombok.extern.java.Log;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
+
   // private final SimpleMotorFeedforward ffModel;
-  
+
   public Flywheel(FlywheelIO io) {
     this.io = io;
   }
 
   public void setFlywheelVoltage(double desiredVoltage) {
-    io.setVoltage(desiredVoltage); ///io calls the functions
+    io.setVoltage(desiredVoltage); // /io calls the functions
     Logger.recordOutput("Flywheel/voltage", desiredVoltage);
   }
 
@@ -28,7 +27,7 @@ public class Flywheel extends SubsystemBase {
     Logger.recordOutput("Flywheel/RPM", desiredRPM);
   }
 
-  public boolean hasNote(){
+  public boolean hasNote() {
     return inputs.isNoteDetected;
   }
 

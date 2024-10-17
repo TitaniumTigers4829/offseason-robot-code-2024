@@ -13,24 +13,27 @@
 
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.robot.subsystems.shooter.ShooterConstants;
 
-public class FlywheelIOSim implements FlywheelIO { //FlywheelIOSim makes Advantage kit log simulated movements using physics 
-  private FlywheelSim flywheelSim = new FlywheelSim(DCMotor.getKrakenX60(2), ShooterConstants.GEAR_RATIO, 0.004); //initiates virtual
+public class FlywheelIOSim
+    implements FlywheelIO { // FlywheelIOSim makes Advantage kit log simulated movements using
+  // physics
+  private FlywheelSim flywheelSim =
+      new FlywheelSim(
+          DCMotor.getKrakenX60(2), ShooterConstants.GEAR_RATIO, 0.004); // initiates virtual
   private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
-  private PIDController pid = new PIDController(ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D);
-  private SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(ShooterConstants.FLYWHEEL_S, ShooterConstants.FLYWHEEL_V, ShooterConstants.FLYWHEEL_A);
-  
+  private PIDController pid =
+      new PIDController(
+          ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D);
+  private SimpleMotorFeedforward feedForward =
+      new SimpleMotorFeedforward(
+          ShooterConstants.FLYWHEEL_S, ShooterConstants.FLYWHEEL_V, ShooterConstants.FLYWHEEL_A);
+
   private double appliedVolts = 0.0;
 
   @Override
@@ -49,11 +52,13 @@ public class FlywheelIOSim implements FlywheelIO { //FlywheelIOSim makes Advanta
     appliedVolts = volts;
     flywheelSim.setInputVoltage(volts);
   }
-/**
- * @param velocityRPM User inputs the desired velocity in RPM, gets converted in method for PID to set value in RPS 
- */
+
+  /**
+   * @param velocityRPM User inputs the desired velocity in RPM, gets converted in method for PID to
+   *     set value in RPS
+   */
   @Override
-  public void setVelocity(double velocityRPM) { //ffvolts is feedorward
+  public void setVelocity(double velocityRPM) { // ffvolts is feedorward
     double velocityRPS = velocityRPM / 60;
     flywheelSim.setState(pid.calculate(velocityRPS) + feedForward.calculate(velocityRPS));
   }
