@@ -45,7 +45,8 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   private double metersToRotations(double value) {
-    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
+    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO;
   }
 
   @Override

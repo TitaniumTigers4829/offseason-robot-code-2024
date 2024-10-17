@@ -10,7 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class PivotIOSim implements PivotIO {
-  private final double pivotGearing = PivotConstants.PIVOT_GEARING;
+  private final double pivotGearing = PivotConstants.PIVOT_GEAR_RATIO;
   private final double pivotMass = PivotConstants.PIVOT_MASS;
   private final double pivotLength = PivotConstants.PIVOT_LENGTH;
 
