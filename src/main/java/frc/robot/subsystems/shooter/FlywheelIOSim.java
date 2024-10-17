@@ -29,7 +29,7 @@ public class FlywheelIOSim implements FlywheelIO { //FlywheelIOSim makes Advanta
   private FlywheelSim flywheelSim = new FlywheelSim(DCMotor.getKrakenX60(2), ShooterConstants.GEAR_RATIO, 0.004); //initiates virtual
   private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
   private PIDController pid = new PIDController(ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D);
-  private SimpleMotorFeedforward feedFoward = new SimpleMotorFeedforward(ShooterConstants.FLYWHEEL_S, ShooterConstants.FLYWHEEL_V, ShooterConstants.FLYWHEEL_A);
+  private SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(ShooterConstants.FLYWHEEL_S, ShooterConstants.FLYWHEEL_V, ShooterConstants.FLYWHEEL_A);
   
   private double appliedVolts = 0.0;
 
@@ -54,7 +54,8 @@ public class FlywheelIOSim implements FlywheelIO { //FlywheelIOSim makes Advanta
  */
   @Override
   public void setVelocity(double velocityRPM) { //ffvolts is feedorward
-    flywheelSim.setState(pid.calculate(velocityRPM / 60.0));
+    double velocityRPS = velocityRPM / 60;
+    flywheelSim.setState(pid.calculate(velocityRPS) + feedForward.calculate(velocityRPS));
   }
 
   @Override
