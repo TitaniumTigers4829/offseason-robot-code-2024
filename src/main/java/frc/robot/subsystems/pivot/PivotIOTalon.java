@@ -21,7 +21,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.Constants.PivotConstants;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
 
 
@@ -180,20 +179,6 @@ public class PivotIOTalon implements PivotIO {
     @Override
     public double getPivotTarget() {
         return pivotTargetAngle;
-      }
-
-    @Override
-    public void setPivotFromSpeakerDistance(double speakerDistance) {
-        double speakerAngle = speakerAngleLookupValues.getLookupValue(speakerDistance);
-        pivotTargetAngle = speakerAngle;
-        setPivotAngle(speakerAngle);
-      }
-
-    @Override
-    public void setPivotFromPassDistance(double passDistance) {
-        double passAngle = passAngleLookupValues.getLookupValue(passDistance);
-        pivotTargetAngle = passAngle;
-        setPivotAngle(passAngle);
       }
 
     @Override

@@ -44,6 +44,10 @@ public class Vision extends SubsystemBase {
       return visionIO.getLatencySeconds(limelightNumber);
   }
 
+  public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
+    visionIO.setHeadingInfo(headingDegrees, headingRateDegrees);
+  }
+
   
   @AutoLogOutput(key = "Vision/Has Targets")
   public boolean canSeeAprilTags(int limelightNumber) {

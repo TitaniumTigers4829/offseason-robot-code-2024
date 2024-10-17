@@ -23,7 +23,7 @@ public interface VisionIO {
         public double fiducialMarksID = 0.0;
         
         public int camerasAmount = 0;
-        public PoseEstimate currentPose = new PoseEstimate();
+        public Pose2d currentPose = new Pose2d();
         public int targetsCount = 0;
     }
 
@@ -42,4 +42,6 @@ public interface VisionIO {
     int getNumberOfAprilTags(int limelightNumber);
 
     Pose2d getPoseFromAprilTags(int limelightNumber);
+
+    void setHeadingInfo(double headingDegrees, double headingRateDegrees);
 }
