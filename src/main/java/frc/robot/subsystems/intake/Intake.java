@@ -29,10 +29,6 @@ public class Intake extends SubsystemBase {
     io.getPivotPosition();
   }
 
-  public void getPivotPosition() {
-    io.getPivotPosition();
-  }
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
