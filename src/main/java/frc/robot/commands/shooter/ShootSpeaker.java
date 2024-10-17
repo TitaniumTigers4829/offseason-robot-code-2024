@@ -17,7 +17,6 @@ import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
 import java.util.Optional;
@@ -110,13 +109,13 @@ public class ShootSpeaker extends Command {
         !isFieldRelative.getAsBoolean());
 
     // Sets flywheel speed based on distance
-    if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
-      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
-    } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
-      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
-    } else {
-      flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
-    }
+    // if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
+    //   flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
+    // } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
+    //   flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
+    // } else {
+    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+    // }
 
     // Sets Pivot and Elevator
     pivot.setPivotFromSpeakerDistance(distance);
@@ -147,9 +146,10 @@ public class ShootSpeaker extends Command {
 
   public boolean isReadyToShoot() {
     // TODO: heading and elevator?
-    return flywheel.isShooterWithinAcceptableError()
-        && pivot.isPivotWithinAcceptableError()
-        && (Math.abs(headingError) < DriveConstants.HEADING_ACCEPTABLE_ERROR_RADIANS);
+    return true;
+    // return flywheel.isShooterWithinAcceptableError()
+    //     && pivot.isPivotWithinAcceptableError()
+    //     && (Math.abs(headingError) < DriveConstants.HEADING_ACCEPTABLE_ERROR_RADIANS);
   }
 
   private double deadband(double val) {

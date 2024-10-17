@@ -1,15 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 
-/** Add your docs here. */
-public final class ShooterConstants {
+public class ShooterConstants {
   public static final int LEADER_FLYWHEEL_ID = 4;
   public static final int FOLLOWER_FLYWHEEL_ID = 12;
   public static final int ROLLER_MOTOR_ID = 2;
@@ -22,15 +17,9 @@ public final class ShooterConstants {
   public static final double ROLLER_NEUTRAL_SPEED = 0;
   public static final double SHOOTER_NEUTRAL_SPEED = 0;
 
-  public static final int NOTE_SENSOR_ID = 4;
-
   public static final double SHOOT_SPEAKER_RPM = 4000;
-  public static final double SHOOT_SPEAKER_MEDIUM_RPM = 4400;
   public static final double SHOOT_SPEAKER_FAR_RPM = 4800;
   public static final double SHOOT_SPEAKER_VERY_FAR_RPM = 5500;
-
-  public static final double SHOOTER_DISTANCE = 1.8;
-  public static final double SHOOTER_FAR_DISTANCE = 3.2;
 
   public static final int SHOOTER_ACCEPTABLE_RPM_ERROR = 25;
 
@@ -72,4 +61,25 @@ public final class ShooterConstants {
 
   public static final double SHOOTER_HEIGHT = Units.inchesToMeters(28.5);
   public static final double SPEAKER_HEIGHT = Units.inchesToMeters(80);
+
+  public static final int LEFT_FLYWHEEL_MOTOR_ID = 4;
+  public static final int RIGHT_FLYWHEEL_MOTOR_ID = 12;
+  public static final int NOTE_SENSOR_ID = 0 - 9;
+
+  public static final double GEAR_RATIO = 1.0;
+
+  public static final double FLYWHEEL_P = 0.0;
+  public static final double FLYWHEEL_I = 0.0;
+  public static final double FLYWHEEL_D = 0.0;
+  public static final double FLYWHEEL_S = 0.0;
+  public static final double FLYWHEEL_V = 0.0;
+  public static final double FLYWHEEL_A = 0.0;
+
+  public static final double FLYWHEEL_SUPPLY_LIMIT = 60.0;
+  public static final boolean FLYWHEEL_SUPPLY_ENABLE = true;
+  public static final double FLYWHEEL_STATOR_LIMIT = 60.0;
+  public static final boolean FLYWHEEL_STATOR_ENABLE = true;
+
+  public static final double LOW_VOLTAGE_BOUNDARY = 12.0;
+  public static final double HIGH_VOLTAGE_BOUNDARY = -12.0;
 }
