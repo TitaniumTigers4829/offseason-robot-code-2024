@@ -60,6 +60,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     elevatorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = false;
 
     elevatorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    elevatorConfiguration.Feedback.SensorToMechanismRatio =
+        ElevatorConstants.ENCODER_CONVERSION_FACTOR;
     // elevatorConfiguration.Feedback.FeedbackRotorOffset = 0.0;
 
     elevatorConfiguration.MotorOutput.DutyCycleNeutralDeadband =
@@ -128,8 +130,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     followerElevatorMotor.setControl(mmPositionRequest.withPosition(metersToRotations(position)));
   }
 
+  @Override
+  public void setElevatorSpeed(double speed) {
+    leaderElevatorMotor.set(speed);
+    followerElevatorMotor.set(speed);
+  }
+
   private double metersToRotations(double value) {
-    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
+    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO;
   }
 
   @Override

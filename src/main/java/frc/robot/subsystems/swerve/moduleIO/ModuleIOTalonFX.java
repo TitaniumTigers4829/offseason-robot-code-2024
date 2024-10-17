@@ -17,7 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.extras.DeviceCANBus;
+import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
@@ -158,13 +158,18 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setDriveSpeed(double volts) {
+  public void setDriveVoltage(double volts) {
     driveMotor.setControl(voltageOut.withOutput(volts));
   }
 
   @Override
-  public void setTurnSpeed(double powerPercent) {
-    turnMotor.setControl(percentOut.withOutput(powerPercent));
+  public void setTurnVoltage(double volts) {
+    turnMotor.setControl(voltageOut.withOutput(volts));
+  }
+
+  @Override
+  public double getDriveVoltage() {
+    return driveMotorAppliedVoltage.refresh().getValueAsDouble();
   }
 
   /**

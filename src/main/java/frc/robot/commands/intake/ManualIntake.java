@@ -2,39 +2,43 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.pivot;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.pivot.*;
-import java.util.function.DoubleSupplier;
+import frc.robot.subsystems.intake.*;
 
-public class ManualPivot extends Command {
+public class ManualIntake extends Command {
 
-  private final Pivot pivot;
-  private final DoubleSupplier speed;
+  private final Intake intake;
+  private boolean direction;
 
-  /** Creates a new ManualPivot. */
-  public ManualPivot(Pivot pivot, DoubleSupplier speed) {
-    this.pivot = pivot;
-    this.speed = speed;
-    addRequirements(pivot);
+  // private final Shooter shooter;
+
+  /** Creates a new ManualPickup. */
+  public ManualIntake(Intake intake, boolean direction) {
+    this.intake = intake;
+    this.direction = direction;
+    addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivot.setPivotSpeed(speed.getAsDouble());
+    intake.setIntakeSpeed(direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    pivot.setPivotSpeed(PivotConstants.PIVOT_NEUTRAL_SPEED);
+    intake.setIntakeSpeed(0);
+    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
   }
 
   // Returns true when the command should end.
