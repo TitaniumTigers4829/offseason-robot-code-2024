@@ -60,7 +60,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     elevatorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = false;
 
     elevatorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    elevatorConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.ENCODER_CONVERSION_FACTOR;
+    elevatorConfiguration.Feedback.SensorToMechanismRatio =
+        ElevatorConstants.ENCODER_CONVERSION_FACTOR;
     // elevatorConfiguration.Feedback.FeedbackRotorOffset = 0.0;
 
     elevatorConfiguration.MotorOutput.DutyCycleNeutralDeadband =
