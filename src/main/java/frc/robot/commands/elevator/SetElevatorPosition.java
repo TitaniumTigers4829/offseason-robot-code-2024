@@ -10,8 +10,9 @@ import frc.robot.subsystems.elevator.Elevator;
 public class SetElevatorPosition extends Command {
   /** Creates a new ElevatorPivot. */
   private final double position;
+
   private final Elevator elevator;
-u
+
   public SetElevatorPosition(double position, Elevator elevator) {
     this.position = position;
     this.elevator = elevator;
@@ -25,7 +26,6 @@ u
   @Override
   public void execute() {
     elevator.setElevatorPosition(position);
-    
   }
 
   // Called once the command ends or is interrupted.

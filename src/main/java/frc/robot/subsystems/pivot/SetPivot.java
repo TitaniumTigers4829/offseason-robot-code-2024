@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class SetPivot extends Command {
   /** Creates a new SetPivot. */
-   private final Pivot pivot;
+  private final Pivot pivot;
+
   private final double angle;
+
   public SetPivot(double angle, Pivot pivot) {
     this.pivot = pivot;
     this.angle = angle;
@@ -23,7 +25,6 @@ public class SetPivot extends Command {
   @Override
   public void execute() {
     pivot.setPivotAngle(angle);
-  
   }
 
   // Called once the command ends or is interrupted.
