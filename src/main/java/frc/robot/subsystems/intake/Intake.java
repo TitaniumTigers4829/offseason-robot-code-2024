@@ -17,7 +17,7 @@ public class Intake extends SubsystemBase {
    * @param angle desired angle in degrees
    */
   public void setPivotAngle(double angle) {
-    double angleRots = angle/360;
+    double angleRots = angle / 360;
     io.setPivotPosition(angleRots);
     Logger.recordOutput("OTBIntake/Pivot", angleRots);
   }
