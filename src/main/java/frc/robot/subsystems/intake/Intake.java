@@ -11,11 +11,21 @@ public class Intake extends SubsystemBase {
     this.io = io;
   }
 
+  /**
+   * sets the angle of the pivot in rotations
+   *
+   * @param angle desired angle in rotations
+   */
   public void setPivotAngle(double angle) {
     io.setPivotPosition(angle);
     Logger.recordOutput("OTBIntake/Pivot", angle);
   }
 
+  /**
+   * sets the speed of the intake rollers
+   *
+   * @param speed sets the intake roller speed in rotations/sec
+   */
   public void setIntakeSpeed(double speed) {
     io.setIntakeSpeed(speed);
     Logger.recordOutput("OTBIntake/Intake", speed);
