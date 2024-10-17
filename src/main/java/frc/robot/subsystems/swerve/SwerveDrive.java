@@ -112,7 +112,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   }
 
   /**
-   * runs characterization based on volts
+   * Runs characterization based on volts
    *
    * @param volts
    */
@@ -150,12 +150,12 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   }
 
   /**
-   * drive command
+   * Tells the robot which way to move
    *
-   * @param xSpeed
-   * @param ySpeed
-   * @param rotationSpeed
-   * @param fieldRelative
+   * @param xSpeed meters per second, max is 5.0
+   * @param ySpeed meters per second, max is 5.0
+   * @param rotationSpeed radians per second, max is 2
+   * @param fieldRelative is the robot field relative
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
     ChassisSpeeds sChassisSpeeds =
