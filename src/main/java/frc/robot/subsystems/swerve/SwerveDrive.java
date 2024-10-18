@@ -143,9 +143,9 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
         "SystemPerformance/OdometryFetchingTimeMS", (TimeUtil.getRealTimeSeconds() - t0) * 1000);
     modulesPeriodic();
 
-    for (int timeStampIndex = 0;
-        timeStampIndex < odometryThreadInputs.measurementTimeStamps.length;
-        timeStampIndex++) feedSingleOdometryDataToPositionEstimator(timeStampIndex);
+    // for (int timeStampIndex = 0;
+    //     timeStampIndex < odometryThreadInputs.measurementTimeStamps.length;
+    //     timeStampIndex++) feedSingleOdometryDataToPositionEstimator(timeStampIndex);
   }
 
   /**
@@ -161,11 +161,11 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   /** Returns the average drive velocity in radians/sec. */
   public double getCharacterizationVelocity() {
-    double driveVelocityAverage = 0.0;
+    double velocity = 0.0;
     for (SwerveModule module : swerveModules) {
-      driveVelocityAverage += module.getCharacterizationVelocity();
+      velocity += module.getCharacterizationVelocity();
     }
-    return driveVelocityAverage / 4.0;
+    return velocity;
   }
 
   private void fetchOdometryInputs() {
@@ -173,7 +173,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     odometryThread.updateInputs(odometryThreadInputs);
     Logger.processInputs("Drive/OdometryThread", odometryThreadInputs);
 
-    for (var module : swerveModules) module.updateOdometryInputs();
+    for (SwerveModule module : swerveModules) module.updateOdometryInputs();
 
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);

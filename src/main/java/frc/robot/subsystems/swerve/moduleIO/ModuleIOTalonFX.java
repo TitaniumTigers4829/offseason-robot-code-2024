@@ -46,9 +46,9 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final BaseStatusSignal[] periodicallyRefreshedSignals;
 
   public ModuleIOTalonFX(ModuleConfig moduleConfig) {
-    driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.CANIVORE.name);
-    turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.CANIVORE.name);
-    turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.CANIVORE.name);
+    driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.RIO.name);
+    turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.RIO.name);
+    turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.RIO.name);
 
     CANcoderConfiguration turnEncoderConfig = new CANcoderConfiguration();
     turnEncoderConfig.MagnetSensor.MagnetOffset = -moduleConfig.angleZero();
@@ -110,7 +110,8 @@ public class ModuleIOTalonFX implements ModuleIO {
           driveMotorCurrent,
           turnEncoderVelocityPerSecond,
           turnMotorAppliedVolts,
-          turnMotorCurrent
+          turnMotorCurrent,
+          turnMotor.getPosition()
         };
 
     driveMotor.setPosition(0.0);
@@ -123,8 +124,9 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.isConnected = BaseStatusSignal.refreshAll(periodicallyRefreshedSignals).isOK();
+    inputs.isConnected = BaseStatusSignal.isAllGood(periodicallyRefreshedSignals);
 
+    inputs.driveVelocity = driveVelocity.getValueAsDouble();
     inputs.odometryDriveWheelRevolutions =
         drivePosition.stream()
             .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
@@ -147,6 +149,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.driveAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
     inputs.driveCurrentAmps = driveMotorCurrent.getValueAsDouble();
 
+    inputs.turnPosition = turnMotor.getPosition().getValueAsDouble();
+
     inputs.turnVelocityRadPerSec =
         Units.rotationsToRadians(turnEncoderVelocityPerSecond.getValueAsDouble());
     inputs.turnMotorAppliedVolts = turnMotorAppliedVolts.getValueAsDouble();
@@ -155,6 +159,11 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   private Rotation2d getTurnAbsolutePosition(double canCoderReadingRotations) {
     return Rotation2d.fromRotations(canCoderReadingRotations);
+  }
+
+  @Override
+  public double getDriveVelocity() {
+    return driveVelocity.refresh().getValueAsDouble();
   }
 
   @Override

@@ -36,8 +36,8 @@ public class ModuleIOSim implements ModuleIO {
     inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 
     inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
-    inputs.turnPosition =
-        Rotation2d.fromRadians(moduleSimulation.getSteerRelativeEncoderPositionRad());
+    // inputs.turnPosition =
+    //     Rotation2d.fromRadians(moduleSimulation.getSteerRelativeEncoderPositionRad());
     inputs.turnVelocityRadPerSec = moduleSimulation.getSteerRelativeEncoderSpeedRadPerSec();
     inputs.turnAppliedVolts = moduleSimulation.getSteerMotorAppliedVolts();
     inputs.turnCurrentAmps = Math.abs(moduleSimulation.getSteerMotorSupplyCurrentAmps());
@@ -55,6 +55,12 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setDriveVoltage(double volts) {
     moduleSimulation.requestDriveVoltageOut(volts);
+  }
+
+  @Override
+  public double getDriveVelocity() {
+    // TODO Auto-generated method stub
+    return 0;
   }
 
   @Override

@@ -21,7 +21,6 @@ public interface ModuleIO {
     public double driveCurrentAmps = 0.0;
     public double drivePosition = 0.0;
     public Rotation2d turnAbsolutePosition = new Rotation2d();
-    public Rotation2d turnPosition = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;
     public double turnAppliedVolts = 0.0;
     public double turnCurrentAmps = 0.0;
@@ -31,20 +30,21 @@ public interface ModuleIO {
     public double driveWheelFinalVelocityPerSec = 0.0;
     public double turnMotorAppliedVolts = 0.0;
     public double turnMotorCurrentAmps = 0.0;
+    public double turnPosition = 0.0;
   }
 
   /** Updates the inputs */
   default void updateInputs(ModuleIOInputs inputs) {}
-  ;
 
   default String getCANBus() {
     return "";
   }
-  ;
 
   default void calibrate() {}
 
   default void setDesiredState(SwerveModuleState desiredState) {}
+
+  double getDriveVelocity();
 
   /**
    * Run the drive motor at the specified percent speed.
