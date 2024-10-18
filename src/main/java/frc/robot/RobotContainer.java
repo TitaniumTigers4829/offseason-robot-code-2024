@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
@@ -222,6 +223,7 @@ public class RobotContainer {
     // driveSubsystem.getPose().getY(),
     //   Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
-    return null;
+    return new FeedForwardCharacterization(driveSubsystem, driveSubsystem::runCharacterization, driveSubsystem::getCharacterizationVelocity);
+    // return null;
   }
 }

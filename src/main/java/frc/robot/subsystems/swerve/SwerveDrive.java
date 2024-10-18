@@ -141,9 +141,9 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
         "SystemPerformance/OdometryFetchingTimeMS", (TimeUtil.getRealTimeSeconds() - t0) * 1000);
     modulesPeriodic();
 
-    for (int timeStampIndex = 0;
-        timeStampIndex < odometryThreadInputs.measurementTimeStamps.length;
-        timeStampIndex++) feedSingleOdometryDataToPositionEstimator(timeStampIndex);
+    // for (int timeStampIndex = 0;
+    //     timeStampIndex < odometryThreadInputs.measurementTimeStamps.length;
+    //     timeStampIndex++) feedSingleOdometryDataToPositionEstimator(timeStampIndex);
   }
 
   public void runCharacterization(double volts) {

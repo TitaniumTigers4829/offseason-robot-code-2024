@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.debug.Alert;
@@ -51,6 +52,10 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometryPositions();
+    SmartDashboard.putNumber("abs pos?" + name, inputs.turnRotation.getRotations());
+    SmartDashboard.putNumber("relative pos" + name, inputs.turnPosition);
+    SmartDashboard.putNumber("abs pos" + name, inputs.turnAbsolutePosition.getRotations());
+    SmartDashboard.putNumber("drive pos" + name, inputs.drivePosition);
   }
 
   public void setVoltage(double volts) {

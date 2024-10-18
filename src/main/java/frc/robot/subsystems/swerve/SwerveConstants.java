@@ -39,25 +39,25 @@ public class SwerveConstants {
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =
         new SwerveDriveKinematics(MODULE_TRANSLATIONS);
 
-    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 22;
-    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 24;
+    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 6;
+    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 18;
     public static final int REAR_LEFT_DRIVE_MOTOR_ID = 23;
-    public static final int REAR_RIGHT_DRIVE_MOTOR_ID = 21;
+    public static final int REAR_RIGHT_DRIVE_MOTOR_ID = 4;
 
-    public static final int FRONT_LEFT_TURN_MOTOR_ID = 5;
-    public static final int FRONT_RIGHT_TURN_MOTOR_ID = 6;
-    public static final int REAR_LEFT_TURN_MOTOR_ID = 8;
-    public static final int REAR_RIGHT_TURN_MOTOR_ID = 7;
+    public static final int FRONT_LEFT_TURN_MOTOR_ID = 7;
+    public static final int FRONT_RIGHT_TURN_MOTOR_ID = 1;
+    public static final int REAR_LEFT_TURN_MOTOR_ID = 25;
+    public static final int REAR_RIGHT_TURN_MOTOR_ID = 3;
 
-    public static final int FRONT_LEFT_CANCODER_ID = 14;
-    public static final int FRONT_RIGHT_CANCODER_ID = 12;
+    public static final int FRONT_LEFT_CANCODER_ID = 10;
+    public static final int FRONT_RIGHT_CANCODER_ID = 0;
     public static final int REAR_LEFT_CANCODER_ID = 11;
-    public static final int REAR_RIGHT_CANCODER_ID = 13;
+    public static final int REAR_RIGHT_CANCODER_ID = 12;
 
-    public static final double FRONT_LEFT_ZERO_ANGLE = 0.137939453125;
-    public static final double FRONT_RIGHT_ZERO_ANGLE = -0.420654296875;
-    public static final double REAR_LEFT_ZERO_ANGLE = -0.475341796875;
-    public static final double REAR_RIGHT_ZERO_ANGLE = -0.05078125;
+    public static final double FRONT_LEFT_ZERO_ANGLE = -0.078369140625;
+    public static final double FRONT_RIGHT_ZERO_ANGLE =  -0.482421875;
+    public static final double REAR_LEFT_ZERO_ANGLE = -0.319580078125;
+    public static final double REAR_RIGHT_ZERO_ANGLE = -0.487060546875;
 
     public static final SensorDirectionValue FRONT_LEFT_CANCODER_REVERSED =
         SensorDirectionValue.CounterClockwise_Positive;
@@ -73,23 +73,23 @@ public class SwerveConstants {
     public static final InvertedValue FRONT_RIGHT_TURN_MOTOR_REVERSED =
         InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue REAR_LEFT_TURN_MOTOR_REVERSED =
-        InvertedValue.Clockwise_Positive;
+        InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue REAR_RIGHT_TURN_MOTOR_REVERSED =
         InvertedValue.Clockwise_Positive;
 
     public static final InvertedValue FRONT_LEFT_DRIVE_ENCODER_REVERSED =
         InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue FRONT_RIGHT_DRIVE_ENCODER_REVERSED =
-        InvertedValue.Clockwise_Positive;
+        InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue REAR_LEFT_DRIVE_ENCODER_REVERSED =
         InvertedValue.Clockwise_Positive;
     public static final InvertedValue REAR_RIGHT_DRIVE_ENCODER_REVERSED =
         InvertedValue.CounterClockwise_Positive;
 
-    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 20;
-    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 5;
+    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 3 * Math.PI;
+    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
 
-    public static final double MAX_SPEED_METERS_PER_SECOND = 6.95;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.5;
     public static final double MAX_SHOOT_SPEED_METERS_PER_SECOND = 3;
 
     public static final double HEADING_ACCEPTABLE_ERROR_RADIANS = Units.degreesToRadians(2.5);
@@ -113,14 +113,14 @@ public class SwerveConstants {
     public static final double DRIVE_SUPPLY_LIMIT = 45.0;
     public static final double DRIVE_STATOR_LIMIT = 50.0;
 
-    public static final double TURN_P = 116;
+    public static final double TURN_P = 1.6;
     public static final double TURN_I = 0.0;
     public static final double TURN_D = 0.64;
 
     public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 30;
     public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 24;
 
-    public static final double DRIVE_P = 0.417;
+    public static final double DRIVE_P = 0.027;
     public static final double DRIVE_I = 0.0;
     public static final double DRIVE_D = 0.0;
 

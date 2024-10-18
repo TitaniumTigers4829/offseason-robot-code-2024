@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public interface VisionIO {
-
     @AutoLog
     class VisionIOInputs {
         public boolean cameraConnected = false;
@@ -23,7 +22,6 @@ public interface VisionIO {
         public double fiducialMarksID = 0.0;
         
         public int camerasAmount = 0;
-        public Pose2d currentPose = new Pose2d();
         public int targetsCount = 0;
     }
 

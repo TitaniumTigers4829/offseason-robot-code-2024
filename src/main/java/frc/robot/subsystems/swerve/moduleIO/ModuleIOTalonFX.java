@@ -46,9 +46,9 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final BaseStatusSignal[] periodicallyRefreshedSignals;
 
   public ModuleIOTalonFX(ModuleConfig moduleConfig) {
-    driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.CANIVORE.name);
-    turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.CANIVORE.name);
-    turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.CANIVORE.name);
+    driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.RIO.name);
+    turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.RIO.name);
+    turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.RIO.name);
 
     CANcoderConfiguration turnEncoderConfig = new CANcoderConfiguration();
     turnEncoderConfig.MagnetSensor.MagnetOffset = -moduleConfig.angleZero();
@@ -105,12 +105,15 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     periodicallyRefreshedSignals =
         new BaseStatusSignal[] {
+          driveMotor.getPosition(),
           driveVelocity,
           driveMotorAppliedVoltage,
           driveMotorCurrent,
           turnEncoderVelocityPerSecond,
           turnMotorAppliedVolts,
-          turnMotorCurrent
+          turnMotorCurrent,
+          turnMotor.getPosition(),
+          turnEncoder.getAbsolutePosition()
         };
 
     driveMotor.setPosition(0.0);
@@ -123,7 +126,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    inputs.isConnected = BaseStatusSignal.refreshAll(periodicallyRefreshedSignals).isOK();
+    inputs.isConnected = BaseStatusSignal.isAllGood(periodicallyRefreshedSignals);
 
     inputs.odometryDriveWheelRevolutions =
         drivePosition.stream()
@@ -146,6 +149,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveVelocity.getValueAsDouble() / ModuleConstants.DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
     inputs.driveCurrentAmps = driveMotorCurrent.getValueAsDouble();
+
+    inputs.turnPosition = turnMotor.getPosition().getValueAsDouble();
 
     inputs.turnVelocityRadPerSec =
         Units.rotationsToRadians(turnEncoderVelocityPerSecond.getValueAsDouble());
