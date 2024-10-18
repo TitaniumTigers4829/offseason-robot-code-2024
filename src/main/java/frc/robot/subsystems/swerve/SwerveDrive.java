@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -161,11 +162,11 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   /** Returns the average drive velocity in radians/sec. */
   public double getCharacterizationVelocity() {
-    double driveVelocityAverage = 0.0;
+    double velocity = 0.0;
     for (SwerveModule module : swerveModules) {
-      driveVelocityAverage += module.getCharacterizationVelocity();
+      velocity += module.getCharacterizationVelocity();
     }
-    return driveVelocityAverage / 4.0;
+    return velocity;
   }
 
   private void fetchOdometryInputs() {
@@ -173,7 +174,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     odometryThread.updateInputs(odometryThreadInputs);
     Logger.processInputs("Drive/OdometryThread", odometryThreadInputs);
 
-    for (var module : swerveModules) module.updateOdometryInputs();
+    for (SwerveModule module : swerveModules) module.updateOdometryInputs();
 
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);

@@ -52,15 +52,11 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometryPositions();
-    SmartDashboard.putNumber("abs pos?" + name, inputs.turnRotation.getRotations());
-    SmartDashboard.putNumber("relative pos" + name, inputs.turnPosition);
-    SmartDashboard.putNumber("abs pos" + name, inputs.turnAbsolutePosition.getRotations());
-    SmartDashboard.putNumber("drive pos" + name, inputs.drivePosition);
   }
 
   public void setVoltage(double volts) {
     io.setDriveVoltage(volts);
-    io.setTurnVoltage(0.0);
+    // io.setTurnVoltage(0.0);
   }
 
   public double getDriveVoltage() {
@@ -68,7 +64,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getCharacterizationVelocity() {
-    return inputs.driveVelocity;
+    return io.getDriveVelocity();
   }
 
   private void updateOdometryPositions() {

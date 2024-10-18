@@ -58,6 +58,12 @@ public class ModuleIOSim implements ModuleIO {
   }
 
   @Override
+  public double getDriveVelocity() {
+      // TODO Auto-generated method stub
+      return 0;
+  }
+
+  @Override
   public void setTurnVoltage(double volts) {
     moduleSimulation.requestTurnVoltageOut(volts);
   }

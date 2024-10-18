@@ -105,15 +105,13 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     periodicallyRefreshedSignals =
         new BaseStatusSignal[] {
-          driveMotor.getPosition(),
           driveVelocity,
           driveMotorAppliedVoltage,
           driveMotorCurrent,
           turnEncoderVelocityPerSecond,
           turnMotorAppliedVolts,
           turnMotorCurrent,
-          turnMotor.getPosition(),
-          turnEncoder.getAbsolutePosition()
+          turnMotor.getPosition()
         };
 
     driveMotor.setPosition(0.0);
@@ -128,6 +126,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
     inputs.isConnected = BaseStatusSignal.isAllGood(periodicallyRefreshedSignals);
 
+    inputs.driveVelocity = driveVelocity.getValueAsDouble();
     inputs.odometryDriveWheelRevolutions =
         drivePosition.stream()
             .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
@@ -160,6 +159,11 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   private Rotation2d getTurnAbsolutePosition(double canCoderReadingRotations) {
     return Rotation2d.fromRotations(canCoderReadingRotations);
+  }
+
+  @Override
+  public double getDriveVelocity() {
+    return driveVelocity.refresh().getValueAsDouble();
   }
 
   @Override

@@ -44,6 +44,8 @@ public interface ModuleIO {
 
   default void setDesiredState(SwerveModuleState desiredState) {}
 
+  double getDriveVelocity();
+
   /**
    * Run the drive motor at the specified percent speed.
    *
