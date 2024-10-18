@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.debug.Alert;
@@ -98,6 +99,40 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     startDashboardDisplay();
   }
 
+  public double getGyroRate() {
+    return gyroInputs.yawVelocity;
+  }
+
+  /** Updates the pose estimator with the pose calculated from the swerve modules. */
+  public void addPoseEstimatorSwerveMeasurement() {
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroInputs.yawDegrees, getModuleLatestPositions());
+  }
+
+  // * Updates the pose estimator with the pose calculated from the april tags. How much it
+  // * contributes to the pose estimation is set by setPoseEstimatorVisionConfidence.
+  // *
+  // * @param visionMeasurement The pose calculated from the april tags
+  // * @param currentTimeStampSeconds The time stamp in seconds of when the pose from the april tags
+  // *     was calculated.
+  // */
+ public void addPoseEstimatorVisionMeasurement(
+     Pose2d visionMeasurement, double currentTimeStampSeconds) {
+   poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
+ }
+
+ /**
+  * Sets the standard deviations of model states, or how much the april tags contribute to the pose
+  * estimation of the robot. Lower numbers equal higher confidence and vice versa.
+  *
+  * @param xStandardDeviation the x standard deviation in meters
+  * @param yStandardDeviation the y standard deviation in meters
+  * @param thetaStandardDeviation the theta standard deviation in radians
+  */
+ public void setPoseEstimatorVisionConfidence(
+     double xStandardDeviation, double yStandardDeviation, double thetaStandardDeviation) {
+   poseEstimator.setVisionMeasurementStdDevs(
+       VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
+ }
   @Override
   public void periodic() {
     final double t0 = TimeUtil.getRealTimeSeconds();

@@ -6,17 +6,19 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import java.util.function.DoubleSupplier;
 
-public class SpinupFlywheel extends Command {
+public class SetFlywheelSpeed extends Command {
+  private final Flywheel flywheel;
+  private DoubleSupplier speed;
 
-  /** Creates a new SpinupFlywheel. */
-  private Flywheel flywheelSubsystem;
+  /** Creates a new SetFlywheelSpeed. */
+  public SetFlywheelSpeed(Flywheel flywheel, DoubleSupplier speed) {
+    this.flywheel = flywheel;
+    this.speed = speed;
 
-  public SpinupFlywheel(Flywheel flywheelSubsystem) {
-    this.flywheelSubsystem = flywheelSubsystem;
-    // Use addRequirements() here to declare subsystem dependencies.'
-    addRequirements(flywheelSubsystem);
+    addRequirements(flywheel);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -26,14 +28,12 @@ public class SpinupFlywheel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    flywheelSubsystem.setFlywheelVelocity(0.0);
+    flywheel.setFlywheelVelocity(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    flywheelSubsystem.setFlywheelVelocity(ShooterConstants.FLYWHEEL_SPINUP_SPEED);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
