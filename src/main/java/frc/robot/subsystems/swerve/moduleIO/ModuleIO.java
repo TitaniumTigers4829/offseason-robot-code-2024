@@ -35,12 +35,10 @@ public interface ModuleIO {
 
   /** Updates the inputs */
   default void updateInputs(ModuleIOInputs inputs) {}
-  ;
 
   default String getCANBus() {
     return "";
   }
-  ;
 
   default void calibrate() {}
 
