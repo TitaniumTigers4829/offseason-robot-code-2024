@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,11 +13,21 @@ public class Flywheel extends SubsystemBase {
     this.io = io;
   }
 
+  /**
+   * Sets the flywheel voltage
+   *
+   * @param desiredVoltage
+   */
   public void setFlywheelVoltage(double desiredVoltage) {
     io.setVoltage(desiredVoltage); // /io calls the functions
     Logger.recordOutput("Flywheel/voltage", desiredVoltage);
   }
 
+  /**
+   * sets flywheel velocity in RPM
+   *
+   * @param desiredRPM desired velocity in RPM
+   */
   public void setFlywheelVelocity(double desiredRPM) {
     io.setVelocity(desiredRPM);
     Logger.recordOutput("Flywheel/RPM", desiredRPM);
@@ -31,6 +37,11 @@ public class Flywheel extends SubsystemBase {
     return inputs.isNoteDetected;
   }
 
+  /**
+   * sets the roller speed on the shooter
+   *
+   * @param speed desired speed in rotations/sec
+   */
   public void setRollerSpeed(double speed) {
     io.setRollerSpeed(speed);
     Logger.recordOutput("Roller/DutyCycleOut", speed);
