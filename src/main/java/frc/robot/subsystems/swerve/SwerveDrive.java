@@ -105,7 +105,8 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   /** Updates the pose estimator with the pose calculated from the swerve modules. */
   public void addPoseEstimatorSwerveMeasurement() {
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroInputs.yawDegrees, getModuleLatestPositions());
+    poseEstimator.updateWithTime(
+        Timer.getFPGATimestamp(), gyroInputs.yawDegrees, getModuleLatestPositions());
   }
 
   // * Updates the pose estimator with the pose calculated from the april tags. How much it
@@ -115,24 +116,25 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   // * @param currentTimeStampSeconds The time stamp in seconds of when the pose from the april tags
   // *     was calculated.
   // */
- public void addPoseEstimatorVisionMeasurement(
-     Pose2d visionMeasurement, double currentTimeStampSeconds) {
-   poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
- }
+  public void addPoseEstimatorVisionMeasurement(
+      Pose2d visionMeasurement, double currentTimeStampSeconds) {
+    poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
+  }
 
- /**
-  * Sets the standard deviations of model states, or how much the april tags contribute to the pose
-  * estimation of the robot. Lower numbers equal higher confidence and vice versa.
-  *
-  * @param xStandardDeviation the x standard deviation in meters
-  * @param yStandardDeviation the y standard deviation in meters
-  * @param thetaStandardDeviation the theta standard deviation in radians
-  */
- public void setPoseEstimatorVisionConfidence(
-     double xStandardDeviation, double yStandardDeviation, double thetaStandardDeviation) {
-   poseEstimator.setVisionMeasurementStdDevs(
-       VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
- }
+  /**
+   * Sets the standard deviations of model states, or how much the april tags contribute to the pose
+   * estimation of the robot. Lower numbers equal higher confidence and vice versa.
+   *
+   * @param xStandardDeviation the x standard deviation in meters
+   * @param yStandardDeviation the y standard deviation in meters
+   * @param thetaStandardDeviation the theta standard deviation in radians
+   */
+  public void setPoseEstimatorVisionConfidence(
+      double xStandardDeviation, double yStandardDeviation, double thetaStandardDeviation) {
+    poseEstimator.setVisionMeasurementStdDevs(
+        VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
+  }
+
   @Override
   public void periodic() {
     final double t0 = TimeUtil.getRealTimeSeconds();

@@ -22,7 +22,8 @@
 //     @Override
 //     public void updateInputs(VisionIOInputs inputs) {
 //         if (inputs.camerasAmount != cameras.length)
-//             throw new IllegalStateException("inputs camera amount (" + inputs.camerasAmount + ") does not match actual cameras amount");
+//             throw new IllegalStateException("inputs camera amount (" + inputs.camerasAmount + ")
+// does not match actual cameras amount");
 
 //         for (int i = 0; i < cameras.length; i++)
 //             if (cameras[i].isConnected())
