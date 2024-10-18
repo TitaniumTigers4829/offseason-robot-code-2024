@@ -13,7 +13,7 @@ public interface VisionIO {
     public int camerasAmount = 0;
     public int targetsCount = 0;
   }
-  
+
   void updateInputs(VisionIOInputs inputs);
 
   String getLimelightName(int limelightNumber);

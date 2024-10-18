@@ -59,8 +59,8 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public double getDriveVelocity() {
-      // TODO Auto-generated method stub
-      return 0;
+    // TODO Auto-generated method stub
+    return 0;
   }
 
   @Override
