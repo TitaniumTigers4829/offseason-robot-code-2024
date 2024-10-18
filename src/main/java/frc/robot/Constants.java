@@ -12,7 +12,7 @@ public final class Constants {
     public static final String APRIL_TAGS_VISION_PATH = "Vision/AprilTags/";
   }
 
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */

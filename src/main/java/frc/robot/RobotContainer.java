@@ -223,7 +223,10 @@ public class RobotContainer {
     // driveSubsystem.getPose().getY(),
     //   Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
-    return new FeedForwardCharacterization(driveSubsystem, driveSubsystem::runCharacterization, driveSubsystem::getCharacterizationVelocity);
+    return new FeedForwardCharacterization(
+        driveSubsystem,
+        driveSubsystem::runCharacterization,
+        driveSubsystem::getCharacterizationVelocity);
     // return null;
   }
 }

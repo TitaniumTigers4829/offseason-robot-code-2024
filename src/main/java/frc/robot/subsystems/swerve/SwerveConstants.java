@@ -55,7 +55,7 @@ public class SwerveConstants {
     public static final int REAR_RIGHT_CANCODER_ID = 12;
 
     public static final double FRONT_LEFT_ZERO_ANGLE = -0.078369140625;
-    public static final double FRONT_RIGHT_ZERO_ANGLE =  -0.482421875;
+    public static final double FRONT_RIGHT_ZERO_ANGLE = -0.482421875;
     public static final double REAR_LEFT_ZERO_ANGLE = -0.319580078125;
     public static final double REAR_RIGHT_ZERO_ANGLE = -0.487060546875;
 
