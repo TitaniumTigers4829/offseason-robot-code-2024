@@ -24,9 +24,9 @@ public class SwerveConstants {
     // Wheel base and track width are measured by the center of the swerve modules, not the frame of
     // the robot
     // Distance between centers of right and left wheels on robot
-    public static final double TRACK_WIDTH = Units.inchesToMeters(21.25);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(22);
     // Distance between front and back wheels on robot
-    public static final double WHEEL_BASE = Units.inchesToMeters(21.25);
+    public static final double WHEEL_BASE = Units.inchesToMeters(22);
 
     public static final Translation2d[] MODULE_TRANSLATIONS =
         new Translation2d[] {
