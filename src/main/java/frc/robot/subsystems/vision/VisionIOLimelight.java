@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
@@ -43,24 +42,24 @@ public class VisionIOLimelight implements VisionIO {
     inputs.cameraConnected = true;
 
     for (int limelightNumber = 0; limelightNumber < limelightEstimates.length; limelightNumber++) {
-        // Update camera connection status
-        inputs.cameraConnected = true;
+      // Update camera connection status
+      inputs.cameraConnected = true;
 
-        // Add number of April tags seen by this limelight
-        inputs.targetsCount += getNumberOfAprilTags(limelightNumber);
+      // Add number of April tags seen by this limelight
+      inputs.targetsCount += getNumberOfAprilTags(limelightNumber);
 
-        // Add fiducial mark ID
-        inputs.fiducialMarksID = LimelightHelpers.getFiducialID(getLimelightName(limelightNumber));
+      // Add fiducial mark ID
+      inputs.fiducialMarksID = LimelightHelpers.getFiducialID(getLimelightName(limelightNumber));
 
-        // Add latency for this limelight
-        inputs.latency += getLatencySeconds(limelightNumber) / 1000.0;
+      // Add latency for this limelight
+      inputs.latency += getLatencySeconds(limelightNumber) / 1000.0;
     }
 
     // Calculate average latency
     inputs.latency /= limelightEstimates.length;
 
     periodic();
-}
+  }
 
   /**
    * Checks if the specified limelight can fully see one or more April Tag.

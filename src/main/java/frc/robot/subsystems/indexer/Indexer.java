@@ -11,11 +11,17 @@ public class Indexer extends SubsystemBase {
     this.io = io;
   }
 
+  /**
+   * Sets the indexer speed
+   *
+   * @param speed The desired speed (-1.0 to 1.0)
+   */
   public void setIndexerSpeed(double speed) {
     io.setSpeed(speed);
     Logger.recordOutput("Indexer", speed);
   }
 
+  /** Stops the motor */
   public void stop() {
     io.stop();
   }
