@@ -148,6 +148,11 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     //     timeStampIndex++) feedSingleOdometryDataToPositionEstimator(timeStampIndex);
   }
 
+  /**
+   * Runs characterization based on volts
+   *
+   * @param volts
+   */
   public void runCharacterization(double volts) {
     for (SwerveModule module : swerveModules) {
       module.setVoltage(volts);
@@ -181,6 +186,14 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     for (var module : swerveModules) module.periodic();
   }
 
+  /**
+   * Tells the robot which way to move
+   *
+   * @param xSpeed meters per second, max is 5.0
+   * @param ySpeed meters per second, max is 5.0
+   * @param rotationSpeed radians per second, max is 2
+   * @param fieldRelative is the robot field relative
+   */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
     ChassisSpeeds sChassisSpeeds =
         fieldRelative
