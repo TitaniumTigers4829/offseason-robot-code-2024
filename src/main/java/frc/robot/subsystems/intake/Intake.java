@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.*;
-
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -19,7 +18,7 @@ public class Intake extends SubsystemBase {
    * @param angle desired angle in degrees
    */
   public void setPivotAngle(double angle) {
-    double angleRots = Units.degreestoRotations(angle);
+    double angleRots = Units.degreesToRotations(angle);
     io.setPivotPosition(angleRots);
     Logger.recordOutput("OTBIntake/Pivot", angleRots);
   }
