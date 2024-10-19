@@ -8,10 +8,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.debug.Alert;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
 import frc.robot.subsystems.swerve.moduleIO.ModuleIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -51,6 +53,7 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometryPositions();
+    SmartDashboard.putNumber("turn pos", io.getTurnAbsolutePosition());
   }
 
   public void setVoltage(double volts) {
@@ -66,23 +69,23 @@ public class SwerveModule extends SubsystemBase {
     return io.getDriveVelocity();
   }
 
+  public void setTurnPosition(double position) {
+    io.setTurnPosition(position);
+  }
+
   private void updateOdometryPositions() {
     odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
     for (int i = 0; i < odometryPositions.length; i++) {
       double positionMeters =
-          driveWheelRevolutionsToMeters(inputs.odometryDriveWheelRevolutions[i]);
-      Rotation2d angle = inputs.odometryTurnPositions[i];
+          driveWheelRevolutionsToMeters(inputs.drivePosition);
+      Rotation2d angle = inputs.turnAbsolutePosition;
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
   }
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
-  public SwerveModuleState runSetPoint(SwerveModuleState state) {
-    this.setPoint = SwerveModuleState.optimize(state, getSteerFacing());
-
-    io.setDesiredState(setPoint);
-
-    return this.setPoint;
+  public void runSetPoint(SwerveModuleState state) {
+    io.setDesiredState(state);
   }
 
   /** Returns the current turn angle of the module. */
@@ -123,4 +126,17 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModulePosition[] getOdometryPositions() {
     return odometryPositions;
   }
+
+  /**
+   * Gets the module position consisting of the distance it has traveled and the angle it is rotated.
+   * @return a SwerveModulePosition object containing position and rotation
+   */
+  public SwerveModulePosition getPosition() {
+    // driveMotorPosition.refresh();
+    double position = ModuleConstants.DRIVE_TO_METERS * io.getDrivePosition();
+    Rotation2d rotation = Rotation2d.fromRotations(io.getTurnAbsolutePosition());
+    SmartDashboard.putString(name, new SwerveModulePosition(position, rotation).toString());
+    return new SwerveModulePosition(position, rotation);
+  }
+
 }

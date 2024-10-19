@@ -2,6 +2,8 @@ package frc.robot.subsystems.swerve.moduleIO;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+
+import org.dyn4j.geometry.Rotation;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
@@ -9,7 +11,7 @@ public interface ModuleIO {
   class ModuleIOInputs {
 
     public boolean isConnected = false;
-    public Rotation2d turnRotation = new Rotation2d();
+    // public Rotation2d turnRotation = new Rotation2d();
     public double steerVelocityRadPerSec = 0.0;
     public double steerMotorAppliedVolts = 0.0;
     public double steerMotorCurrentAmps = 0.0;
@@ -26,7 +28,7 @@ public interface ModuleIO {
     public double turnCurrentAmps = 0.0;
     public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsRad = new double[] {};
-    public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+    // public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
     public double driveWheelFinalVelocityPerSec = 0.0;
     public double turnMotorAppliedVolts = 0.0;
     public double turnMotorCurrentAmps = 0.0;
@@ -45,6 +47,10 @@ public interface ModuleIO {
   default void setDesiredState(SwerveModuleState desiredState) {}
 
   double getDriveVelocity();
+
+  void setTurnPosition(double position);
+
+  double getTurnAbsolutePosition();
 
   /**
    * Run the drive motor at the specified percent speed.
@@ -72,11 +78,13 @@ public interface ModuleIO {
 
   default void stopModule() {}
 
-  default double getTurnRotations() {
+  default double getTurnRadians() {
     return 0.0;
   }
 
   default double getDriveVoltage() {
     return 0.0;
   }
+
+  double getDrivePosition();
 }

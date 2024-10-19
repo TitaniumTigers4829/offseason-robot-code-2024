@@ -19,7 +19,7 @@ public class IndexerIOTalonFX implements IndexerIO {
 
   public IndexerIOTalonFX() {
     TalonFXConfiguration indexerConfiguration = new TalonFXConfiguration();
-    indexerConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    indexerConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     indexerConfiguration.MotorOutput.DutyCycleNeutralDeadband =
         HardwareConstants.MIN_FALCON_DEADBAND;
     indexerConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;

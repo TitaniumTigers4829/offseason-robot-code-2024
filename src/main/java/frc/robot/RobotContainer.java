@@ -2,9 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.commands.drive.SetTurnPosition;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
@@ -19,7 +21,7 @@ public class RobotContainer {
 
   // private final Vision visionSubsystem;
   private final SwerveDrive driveSubsystem;
-  private final XboxController driverController = new XboxController(0);
+  private final CommandXboxController driverController = new CommandXboxController(0);
 
   public RobotContainer() {
     // visionSubsystem = new Vision();
@@ -97,10 +99,10 @@ public class RobotContainer {
           () -> modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
         };
 
-    Trigger driverRightBumper = new Trigger(driverController::getRightBumper);
-    Trigger driverRightDirectionPad = new Trigger(() -> driverController.getPOV() == 90);
-    Trigger driverDownDirectionPad = new Trigger(() -> driverController.getPOV() == 180);
-    Trigger driverLeftDirectionPad = new Trigger(() -> driverController.getPOV() == 270);
+    Trigger driverRightBumper = new Trigger(driverController.rightBumper());
+    Trigger driverRightDirectionPad = new Trigger(driverController.pov(90));
+    Trigger driverDownDirectionPad = new Trigger(driverController.pov(180));
+    Trigger driverLeftDirectionPad = new Trigger(driverController.pov(270));
 
     // // autodrive
     // Trigger driverAButton = new Trigger(driverController::getAButton);
@@ -125,7 +127,7 @@ public class RobotContainer {
     // Trigger operatorLeftDirectionPad = new Trigger(()->operatorController.getPOV() == 270);
     // Trigger operatorDownDirectionPad = new Trigger(()->operatorController.getPOV() == 180);
     // Trigger driverLeftTrigger = new Trigger(()->driverController.getLeftTriggerAxis() > 0.2);
-    Trigger driverLeftBumper = new Trigger(driverController::getLeftBumper);
+    Trigger driverLeftBumper = new Trigger(driverController.leftBumper());
     // Trigger driverBButton = new Trigger(driverController::getBButton);
     // Trigger driverYButton = new Trigger(driverController::getYButton);
     // DoubleSupplier operatorLeftStickY = operatorController::getLeftY;
@@ -144,6 +146,8 @@ public class RobotContainer {
             () -> driverLeftBumper.getAsBoolean());
 
     driveSubsystem.setDefaultCommand(driveCommand);
+
+    driverController.a().onTrue(new SetTurnPosition(driveSubsystem));
 
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));

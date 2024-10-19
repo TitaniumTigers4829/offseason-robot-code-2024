@@ -24,9 +24,9 @@ public class SwerveConstants {
     // Wheel base and track width are measured by the center of the swerve modules, not the frame of
     // the robot
     // Distance between centers of right and left wheels on robot
-    public static final double TRACK_WIDTH = Units.inchesToMeters(21.25);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(22);
     // Distance between front and back wheels on robot
-    public static final double WHEEL_BASE = Units.inchesToMeters(21.25);
+    public static final double WHEEL_BASE = Units.inchesToMeters(22);
 
     public static final Translation2d[] MODULE_TRANSLATIONS =
         new Translation2d[] {
@@ -54,10 +54,10 @@ public class SwerveConstants {
     public static final int REAR_LEFT_CANCODER_ID = 11;
     public static final int REAR_RIGHT_CANCODER_ID = 12;
 
-    public static final double FRONT_LEFT_ZERO_ANGLE = -0.078369140625;
-    public static final double FRONT_RIGHT_ZERO_ANGLE = -0.482421875;
-    public static final double REAR_LEFT_ZERO_ANGLE = -0.319580078125;
-    public static final double REAR_RIGHT_ZERO_ANGLE = -0.487060546875;
+    public static final double FRONT_LEFT_ZERO_ANGLE = -0.08447265625;
+    public static final double FRONT_RIGHT_ZERO_ANGLE = -0.478271484375;
+    public static final double REAR_LEFT_ZERO_ANGLE = -0.318115234375;
+    public static final double REAR_RIGHT_ZERO_ANGLE = -0.462646484375;
 
     public static final SensorDirectionValue FRONT_LEFT_CANCODER_REVERSED =
         SensorDirectionValue.CounterClockwise_Positive;
@@ -113,23 +113,27 @@ public class SwerveConstants {
     public static final double DRIVE_SUPPLY_LIMIT = 45.0;
     public static final double DRIVE_STATOR_LIMIT = 50.0;
 
-    public static final double TURN_P = 0.0;
+    public static final double TURN_P = .5;
     public static final double TURN_I = 0.0;
     public static final double TURN_D = 0.0;
 
-    public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 30;
-    public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 24;
+    public static final double TURN_S = 0.1429;   
+    public static final double TURN_V = 0.695670;  
+    public static final double TURN_A = 0.015720;   
 
-    public static final double DRIVE_P = 0.027;
+    public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 2000;
+    public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 200;
+
+    public static final double DRIVE_P = 0.345;
     public static final double DRIVE_I = 0.0;
     public static final double DRIVE_D = 0.0;
 
-    public static final double DRIVE_S = 0.038005863389784;
+    public static final double DRIVE_S = 0.151315113225759;
     // These values were gotten using recalc, then converted to the correct units & were confirmed
     // through testing and characterization
     // https://www.reca.lc/drive?appliedVoltageRamp=%7B%22s%22%3A1200%2C%22u%22%3A%22V%2Fs%22%7D&batteryAmpHours=%7B%22s%22%3A18%2C%22u%22%3A%22A%2Ah%22%7D&batteryResistance=%7B%22s%22%3A0.018%2C%22u%22%3A%22Ohm%22%7D&batteryVoltageAtRest=%7B%22s%22%3A12.6%2C%22u%22%3A%22V%22%7D&efficiency=97&filtering=1&gearRatioMax=%7B%22magnitude%22%3A15%2C%22ratioType%22%3A%22Reduction%22%7D&gearRatioMin=%7B%22magnitude%22%3A3%2C%22ratioType%22%3A%22Reduction%22%7D&maxSimulationTime=%7B%22s%22%3A4%2C%22u%22%3A%22s%22%7D&maxSpeedAccelerationThreshold=%7B%22s%22%3A0.15%2C%22u%22%3A%22ft%2Fs2%22%7D&motor=%7B%22quantity%22%3A4%2C%22name%22%3A%22Kraken%20X60%2A%22%7D&motorCurrentLimit=%7B%22s%22%3A60%2C%22u%22%3A%22A%22%7D&numCyclesPerMatch=24&peakBatteryDischarge=20&ratio=%7B%22magnitude%22%3A4.59%2C%22ratioType%22%3A%22Reduction%22%7D&sprintDistance=%7B%22s%22%3A25%2C%22u%22%3A%22ft%22%7D&swerve=1&targetTimeToGoal=%7B%22s%22%3A2%2C%22u%22%3A%22s%22%7D&throttleResponseMax=0.99&throttleResponseMin=0.5&weightAuxilliary=%7B%22s%22%3A24%2C%22u%22%3A%22lbs%22%7D&weightDistributionFrontBack=0.5&weightDistributionLeftRight=0.5&weightInspected=%7B%22s%22%3A125%2C%22u%22%3A%22lbs%22%7D&wheelBaseLength=%7B%22s%22%3A27%2C%22u%22%3A%22in%22%7D&wheelBaseWidth=%7B%22s%22%3A20%2C%22u%22%3A%22in%22%7D&wheelCOFDynamic=0.9&wheelCOFLateral=1.1&wheelCOFStatic=1.1&wheelDiameter=%7B%22s%22%3A4%2C%22u%22%3A%22in%22%7D
-    public static final double DRIVE_V = 0.026964729854331; // = 0.1203 V*s/m
-    public static final double DRIVE_A = 0.001583607280437; // = 0.02225 V*s^2/m
+    public static final double DRIVE_V = 0.027285425272591; // = 0.1203 V*s/m
+    public static final double DRIVE_A = 0.000261387517243; // = 0.02225 V*s^2/m
   }
 
   public static final class TrajectoryConstants {
