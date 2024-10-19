@@ -12,6 +12,8 @@ import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import java.util.Arrays;
 
+import org.dyn4j.geometry.Rotation;
+
 /** Wrapper class around {@link SwerveModuleSimulation} that implements ModuleIO */
 public class ModuleIOSim implements ModuleIO {
   private final SwerveModuleSimulation moduleSimulation;
@@ -44,7 +46,7 @@ public class ModuleIOSim implements ModuleIO {
 
     inputs.odometryTimestamps = OdometryTimestampsSim.getTimeStamps();
     inputs.odometryDrivePositionsRad = moduleSimulation.getCachedDriveWheelFinalPositionsRad();
-    inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
+    // inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
 
     inputs.odometryDriveWheelRevolutions =
         Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
@@ -64,41 +66,59 @@ public class ModuleIOSim implements ModuleIO {
   }
 
   @Override
+  public void setTurnPosition(double position) {
+      // TODO Auto-generated method stub
+      // return 0;
+  }
+
+  @Override
+  public double getTurnAbsolutePosition() {
+      // TODO Auto-generated method stub
+      return 0;
+  }
+
+  @Override
   public void setTurnVoltage(double volts) {
     moduleSimulation.requestTurnVoltageOut(volts);
   }
 
-  public void setDesiredState(SwerveModuleState desiredState) {
-    double turnRotations = getTurnRotations();
-    // Optimize the reference state to avoid spinning further than 90 degrees
-    SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(turnRotations));
-
-    if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
-      moduleSimulation.requestDriveVoltageOut(0);
-      moduleSimulation.requestTurnVoltageOut(0);
-      return;
-    }
-
-    // Converts meters per second to rotations per second
-    double desiredDriveRPS =
-        optimizedDesiredState.speedMetersPerSecond
-            * ModuleConstants.DRIVE_GEAR_RATIO
-            / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
-
-    moduleSimulation.requestDriveVoltageOut(
-        drivePID.calculate(
-                Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()),
-                desiredDriveRPS)
-            + driveFF.calculate(desiredDriveRPS));
-    moduleSimulation.requestTurnVoltageOut(
-        turnPID.calculate(
-                moduleSimulation.getTurnAbsolutePosition().getRotations(),
-                desiredState.angle.getRotations())
-            + turnFF.calculate(turnPID.getSetpoint().velocity));
+  @Override
+  public double getDrivePosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getDrivePosition'");
   }
 
-  public double getTurnRotations() {
-    return moduleSimulation.getTurnAbsolutePosition().getRotations();
-  }
+  // public void setDesiredState(SwerveModuleState desiredState) {
+  //   Rotation2d turnRotations = getTurnRotations();
+  //   // Optimize the reference state to avoid spinning further than 90 degrees
+  //   SwerveModuleState optimizedDesiredState =
+  //       SwerveModuleState.optimize(desiredState, new Rotation2d(turnRotations));
+
+  //   if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
+  //     moduleSimulation.requestDriveVoltageOut(0);
+  //     moduleSimulation.requestTurnVoltageOut(0);
+  //     return;
+  //   }
+
+  //   // Converts meters per second to rotations per second
+  //   double desiredDriveRPS =
+  //       optimizedDesiredState.speedMetersPerSecond
+  //           * ModuleConstants.DRIVE_GEAR_RATIO
+  //           / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
+
+  //   moduleSimulation.requestDriveVoltageOut(
+  //       drivePID.calculate(
+  //               Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()),
+  //               desiredDriveRPS)
+  //           + driveFF.calculate(desiredDriveRPS));
+  //   moduleSimulation.requestTurnVoltageOut(
+  //       turnPID.calculate(
+  //               moduleSimulation.getTurnAbsolutePosition().getRotations(),
+  //               desiredState.angle.getRotations())
+  //           + turnFF.calculate(turnPID.getSetpoint().velocity));
+  // }
+
+  // public Rotation2d getTurnRotations() {
+  //   return new Ro(moduleSimulation.getTurnAbsolutePosition()).getRadians();
+  // }
 }
