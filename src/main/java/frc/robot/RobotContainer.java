@@ -149,9 +149,6 @@ public class RobotContainer {
             () -> driverLeftBumper.getAsBoolean());
 
     driveSubsystem.setDefaultCommand(driveCommand);
-
-    // driverController.a().onTrue(new SetTurnPosition(driveSubsystem));
-
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));
 
