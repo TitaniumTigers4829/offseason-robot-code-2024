@@ -38,7 +38,7 @@ public class ManualIntake extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.setIntakeSpeed(0);
-    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
+    // intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_IN);
   }
 
   // Returns true when the command should end.
