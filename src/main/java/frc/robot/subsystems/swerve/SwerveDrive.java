@@ -8,6 +8,8 @@ import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.CH
 import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.CHASSIS_MAX_ANGULAR_ACCELERATION_RAD_PER_SEC_SQ;
 import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.CHASSIS_MAX_ANGULAR_VELOCITY_RAD_PER_SEC;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -20,7 +22,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.debug.Alert;
@@ -121,6 +125,14 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
   }
 
+  public void setTurnPosition(double position) {
+    SmartDashboard.putNumber("turn position", position);
+    for (SwerveModule module : swerveModules) {
+      module.setTurnPosition(position);
+      
+    }
+  }
+
   /**
    * Sets the standard deviations of model states, or how much the april tags contribute to the pose
    * estimation of the robot. Lower numbers equal higher confidence and vice versa.
@@ -155,7 +167,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
    */
   public void runCharacterization(double volts) {
     for (SwerveModule module : swerveModules) {
-      module.setVoltage(volts);
+      module.setVoltage(-volts);
     }
   }
 
@@ -195,17 +207,40 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
    * @param fieldRelative is the robot field relative
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
-    ChassisSpeeds sChassisSpeeds =
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed, ySpeed, rotationSpeed, Rotation2d.fromDegrees(0))
-            : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
-
-    runRawChassisSpeeds(sChassisSpeeds);
+    SwerveModuleState[] swerveModuleStates =
+        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(ChassisSpeeds.discretize(
+            fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                    xSpeed, ySpeed, rotationSpeed, getPose().getRotation())
+                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed), 0.02));
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+        
+    setModuleStates(swerveModuleStates); 
+    Logger.recordOutput("SwerveStates/SwerveModuleStates", swerveModuleStates);
   }
 
+   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
+  public double getAllianceAngleOffset() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    double offset =
+        alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
+    return offset;
+  }
+    /**
+   * Sets the modules to the specified states.
+   *
+   * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
+   *     frontRight, backLeft, backRight (should be the same as the kinematics).
+   */
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    for (int i = 0; i < 4; i++) {
+      swerveModules[i].runSetPoint(desiredStates[i]);
+    }
+  }
+  
   private void feedSingleOdometryDataToPositionEstimator(int timeStampIndex) {
-    final SwerveModulePosition[] modulePositions = getModulesPosition(timeStampIndex),
+    final SwerveModulePosition[] modulePositions = getModulePosition(),
         moduleDeltas = getModulesDelta(modulePositions);
 
     if (!updateRobotFacingWithGyroReading(timeStampIndex))
@@ -217,11 +252,20 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
         modulePositions);
   }
 
-  private SwerveModulePosition[] getModulesPosition(int timeStampIndex) {
+  // private SwerveModulePosition[] getModulesPosition(int timeStampIndex) {
+  //   SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
+  //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++)
+  //     swerveModulePositions[moduleIndex] =
+  //         swerveModules[moduleIndex].getOdometryPositions()[];
+  //   return swerveModulePositions;
+  // }
+
+  private SwerveModulePosition[] getModulePosition() {
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
-    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++)
-      swerveModulePositions[moduleIndex] =
-          swerveModules[moduleIndex].getOdometryPositions()[timeStampIndex];
+    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+      swerveModulePositions[moduleIndex] = swerveModules[moduleIndex].getPosition();
+    }
+
     return swerveModulePositions;
   }
 
@@ -260,20 +304,20 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
   }
 
-  @Override
-  public void runRawChassisSpeeds(ChassisSpeeds speeds) {
-    SwerveModuleState[] setpointStates =
-        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, 4.5); // TODO: get actual value
+  // @Override
+  // public void runRawChassisSpeeds(ChassisSpeeds speeds) {
+  //   SwerveModuleState[] setpointStates =
+  //       DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
+  //   SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, 4.5); // TODO: get actual value
 
-    // Send setpoints to modules
-    SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
-    for (int i = 0; i < 4; i++)
-      optimizedSetpointStates[i] = swerveModules[i].runSetPoint(setpointStates[i]);
+  //   // Send setpoints to modules
+  //   SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
+  //   for (int i = 0; i < 4; i++)
+  //     // optimizedSetpointStates[i] = swerveModules[i].runSetPoint(setpointStates[i]);
 
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
-  }
+  //   Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+  //   Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+  // }
 
   @Override
   public void stop() {
@@ -323,7 +367,7 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   @Override
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModuleLatestPositions(), pose);
+    poseEstimator.resetPosition(rawGyroRotation, getModulePosition(), pose);
   }
 
   @Override
@@ -386,5 +430,11 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
           builder.addDoubleProperty(
               "Back Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
         });
+  }
+
+  @Override
+  public void runRawChassisSpeeds(ChassisSpeeds speeds) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'runRawChassisSpeeds'");
   }
 }

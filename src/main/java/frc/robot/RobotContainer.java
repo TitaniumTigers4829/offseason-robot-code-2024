@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -9,6 +11,8 @@ import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.intake.ManualIntakePivot;
 import frc.robot.commands.intake.Outtake;
+import frc.robot.commands.drive.DriveForwardAndBack;
+import frc.robot.commands.drive.SetTurnPosition;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
@@ -27,10 +31,10 @@ public class RobotContainer {
 
   // private final Vision visionSubsystem;
   private final SwerveDrive driveSubsystem;
-  private final XboxController driverController = new XboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
   private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
   private final Intake intake = new Intake(new IntakeIOTalonFX());
+  private final CommandXboxController driverController = new CommandXboxController(0);
 
   public RobotContainer() {
     // visionSubsystem = new Vision();
@@ -109,13 +113,11 @@ public class RobotContainer {
         };
 
     DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
-    double operatorRightStickX = operatorController.getRightX();
-    Trigger operatorAButton = new Trigger(operatorController.a().whileTrue(new Outtake(intake, indexer)));
 
-    Trigger driverRightBumper = new Trigger(driverController::getRightBumper);
-    Trigger driverRightDirectionPad = new Trigger(() -> driverController.getPOV() == 90);
-    Trigger driverDownDirectionPad = new Trigger(() -> driverController.getPOV() == 180);
-    Trigger driverLeftDirectionPad = new Trigger(() -> driverController.getPOV() == 270);
+    Trigger driverRightBumper = new Trigger(driverController.rightBumper());
+    Trigger driverRightDirectionPad = new Trigger(driverController.pov(90));
+    Trigger driverDownDirectionPad = new Trigger(driverController.pov(180));
+    Trigger driverLeftDirectionPad = new Trigger(driverController.pov(270));
 
     // // autodrive
     // Trigger driverAButton = new Trigger(driverController::getAButton);
@@ -140,7 +142,7 @@ public class RobotContainer {
     // Trigger operatorLeftDirectionPad = new Trigger(()->operatorController.getPOV() == 270);
     // Trigger operatorDownDirectionPad = new Trigger(()->operatorController.getPOV() == 180);
     // Trigger driverLeftTrigger = new Trigger(()->driverController.getLeftTriggerAxis() > 0.2);
-    Trigger driverLeftBumper = new Trigger(driverController::getLeftBumper);
+    Trigger driverLeftBumper = new Trigger(driverController.leftBumper());
     // Trigger driverBButton = new Trigger(driverController::getBButton);
     // Trigger driverYButton = new Trigger(driverController::getYButton);
     // DoubleSupplier operatorLeftStickY = operatorController::getLeftY;
@@ -168,7 +170,7 @@ public class RobotContainer {
     Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
 
     intake.setDefaultCommand(manualIntakePivot);
-
+    
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));
 
@@ -244,14 +246,11 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    // driveSubsystem.resetOdometry(new Pose2d(driveSubsystem.getPose().getX(),
-    // driveSubsystem.getPose().getY(),
-    //   Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
+    driveSubsystem.setPose(new Pose2d(driveSubsystem.getPose().getX(),
+    driveSubsystem.getPose().getY(),
+      Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
-    return new FeedForwardCharacterization(
-        driveSubsystem,
-        driveSubsystem::runCharacterization,
-        driveSubsystem::getCharacterizationVelocity);
+    return new DriveForwardAndBack(driveSubsystem);
     // return null;
   }
 }
