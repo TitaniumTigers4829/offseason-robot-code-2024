@@ -179,8 +179,8 @@ public class RobotContainer {
     operatorController.a().whileTrue(new Outtake(intake, indexer));
 
 
-    operatorController.y().whileTrue(new SetFlywheelSpeed(flywheel, () -> ShooterConstants.SHOOT_SPEAKER_RPM));
-    operatorController.b().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
+    operatorController.leftBumper().whileTrue(new SetFlywheelSpeed(flywheel, () -> ShooterConstants.SHOOT_SPEAKER_RPM));
+    operatorController.rightBumper().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
     
 
     Command ManualPivot = new ManualPivot(pivot, () -> modifyAxisCubed(operatorRightStickY));
