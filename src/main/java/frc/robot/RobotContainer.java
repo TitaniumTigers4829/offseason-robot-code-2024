@@ -2,10 +2,18 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.commands.intake.ManualIntake;
+import frc.robot.commands.intake.ManualIntakePivot;
+import frc.robot.commands.intake.Outtake;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
@@ -20,6 +28,9 @@ public class RobotContainer {
   // private final Vision visionSubsystem;
   private final SwerveDrive driveSubsystem;
   private final XboxController driverController = new XboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
+  private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
+  private final Intake intake = new Intake(new IntakeIOTalonFX());
 
   public RobotContainer() {
     // visionSubsystem = new Vision();
@@ -97,6 +108,10 @@ public class RobotContainer {
           () -> modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
         };
 
+    DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
+    double operatorRightStickX = operatorController.getRightX();
+    Trigger operatorAButton = new Trigger(operatorController.a().whileTrue(new Outtake(intake, indexer)));
+
     Trigger driverRightBumper = new Trigger(driverController::getRightBumper);
     Trigger driverRightDirectionPad = new Trigger(() -> driverController.getPOV() == 90);
     Trigger driverDownDirectionPad = new Trigger(() -> driverController.getPOV() == 180);
@@ -144,6 +159,15 @@ public class RobotContainer {
             () -> driverLeftBumper.getAsBoolean());
 
     driveSubsystem.setDefaultCommand(driveCommand);
+
+    operatorController.b().whileTrue(new ManualIntake(intake, false));
+    operatorController.x().whileTrue(new ManualIntake(intake, true));
+
+    operatorController.a().whileTrue(new Outtake(intake, indexer));
+
+    Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
+
+    intake.setDefaultCommand(manualIntakePivot);
 
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));
