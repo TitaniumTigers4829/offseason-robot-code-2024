@@ -1,11 +1,14 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.commands.drive.DriveForwardAndBack;
 import frc.robot.commands.drive.SetTurnPosition;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -147,7 +150,7 @@ public class RobotContainer {
 
     driveSubsystem.setDefaultCommand(driveCommand);
 
-    driverController.a().onTrue(new SetTurnPosition(driveSubsystem));
+    // driverController.a().onTrue(new SetTurnPosition(driveSubsystem));
 
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));
@@ -224,14 +227,11 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    // driveSubsystem.resetOdometry(new Pose2d(driveSubsystem.getPose().getX(),
-    // driveSubsystem.getPose().getY(),
-    //   Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
+    driveSubsystem.setPose(new Pose2d(driveSubsystem.getPose().getX(),
+    driveSubsystem.getPose().getY(),
+      Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
-    return new FeedForwardCharacterization(
-        driveSubsystem,
-        driveSubsystem::runCharacterization,
-        driveSubsystem::getCharacterizationVelocity);
+    return new DriveForwardAndBack(driveSubsystem);
     // return null;
   }
 }
