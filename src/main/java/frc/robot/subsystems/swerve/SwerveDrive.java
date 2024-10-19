@@ -8,6 +8,8 @@ import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.CH
 import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.CHASSIS_MAX_ANGULAR_ACCELERATION_RAD_PER_SEC_SQ;
 import static frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants.CHASSIS_MAX_ANGULAR_VELOCITY_RAD_PER_SEC;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -20,7 +22,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.debug.Alert;
@@ -215,7 +219,14 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     setModuleStates(swerveModuleStates); 
     Logger.recordOutput("SwerveStates/SwerveModuleStates", swerveModuleStates);
   }
-  
+
+   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
+  public double getAllianceAngleOffset() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    double offset =
+        alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
+    return offset;
+  }
     /**
    * Sets the modules to the specified states.
    *
