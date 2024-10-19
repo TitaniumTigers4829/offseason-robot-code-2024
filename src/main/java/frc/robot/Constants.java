@@ -33,7 +33,7 @@ public final class Constants {
     public static final String CANIVORE_CAN_BUS_STRING = "canivore 1";
     public static final String RIO_CAN_BUS_STRING = "rio";
 
-    public static final double MIN_FALCON_DEADBAND = 0.0001;
+    public static final double MIN_FALCON_DEADBAND = 0.001;
 
     public static final double DEADBAND_VALUE = 0.05;
   }

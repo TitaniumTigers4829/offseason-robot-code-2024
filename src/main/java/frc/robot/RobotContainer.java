@@ -10,6 +10,7 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.intake.ManualIntakePivot;
+import frc.robot.commands.intake.ManualIntakeandIndexerRollers;
 import frc.robot.commands.intake.Outtake;
 import frc.robot.commands.drive.DriveForwardAndBack;
 import frc.robot.commands.drive.SetTurnPosition;
@@ -166,6 +167,7 @@ public class RobotContainer {
     operatorController.x().whileTrue(new ManualIntake(intake, true));
 
     operatorController.a().whileTrue(new Outtake(intake, indexer));
+
 
     Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
 

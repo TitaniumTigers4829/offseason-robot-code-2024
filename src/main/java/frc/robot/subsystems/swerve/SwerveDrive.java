@@ -44,7 +44,10 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs;
   private final OdometryThreadInputsAutoLogged odometryThreadInputs;
-  private final SwerveModule[] swerveModules;
+  private final SwerveModule frontLeftSwerveModule;
+  private final SwerveModule frontRightSwerveModule;
+  private final SwerveModule rearLeftSwerveModule;
+  private final SwerveModule rearRightSwerveModule;
 
   private Rotation2d rawGyroRotation;
   private final SwerveModulePosition[] lastModulePositions;
@@ -65,13 +68,10 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     this.gyroIO = gyroIO;
     this.gyroInputs = new GyroIOInputsAutoLogged();
     this.rawGyroRotation = new Rotation2d();
-    this.swerveModules =
-        new SwerveModule[] {
-          new SwerveModule(frontLeftModuleIO, "FrontLeft"),
-          new SwerveModule(frontRightModuleIO, "FrontRight"),
-          new SwerveModule(backLeftModuleIO, "BackLeft"),
-          new SwerveModule(backRightModuleIO, "BackRight"),
-        };
+    frontLeftSwerveModule = new SwerveModule(frontLeftModuleIO, "FrontLeft");
+    frontRightSwerveModule = new SwerveModule(frontRightModuleIO, "FrontRight");
+    rearLeftSwerveModule    =  new SwerveModule(backLeftModuleIO, "BackLeft");
+    rearRightSwerveModule     = new SwerveModule(backRightModuleIO, "BackRight");
 
     lastModulePositions =
         new SwerveModulePosition[] {
@@ -109,8 +109,8 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   /** Updates the pose estimator with the pose calculated from the swerve modules. */
   public void addPoseEstimatorSwerveMeasurement() {
-    poseEstimator.updateWithTime(
-        Timer.getFPGATimestamp(), gyroInputs.yawDegrees, getModuleLatestPositions());
+    // poseEstimator.updateWithTime(
+    //     Timer.getFPGATimestamp(), gyroInputs.yawDegrees, getModuleLatestPositions());
   }
 
   // * Updates the pose estimator with the pose calculated from the april tags. How much it
@@ -125,13 +125,13 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
     poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
   }
 
-  public void setTurnPosition(double position) {
-    SmartDashboard.putNumber("turn position", position);
-    for (SwerveModule module : swerveModules) {
-      module.setTurnPosition(position);
+  // public void setTurnPosition(double position) {
+  //   // SmartDashboard.putNumber("turn position", position);
+  //   for (SwerveModule module : swerveModules) {
+  //     module.setTurnPosition(position);
       
-    }
-  }
+  //   }
+  // }
 
   /**
    * Sets the standard deviations of model states, or how much the april tags contribute to the pose
@@ -150,10 +150,10 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   @Override
   public void periodic() {
     final double t0 = TimeUtil.getRealTimeSeconds();
-    fetchOdometryInputs();
+    // fetchOdometryInputs();
     Logger.recordOutput(
         "SystemPerformance/OdometryFetchingTimeMS", (TimeUtil.getRealTimeSeconds() - t0) * 1000);
-    modulesPeriodic();
+    // modulesPeriodic();
 
     // for (int timeStampIndex = 0;
     //     timeStampIndex < odometryThreadInputs.measurementTimeStamps.length;
@@ -161,42 +161,42 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   }
 
   /**
-   * Runs characterization based on volts
-   *
-   * @param volts
-   */
-  public void runCharacterization(double volts) {
-    for (SwerveModule module : swerveModules) {
-      module.setVoltage(-volts);
-    }
-  }
+  //  * Runs characterization based on volts
+  //  *
+  //  * @param volts
+  //  */
+  // public void runCharacterization(double volts) {
+  //   for (SwerveModule module : swerveModules) {
+  //     module.setVoltage(-volts);
+  //   }
+  // }
 
-  /** Returns the average drive velocity in radians/sec. */
-  public double getCharacterizationVelocity() {
-    double velocity = 0.0;
-    for (SwerveModule module : swerveModules) {
-      velocity += module.getCharacterizationVelocity();
-    }
-    return velocity;
-  }
+  // /** Returns the average drive velocity in radians/sec. */
+  // public double getCharacterizationVelocity() {
+  //   double velocity = 0.0;
+  //   for (SwerveModule module : swerveModules) {
+  //     velocity += module.getCharacterizationVelocity();
+  //   }
+  //   return velocity;
+  // }
 
-  private void fetchOdometryInputs() {
-    odometryThread.lockOdometry();
-    odometryThread.updateInputs(odometryThreadInputs);
-    Logger.processInputs("Drive/OdometryThread", odometryThreadInputs);
+  // private void fetchOdometryInputs() {
+  //   odometryThread.lockOdometry();
+  //   odometryThread.updateInputs(odometryThreadInputs);
+  //   Logger.processInputs("Drive/OdometryThread", odometryThreadInputs);
 
-    for (SwerveModule module : swerveModules) module.updateOdometryInputs();
+  //   for (SwerveModule module : swerveModules) module.updateOdometryInputs();
 
-    gyroIO.updateInputs(gyroInputs);
-    Logger.processInputs("Drive/Gyro", gyroInputs);
-    gyroDisconnectedAlert.setActivated(!gyroInputs.isConnected);
+  //   gyroIO.updateInputs(gyroInputs);
+  //   Logger.processInputs("Drive/Gyro", gyroInputs);
+  //   gyroDisconnectedAlert.setActivated(!gyroInputs.isConnected);
 
-    odometryThread.unlockOdometry();
-  }
+  //   odometryThread.unlockOdometry();
+  // }
 
-  private void modulesPeriodic() {
-    for (var module : swerveModules) module.periodic();
-  }
+  // private void modulesPeriodic() {
+  //   for (var module : swerveModules) module.periodic();
+  // }
 
   /**
    * Tells the robot which way to move
@@ -208,11 +208,11 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
     SwerveModuleState[] swerveModuleStates =
-        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(ChassisSpeeds.discretize(
+        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
                     xSpeed, ySpeed, rotationSpeed, getPose().getRotation())
-                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed), 0.02));
+                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
         
@@ -227,30 +227,31 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
         alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
     return offset;
   }
-    /**
+ /**
    * Sets the modules to the specified states.
    *
    * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
    *     frontRight, backLeft, backRight (should be the same as the kinematics).
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    for (int i = 0; i < 4; i++) {
-      swerveModules[i].runSetPoint(desiredStates[i]);
-    }
+    frontLeftSwerveModule.runSetPoint(desiredStates[0]);
+    frontRightSwerveModule.runSetPoint(desiredStates[1]);
+    rearLeftSwerveModule.runSetPoint(desiredStates[2]);
+    rearRightSwerveModule.runSetPoint(desiredStates[3]);
   }
-  
-  private void feedSingleOdometryDataToPositionEstimator(int timeStampIndex) {
-    final SwerveModulePosition[] modulePositions = getModulePosition(),
-        moduleDeltas = getModulesDelta(modulePositions);
 
-    if (!updateRobotFacingWithGyroReading(timeStampIndex))
-      updateRobotFacingWithOdometry(moduleDeltas);
+  // private void feedSingleOdometryDataToPositionEstimator(int timeStampIndex) {
+  //   final SwerveModulePosition[] modulePositions = getModulePosition(),
+  //       moduleDeltas = getModulesDelta(modulePositions);
 
-    poseEstimator.updateWithTime(
-        odometryThreadInputs.measurementTimeStamps[timeStampIndex],
-        rawGyroRotation,
-        modulePositions);
-  }
+  //   if (!updateRobotFacingWithGyroReading(timeStampIndex))
+  //     updateRobotFacingWithOdometry(moduleDeltas);
+
+  //   poseEstimator.updateWithTime(
+  //       odometryThreadInputs.measurementTimeStamps[timeStampIndex],
+  //       rawGyroRotation,
+  //       modulePositions);
+  // }
 
   // private SwerveModulePosition[] getModulesPosition(int timeStampIndex) {
   //   SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
@@ -260,27 +261,27 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   //   return swerveModulePositions;
   // }
 
-  private SwerveModulePosition[] getModulePosition() {
-    SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
-    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-      swerveModulePositions[moduleIndex] = swerveModules[moduleIndex].getPosition();
-    }
+  // private SwerveModulePosition[] getModulePosition() {
+  //   SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
+  //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+  //     swerveModulePositions[moduleIndex] = swerveModules[moduleIndex].getPosition();
+  //   }
 
-    return swerveModulePositions;
-  }
+  //   return swerveModulePositions;
+  // }
 
-  private SwerveModulePosition[] getModulesDelta(SwerveModulePosition[] freshModulesPosition) {
-    SwerveModulePosition[] deltas = new SwerveModulePosition[swerveModules.length];
-    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-      final double deltaDistanceMeters =
-          freshModulesPosition[moduleIndex].distanceMeters
-              - lastModulePositions[moduleIndex].distanceMeters;
-      deltas[moduleIndex] =
-          new SwerveModulePosition(deltaDistanceMeters, freshModulesPosition[moduleIndex].angle);
-      lastModulePositions[moduleIndex] = freshModulesPosition[moduleIndex];
-    }
-    return deltas;
-  }
+  // private SwerveModulePosition[] getModulesDelta(SwerveModulePosition[] freshModulesPosition) {
+  //   SwerveModulePosition[] deltas = new SwerveModulePosition[swerveModules.length];
+  //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+  //     final double deltaDistanceMeters =
+  //         freshModulesPosition[moduleIndex].distanceMeters
+  //             - lastModulePositions[moduleIndex].distanceMeters;
+  //     deltas[moduleIndex] =
+  //         new SwerveModulePosition(deltaDistanceMeters, freshModulesPosition[moduleIndex].angle);
+  //     lastModulePositions[moduleIndex] = freshModulesPosition[moduleIndex];
+  //   }
+  //   return deltas;
+  // }
 
   /**
    * updates the robot facing using the reading from the gyro
@@ -319,40 +320,40 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   //   Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
   // }
 
-  @Override
-  public void stop() {
-    Rotation2d[] swerveHeadings = new Rotation2d[swerveModules.length];
-    for (int i = 0; i < swerveHeadings.length; i++) swerveHeadings[i] = new Rotation2d();
-    DriveConstants.DRIVE_KINEMATICS.resetHeadings(swerveHeadings);
-    HolonomicDriveSubsystem.super.stop();
-  }
+  // @Override
+  // public void stop() {
+  //   Rotation2d[] swerveHeadings = new Rotation2d[swerveModules.length];
+  //   for (int i = 0; i < swerveHeadings.length; i++) swerveHeadings[i] = new Rotation2d();
+  //   DriveConstants.DRIVE_KINEMATICS.resetHeadings(swerveHeadings);
+  //   HolonomicDriveSubsystem.super.stop();
+  // }
 
-  /**
-   * Locks the chassis and turns the modules to an X formation to resist movement. The lock will be
-   * cancelled the next time a nonzero velocity is requested.
-   */
-  public void lockChassisWithXFormation() {
-    Rotation2d[] swerveHeadings = new Rotation2d[swerveModules.length];
-    for (int i = 0; i < swerveHeadings.length; i++)
-      swerveHeadings[i] = DriveConstants.MODULE_TRANSLATIONS[i].getAngle();
-    DriveConstants.DRIVE_KINEMATICS.resetHeadings(swerveHeadings);
-    HolonomicDriveSubsystem.super.stop();
-  }
+  // /**
+  //  * Locks the chassis and turns the modules to an X formation to resist movement. The lock will be
+  //  * cancelled the next time a nonzero velocity is requested.
+  //  */
+  // public void lockChassisWithXFormation() {
+  //   Rotation2d[] swerveHeadings = new Rotation2d[swerveModules.length];
+  //   for (int i = 0; i < swerveHeadings.length; i++)
+  //     swerveHeadings[i] = DriveConstants.MODULE_TRANSLATIONS[i].getAngle();
+  //   DriveConstants.DRIVE_KINEMATICS.resetHeadings(swerveHeadings);
+  //   HolonomicDriveSubsystem.super.stop();
+  // }
 
-  /** Returns the module states (turn angles and drive velocities) for all the modules. */
-  @AutoLogOutput(key = "SwerveStates/Measured")
-  private SwerveModuleState[] getModuleStates() {
-    SwerveModuleState[] states = new SwerveModuleState[swerveModules.length];
-    for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getMeasuredState();
-    return states;
-  }
+  // /** Returns the module states (turn angles and drive velocities) for all the modules. */
+  // @AutoLogOutput(key = "SwerveStates/Measured")
+  // private SwerveModuleState[] getModuleStates() {
+  //   SwerveModuleState[] states = new SwerveModuleState[swerveModules.length];
+  //   for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getMeasuredState();
+  //   return states;
+  // }
 
-  /** Returns the module positions (turn angles and drive positions) for all the modules. */
-  private SwerveModulePosition[] getModuleLatestPositions() {
-    SwerveModulePosition[] states = new SwerveModulePosition[swerveModules.length];
-    for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getLatestPosition();
-    return states;
-  }
+  // /** Returns the module positions (turn angles and drive positions) for all the modules. */
+  // private SwerveModulePosition[] getModuleLatestPositions() {
+  //   SwerveModulePosition[] states = new SwerveModulePosition[swerveModules.length];
+  //   for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getLatestPosition();
+  //   return states;
+  // }
 
   @AutoLogOutput(key = "Odometry/RobotPosition")
   @Override
@@ -367,12 +368,13 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
 
   @Override
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModulePosition(), pose);
+    // poseEstimator.resetPosition(rawGyroRotation, getModulePosition(), pose);
   }
 
   @Override
   public ChassisSpeeds getMeasuredChassisSpeedsRobotRelative() {
-    return DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+    // return DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+    return null;
   }
 
   @Override
@@ -405,31 +407,31 @@ public class SwerveDrive extends SubsystemBase implements HolonomicDriveSubsyste
   private double previousMeasurementTimeStamp = -1;
 
   private void startDashboardDisplay() {
-    SmartDashboard.putData(
-        "Swerve Drive",
-        builder -> {
-          builder.setSmartDashboardType("SwerveDrive");
+    // SmartDashboard.putData(
+    //     "Swerve Drive",
+        // builder -> {
+        //   builder.setSmartDashboardType("SwerveDrive");
 
-          builder.addDoubleProperty(
-              "Front Left Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-          builder.addDoubleProperty(
-              "Front Left Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+        //   builder.addDoubleProperty(
+        //       "Front Left Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
+        //   builder.addDoubleProperty(
+        //       "Front Left Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
 
-          builder.addDoubleProperty(
-              "Front Right Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-          builder.addDoubleProperty(
-              "Front Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+        //   builder.addDoubleProperty(
+        //       "Front Right Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
+        //   builder.addDoubleProperty(
+        //       "Front Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
 
-          builder.addDoubleProperty(
-              "Back Left Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-          builder.addDoubleProperty(
-              "Back Left Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+        //   builder.addDoubleProperty(
+        //       "Back Left Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
+        //   builder.addDoubleProperty(
+        //       "Back Left Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
 
-          builder.addDoubleProperty(
-              "Back Right Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
-          builder.addDoubleProperty(
-              "Back Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
-        });
+        //   builder.addDoubleProperty(
+        //       "Back Right Angle", () -> swerveModules[0].getSteerFacing().getRadians(), null);
+        //   builder.addDoubleProperty(
+        //       "Back Right Velocity", () -> swerveModules[0].getDriveVelocityMetersPerSec(), null);
+        // });
   }
 
   @Override

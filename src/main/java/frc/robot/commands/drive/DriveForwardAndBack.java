@@ -31,9 +31,9 @@ public class DriveForwardAndBack extends Command {
   @Override
   public void execute() {
     if (!timer.hasElapsed(2)) {
-      driveSubsystem.drive(0.2, 0, 0, false);
+      driveSubsystem.drive(-0.5, 0, 0, false);
     } else {
-      driveSubsystem.drive(-0.2, 0, 0, false);
+      driveSubsystem.drive(0.4, 0, 0, false);
     }
   }
 
@@ -46,6 +46,6 @@ public class DriveForwardAndBack extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(4);
+    return timer.hasElapsed(5);
   }
 }

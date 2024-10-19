@@ -25,7 +25,7 @@ public class ManualIntake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
+    // intake.setPivotAngle(IntakeConstants.INTAKE_PIVOT_OUT);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
