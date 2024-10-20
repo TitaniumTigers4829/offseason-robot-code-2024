@@ -14,13 +14,13 @@ import java.util.function.DoubleSupplier;
 public class ManualIntakeandIndexerRollers extends Command {
   private final Intake intake;
   private final Indexer indexer;
-  private DoubleSupplier speed;
+  private boolean direction;
 
   /** Creates a new ManualIntakeRollers. */
-  public ManualIntakeandIndexerRollers(Intake intake, Indexer indexer, DoubleSupplier speed) {
+  public ManualIntakeandIndexerRollers(Intake intake, Indexer indexer, boolean direction) {
     this.intake = intake;
     this.indexer = indexer;
-    this.speed = speed;
+    this.direction = direction;
     addRequirements(intake, indexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -32,8 +32,8 @@ public class ManualIntakeandIndexerRollers extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setIntakeSpeed(speed.getAsDouble());
-    indexer.setIndexerSpeed(speed.getAsDouble());
+    intake.setIntakeSpeed(direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
+    indexer.setIndexerSpeed(direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
   }
 
   // Called once the command ends or is interrupted.

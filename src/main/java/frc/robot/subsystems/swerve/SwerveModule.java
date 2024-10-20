@@ -53,7 +53,8 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometryPositions();
-    SmartDashboard.putNumber("turn pos", io.getTurnAbsolutePosition());
+    SmartDashboard.putNumber("turn pos"+ name , io.getTurnAbsolutePosition());
+    SmartDashboard.putNumber("relative" +name, inputs.turnPosition);
   }
 
   public void setVoltage(double volts) {

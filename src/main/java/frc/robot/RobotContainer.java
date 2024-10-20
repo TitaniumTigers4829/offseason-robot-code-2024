@@ -10,6 +10,7 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.intake.ManualIntakePivot;
+import frc.robot.commands.intake.ManualIntakeandIndexerRollers;
 import frc.robot.commands.intake.Outtake;
 import frc.robot.commands.pivot.ManualPivot;
 import frc.robot.commands.shooter.ManualShooterRoller;
@@ -178,7 +179,6 @@ public class RobotContainer {
 
     operatorController.a().whileTrue(new Outtake(intake, indexer));
 
-
     operatorController.leftBumper().whileTrue(new SetFlywheelSpeed(flywheel, () -> ShooterConstants.SHOOT_SPEAKER_RPM));
     operatorController.rightBumper().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
     
@@ -186,7 +186,6 @@ public class RobotContainer {
     Command ManualPivot = new ManualPivot(pivot, () -> modifyAxisCubed(operatorRightStickY));
 
     pivot.setDefaultCommand(ManualPivot);
-
 
     Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
 

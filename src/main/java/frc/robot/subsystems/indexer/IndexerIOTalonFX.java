@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.HardwareConstants;
 
 public class IndexerIOTalonFX implements IndexerIO {
-  private final TalonFX indexerMotor = new TalonFX(0);
+  private final TalonFX indexerMotor = new TalonFX(54);
 
   private final StatusSignal<Double> indexerVelocity;
   private final StatusSignal<Double> indexerAppliedVolts;
