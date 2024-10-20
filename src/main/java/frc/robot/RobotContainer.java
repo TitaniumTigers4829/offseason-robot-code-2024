@@ -12,6 +12,9 @@ import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.intake.ManualIntakePivot;
 import frc.robot.commands.intake.ManualIntakeandIndexerRollers;
 import frc.robot.commands.intake.Outtake;
+import frc.robot.commands.pivot.ManualPivot;
+import frc.robot.commands.shooter.ManualShooterRoller;
+import frc.robot.commands.shooter.SetFlywheelSpeed;
 import frc.robot.commands.drive.DriveForwardAndBack;
 import frc.robot.commands.drive.SetTurnPosition;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
@@ -19,6 +22,11 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
+import frc.robot.subsystems.shooter.Flywheel;
+import frc.robot.subsystems.shooter.FlywheelIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
@@ -35,6 +43,8 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
   private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
   private final Intake intake = new Intake(new IntakeIOTalonFX());
+  private final Pivot pivot = new Pivot(new PivotIOTalonFX());
+  private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
 
   public RobotContainer() {
@@ -114,6 +124,7 @@ public class RobotContainer {
         };
 
     DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
+    DoubleSupplier operatorRightStickY = operatorController::getRightY;
 
     Trigger driverRightBumper = new Trigger(driverController.rightBumper());
     Trigger driverRightDirectionPad = new Trigger(driverController.pov(90));
@@ -168,6 +179,13 @@ public class RobotContainer {
 
     operatorController.a().whileTrue(new Outtake(intake, indexer));
 
+    operatorController.leftBumper().whileTrue(new SetFlywheelSpeed(flywheel, () -> ShooterConstants.SHOOT_SPEAKER_RPM));
+    operatorController.rightBumper().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
+    
+
+    Command ManualPivot = new ManualPivot(pivot, () -> modifyAxisCubed(operatorRightStickY));
+
+    pivot.setDefaultCommand(ManualPivot);
 
     Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
 

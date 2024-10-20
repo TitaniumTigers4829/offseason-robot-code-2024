@@ -5,21 +5,19 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.ShooterConstants;
 
-import java.util.function.DoubleSupplier;
-
-public class SetFlywheelSpeed extends Command {
+public class ShootSubwoofer extends Command {
+  private final Pivot pivot;
   private final Flywheel flywheel;
-  private DoubleSupplier speed;
-
-  /** Creates a new SetFlywheelSpeed. */
-  public SetFlywheelSpeed(Flywheel flywheel, DoubleSupplier speed) {
+  /** Creates a new ShootSubwoofer. */
+  public ShootSubwoofer(Pivot pivot, Flywheel flywheel) {
+    this.pivot = pivot;
     this.flywheel = flywheel;
-    this.speed = speed;
-
-    addRequirements(flywheel);
+    addRequirements(pivot, flywheel);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -30,15 +28,20 @@ public class SetFlywheelSpeed extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    flywheel.setFlywheelVelocity(speed.getAsDouble());
+    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+    pivot.setPivotAngle(PivotConstants.SUBWOOFER_ANGLE);
+    if (pivot.isPivotWithinAcceptableError()) {
+      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-  }
-
+    pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
+    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+  } 
 
   // Returns true when the command should end.
   @Override

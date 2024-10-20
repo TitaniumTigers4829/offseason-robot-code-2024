@@ -4,21 +4,18 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
-
 import java.util.function.DoubleSupplier;
 
-public class SetFlywheelSpeed extends Command {
-  private final Flywheel flywheel;
-  private DoubleSupplier speed;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.shooter.Flywheel;
 
-  /** Creates a new SetFlywheelSpeed. */
-  public SetFlywheelSpeed(Flywheel flywheel, DoubleSupplier speed) {
+public class ManualShooterRoller extends Command {
+  private Flywheel flywheel;
+  private DoubleSupplier speed;
+  /** Creates a new ManualShooterRoller. */
+  public ManualShooterRoller(Flywheel flywheel, DoubleSupplier speed) {
     this.flywheel = flywheel;
     this.speed = speed;
-
     addRequirements(flywheel);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -30,15 +27,12 @@ public class SetFlywheelSpeed extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    flywheel.setFlywheelVelocity(speed.getAsDouble());
+    flywheel.setRollerSpeed(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-  }
-
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
