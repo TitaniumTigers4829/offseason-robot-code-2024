@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -36,7 +37,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final VoltageOut voltageOut = new VoltageOut(0.0); // test: .withUpdateFreqHz(0.0);
   private final DutyCycleOut percentOut = new DutyCycleOut(0.0);
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
-  private final MotionMagicVoltage mmPositionRequest = new MotionMagicVoltage(0.0);
+  private final PositionVoltage mmPositionRequest = new PositionVoltage(0.0);
 
   private final Queue<Double> drivePosition;
   private final StatusSignal<Double> driveVelocity, driveMotorAppliedVoltage, driveMotorCurrent;
@@ -89,10 +90,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.MotorOutput.Inverted = moduleConfig.turnReversed();
     turnConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
-    turnConfig.MotionMagic.MotionMagicCruiseVelocity =
-        ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND;
-    turnConfig.MotionMagic.MotionMagicAcceleration =
-        ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED;
+    // turnConfig.MotionMagic.MotionMagicCruiseVelocity =
+    //     ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND;
+    // turnConfig.MotionMagic.MotionMagicAcceleration =
+    //     ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
     turnConfig.CurrentLimits.SupplyCurrentLimit = 20;
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -121,7 +122,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         };
 
     driveMotor.setPosition(0.0);
-    turnMotor.setPosition(0.0);
+    // turnMotor.setPosition(0.0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, periodicallyRefreshedSignals);
     driveMotor.optimizeBusUtilization();
@@ -161,10 +162,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         Units.rotationsToRadians(turnEncoderVelocityPerSecond.getValueAsDouble());
     inputs.turnMotorAppliedVolts = turnMotorAppliedVolts.getValueAsDouble();
     inputs.turnMotorCurrentAmps = turnMotorCurrent.getValueAsDouble();
-  }
-
-  private Rotation2d getTurnAbsolutePosition(double canCoderReadingRotations) {
-    return Rotation2d.fromRotations(canCoderReadingRotations);
   }
 
   @Override

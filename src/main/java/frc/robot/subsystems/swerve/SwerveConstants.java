@@ -54,10 +54,10 @@ public class SwerveConstants {
     public static final int REAR_LEFT_CANCODER_ID = 11;
     public static final int REAR_RIGHT_CANCODER_ID = 12;
 
-    public static final double FRONT_LEFT_ZERO_ANGLE = -0.08447265625;
+    public static final double FRONT_LEFT_ZERO_ANGLE = -0.09521484375;
     public static final double FRONT_RIGHT_ZERO_ANGLE = -0.478271484375;
     public static final double REAR_LEFT_ZERO_ANGLE = -0.318115234375;
-    public static final double REAR_RIGHT_ZERO_ANGLE = -0.462646484375;
+    public static final double REAR_RIGHT_ZERO_ANGLE = -0.473388671875;
 
     public static final SensorDirectionValue FRONT_LEFT_CANCODER_REVERSED =
         SensorDirectionValue.CounterClockwise_Positive;
@@ -69,11 +69,11 @@ public class SwerveConstants {
         SensorDirectionValue.CounterClockwise_Positive;
 
     public static final InvertedValue FRONT_LEFT_TURN_MOTOR_REVERSED =
-        InvertedValue.CounterClockwise_Positive;
+        InvertedValue.Clockwise_Positive;
     public static final InvertedValue FRONT_RIGHT_TURN_MOTOR_REVERSED =
-        InvertedValue.CounterClockwise_Positive;
+        InvertedValue.Clockwise_Positive;
     public static final InvertedValue REAR_LEFT_TURN_MOTOR_REVERSED =
-        InvertedValue.CounterClockwise_Positive;
+        InvertedValue.Clockwise_Positive;
     public static final InvertedValue REAR_RIGHT_TURN_MOTOR_REVERSED =
         InvertedValue.Clockwise_Positive;
 
@@ -113,16 +113,16 @@ public class SwerveConstants {
     public static final double DRIVE_SUPPLY_LIMIT = 45.0;
     public static final double DRIVE_STATOR_LIMIT = 50.0;
 
-    public static final double TURN_P = .5;
+    public static final double TURN_P = 15;
     public static final double TURN_I = 0.0;
     public static final double TURN_D = 0.0;
 
-    public static final double TURN_S = 0.1429;   
-    public static final double TURN_V = 0.695670;  
-    public static final double TURN_A = 0.015720;   
+    public static final double TURN_S = 0;   
+    public static final double TURN_V = 0.0;  
+    public static final double TURN_A = 0.0;   
 
-    public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 2000;
-    public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 200;
+    public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 30;
+    public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 24;
 
     public static final double DRIVE_P = 0.345;
     public static final double DRIVE_I = 0.0;
