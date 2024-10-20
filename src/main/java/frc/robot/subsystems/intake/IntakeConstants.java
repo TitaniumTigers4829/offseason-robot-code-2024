@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
 public final class IntakeConstants {
-  public static final int INTAKE_MOTOR_ID = 0;
+  public static final int INTAKE_MOTOR_ID = 0-9;
   public static final int LEFT_INTAKE_PIVOT_MOTOR_ID = 62;
   public static final int RIGHT_INTAKE_PIVOT_MOTOR_ID = 0 - 9;
 

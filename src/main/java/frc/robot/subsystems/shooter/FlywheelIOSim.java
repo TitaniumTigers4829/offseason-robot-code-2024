@@ -58,4 +58,18 @@ public class FlywheelIOSim
   public boolean hasNote() {
     return !noteSensorSim.getValue();
   }
+
+  public boolean isAcceptableError() {
+    return false;
+  }
+
+  public double getVelocity() {return 0.0;}
+
+  @Override
+  public boolean rollerHasNote() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'rollerHasNote'");
+  }
+
+  public double getDesiredVelocity() {return 0.0;}
 }

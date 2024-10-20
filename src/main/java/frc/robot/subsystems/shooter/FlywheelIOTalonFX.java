@@ -23,6 +23,7 @@ public class FlywheelIOTalonFX
 
   private final VelocityVoltage velocityRequest;
   private final VoltageOut voltageRequest;
+  private double desiredVelocity = 0.0;
   // gives values for each thing that is set.
   private final StatusSignal<Double> leaderPosition = leftFlywheelMotor.getPosition();
   private final StatusSignal<Double> leaderVelocity = leftFlywheelMotor.getVelocity();
@@ -31,6 +32,7 @@ public class FlywheelIOTalonFX
   private final StatusSignal<Double> followerCurrent =
       rightFlywheelMotor
           .getSupplyCurrent(); // All of these are from TalonFX Phoenix 6 that assign values to
+  private final StatusSignal<Double> rollerStator = rollerMotor.getStatorCurrent();
 
   // advantagekit log variables
 
@@ -104,6 +106,7 @@ public class FlywheelIOTalonFX
           leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()
         }; // puts current values into an array as doubles
     inputs.isNoteDetected = hasNote();
+    inputs.rollerStator = rollerStator.getValueAsDouble();
   }
 
   @Override
@@ -117,7 +120,18 @@ public class FlywheelIOTalonFX
    */
   @Override
   public void setVelocity(double velocityRPM) {
+    desiredVelocity = velocityRPM;
     leftFlywheelMotor.setControl(velocityRequest.withVelocity(velocityRPM / 60.0));
+  }
+
+  @Override
+  public double getDesiredVelocity() {
+    return desiredVelocity / 60.0;
+  }
+
+  @Override
+  public double getVelocity() {
+    return leaderVelocity.getValueAsDouble();
   }
 
   @Override
@@ -125,13 +139,25 @@ public class FlywheelIOTalonFX
     leftFlywheelMotor.stopMotor();
   }
 
+  @Override
   public void setRollerSpeed(double speed) {
     rollerMotor.set(speed);
+  }
+
+  @Override
+  public boolean isAcceptableError() {
+    return Math.abs(desiredVelocity - leaderVelocity.getValueAsDouble() * 60.0) < 50;
+  }
+
+  @Override
+  public boolean rollerHasNote() {
+    return rollerStator.getValueAsDouble() > 0;
   }
 
   /**
    * @return Whether the sensor can detect a note in there
    */
+  @Override
   public boolean hasNote() {
     return !noteSensor.get();
   }

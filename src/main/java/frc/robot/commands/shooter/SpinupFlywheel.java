@@ -26,7 +26,7 @@ public class SpinupFlywheel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    flywheelSubsystem.setFlywheelVelocity(0.0);
+    flywheelSubsystem.setFlywheelVelocity(4000);
   }
 
   // Called once the command ends or is interrupted.

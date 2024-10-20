@@ -6,12 +6,11 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
 
-public class ShootSubwoofer extends Command {
-  private final Flywheel flywheel;
-  /** Creates a new ShootSubwoofer. */
-  public ShootSubwoofer(Flywheel flywheel) {
+public class ShooterIntake extends Command {
+  Flywheel flywheel;
+  /** Creates a new ShooterIntake. */
+  public ShooterIntake(Flywheel flywheel) {
     this.flywheel = flywheel;
     addRequirements(flywheel);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -24,18 +23,21 @@ public class ShootSubwoofer extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
-    if (flywheel.isAcceptableError()) {
-      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
-    }
+    flywheel.setFlywheelVelocity(-2000);
+    flywheel.setRollerSpeed(-0.5);
+    if (flywheel.rollerHasNote()) {
+      flywheel.setRollerSpeed(0.0);
+      flywheel.setFlywheelVelocity(0);
+    } 
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
-  } 
+    flywheel.setFlywheelVelocity(0);
+    flywheel.setRollerSpeed(0);
+  }
 
   // Returns true when the command should end.
   @Override

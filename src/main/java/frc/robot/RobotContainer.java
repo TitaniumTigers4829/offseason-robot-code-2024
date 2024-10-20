@@ -15,6 +15,9 @@ import frc.robot.commands.intake.Outtake;
 import frc.robot.commands.pivot.ManualPivot;
 import frc.robot.commands.shooter.ManualShooterRoller;
 import frc.robot.commands.shooter.SetFlywheelSpeed;
+import frc.robot.commands.shooter.ShootSubwoofer;
+import frc.robot.commands.shooter.ShooterIntake;
+import frc.robot.commands.shooter.SpinupFlywheel;
 import frc.robot.commands.drive.DriveForwardAndBack;
 import frc.robot.commands.drive.SetTurnPosition;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
@@ -41,10 +44,10 @@ public class RobotContainer {
   // private final Vision visionSubsystem;
   private final SwerveDrive driveSubsystem;
   private final CommandXboxController operatorController = new CommandXboxController(1);
-  private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
-  private final Intake intake = new Intake(new IntakeIOTalonFX());
-  private final Pivot pivot = new Pivot(new PivotIOTalonFX());
-  private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
+  // private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
+  // private final Intake intake = new Intake(new IntakeIOTalonFX());
+  // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
+  // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
 
   public RobotContainer() {
@@ -174,23 +177,30 @@ public class RobotContainer {
 
     driveSubsystem.setDefaultCommand(driveCommand);
 
-    operatorController.b().whileTrue(new ManualIntake(intake, false));
-    operatorController.x().whileTrue(new ManualIntake(intake, true));
+    // operatorController.b().whileTrue(new ManualIntake(intake, false));
+    // operatorController.x().whileTrue(new ManualIntake(intake, true));
 
-    operatorController.a().whileTrue(new Outtake(intake, indexer));
+    // operatorController.a().whileTrue(new Outtake(intake, indexer));
 
-    operatorController.leftBumper().whileTrue(new SetFlywheelSpeed(flywheel, () -> ShooterConstants.SHOOT_SPEAKER_RPM));
-    operatorController.rightBumper().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
+    // operatorController.leftBumper().whileTrue(new SetFlywheelSpeed(flywheel, () -> ShooterConstants.SHOOT_SPEAKER_RPM));
+    // operatorController.rightBumper().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
     
 
-    Command ManualPivot = new ManualPivot(pivot, () -> modifyAxisCubed(operatorRightStickY));
+    // Command ManualPivot = new ManualPivot(pivot, () -> modifyAxisCubed(operatorRightStickY));
 
-    pivot.setDefaultCommand(ManualPivot);
+    // pivot.setDefaultCommand(ManualPivot);
 
-    Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
+    // Command manualIntakePivot = new ManualIntakePivot(intake, ()-> modifyAxisCubed(operatorLeftStickX));
 
-    intake.setDefaultCommand(manualIntakePivot);
+    // intake.setDefaultCommand(manualIntakePivot);
     
+    // operatorController.leftTrigger().whileTrue(new ShooterIntake(flywheel));
+    // operatorController.leftBumper().whileTrue(new SpinupFlywheel(flywheel));
+    // operatorController.b().whileTrue(new ManualShooterRoller(flywheel, () -> ShooterConstants.ROLLER_SHOOT_SPEED));
+    // operatorController.rightTrigger().whileTrue(new ShootSubwoofer(flywheel));
+    // operatorController.a().whileTrue(new SetFlywheelSpeed(flywheel, ()-> ShooterConstants.SHOOT_SPEAKER_RPM));
+    // operatorController.x().whileTrue(new ManualShooterRoller(flywheel, () -> -ShooterConstants.ROLLER_SHOOT_SPEED));
+    // operatorController.y().whileTrue(new SetFlywheelSpeed(flywheel, ()-> -ShooterConstants.SHOOT_SPEAKER_RPM));
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));
 
@@ -271,6 +281,7 @@ public class RobotContainer {
       Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
     return new DriveForwardAndBack(driveSubsystem);
+    // return new FeedForwardCharacterization(flywheel, flywheel::setFlywheelVoltage, flywheel::getFlywheelVelocity);
     // return null;
   }
 }

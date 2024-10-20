@@ -17,8 +17,12 @@ public class ShooterConstants {
   public static final double ROLLER_NEUTRAL_SPEED = 0;
   public static final double SHOOTER_NEUTRAL_SPEED = 0;
 
+  public static final double ROLLER_SOURCE_INTAKE_SPEED = 0-9;
+
+  public static final double FLYWHEEL_SOURCE_INTAKE_SPEED = -100;
+
   public static final double FLYWHEEL_SPINUP_SPEED = 4000;
-  public static final double SHOOT_SPEAKER_RPM = 4000;
+  public static final double SHOOT_SPEAKER_RPM = 5000;
   public static final double SHOOT_SPEAKER_FAR_RPM = 4800;
   public static final double SHOOT_SPEAKER_VERY_FAR_RPM = 5500;
 

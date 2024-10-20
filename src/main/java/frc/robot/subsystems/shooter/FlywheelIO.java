@@ -10,6 +10,7 @@ public interface FlywheelIO {
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
     public boolean isNoteDetected = false;
+    public double rollerStator =0.0;
   }
 
   /** Updates the set of loggable inputs. */
@@ -30,4 +31,14 @@ public interface FlywheelIO {
   public default void stop() {}
 
   default void setRollerSpeed(double speed) {}
+
+  boolean rollerHasNote();
+
+  boolean isAcceptableError();
+
+  boolean hasNote();
+
+  double getVelocity();
+
+  double getDesiredVelocity();
 }

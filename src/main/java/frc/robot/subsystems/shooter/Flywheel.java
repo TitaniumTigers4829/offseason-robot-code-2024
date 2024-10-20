@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -33,6 +34,14 @@ public class Flywheel extends SubsystemBase {
     Logger.recordOutput("Flywheel/RPM", desiredRPM);
   }
 
+  public double getFlywheelVelocity() {
+    return io.getVelocity();
+  }
+
+  public double getDesiredFlywheelVelocity() {
+    return io.getDesiredVelocity();
+  }
+
   public boolean hasNote() {
     return inputs.isNoteDetected;
   }
@@ -47,11 +56,24 @@ public class Flywheel extends SubsystemBase {
     Logger.recordOutput("Roller/DutyCycleOut", speed);
   }
 
+  public boolean rollerHasNote() {
+    return io.rollerHasNote();
+  }
+
+  public boolean isAcceptableError() {
+    return io.isAcceptableError();
+  }
+
+  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
     Logger.processInputs("FlywheelSubsystem", inputs);
+    SmartDashboard.putNumber("roller stator", inputs.rollerStator);
+    SmartDashboard.putNumber("desired vel", getDesiredFlywheelVelocity());
+    SmartDashboard.putNumber("current vel", getFlywheelVelocity());
   }
 
   @Override
