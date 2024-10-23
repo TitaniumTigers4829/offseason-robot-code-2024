@@ -56,8 +56,7 @@ public abstract class DriveCommandBase extends Command {
       if (vision.getNumberOfAprilTags(limelightNumber) == 1) {
         double[] standardDeviations =
             oneAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
-        ((SwerveDrive) swerveDrive)
-            .setPoseEstimatorVisionConfidence(
+        swerveDrive.setPoseEstimatorVisionConfidence(
                 standardDeviations[0], standardDeviations[1], standardDeviations[2]);
       } else if (vision.getNumberOfAprilTags(limelightNumber) > 1) {
         double[] standardDeviations =
