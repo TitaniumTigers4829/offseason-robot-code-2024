@@ -15,8 +15,6 @@ import frc.robot.commands.intake.Outtake;
 import frc.robot.commands.pivot.ManualPivot;
 import frc.robot.commands.shooter.ManualShooterRoller;
 import frc.robot.commands.shooter.SetFlywheelSpeed;
-import frc.robot.commands.drive.DriveForwardAndBack;
-import frc.robot.commands.drive.SetTurnPosition;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
@@ -39,7 +37,7 @@ import java.util.function.DoubleSupplier;
 public class RobotContainer {
 
   // private final Vision visionSubsystem;
-  private final SwerveDrive driveSubsystem;
+  private final SwerveDrive swerveDrive;
   private final CommandXboxController operatorController = new CommandXboxController(1);
   private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
   private final Intake intake = new Intake(new IntakeIOTalonFX());
@@ -49,7 +47,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     // visionSubsystem = new Vision();
-    driveSubsystem =
+    swerveDrive =
         new SwerveDrive(
             new GyroIONavX(),
             new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]),
@@ -165,14 +163,14 @@ public class RobotContainer {
 
     Command driveCommand =
         new DriveCommand(
-            driveSubsystem,
+            swerveDrive,
             driverLeftStick[1],
             driverLeftStick[0],
             () -> modifyAxisCubed(driverRightStickX),
             () -> !driverRightBumper.getAsBoolean(),
             () -> driverLeftBumper.getAsBoolean());
 
-    driveSubsystem.setDefaultCommand(driveCommand);
+    swerveDrive.setDefaultCommand(driveCommand);
 
     operatorController.b().whileTrue(new ManualIntake(intake, false));
     operatorController.x().whileTrue(new ManualIntake(intake, true));
@@ -266,11 +264,11 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    driveSubsystem.setPose(new Pose2d(driveSubsystem.getPose().getX(),
-    driveSubsystem.getPose().getY(),
-      Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())));
+    swerveDrive.setPose(new Pose2d(swerveDrive.getPose().getX(),
+    swerveDrive.getPose().getY(),
+      Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
-    return new DriveForwardAndBack(driveSubsystem);
-    // return null;
+    // return new DriveForwardAndBack(swerveDrive);
+    return null;
   }
 }

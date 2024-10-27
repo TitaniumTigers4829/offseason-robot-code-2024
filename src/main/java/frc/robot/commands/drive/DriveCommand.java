@@ -10,7 +10,7 @@ import java.util.function.DoubleSupplier;
 
 public class DriveCommand extends Command {
 
-  private final SwerveDrive driveSubsystem;
+  private final SwerveDrive swerveDrive;
 
   private final DoubleSupplier leftJoystickY, leftJoystickX, rightJoystickX;
   private final BooleanSupplier isFieldRelative, isHighRotation;
@@ -35,7 +35,7 @@ public class DriveCommand extends Command {
       BooleanSupplier isFieldRelative,
       BooleanSupplier isHighRotation) {
     // super(driveSubsystem, visionSubsystem);
-    this.driveSubsystem = driveSubsystem;
+    this.swerveDrive = driveSubsystem;
     addRequirements(driveSubsystem);
     this.leftJoystickY = leftJoystickY;
     this.leftJoystickX = leftJoystickX;
@@ -56,7 +56,7 @@ public class DriveCommand extends Command {
       angularSpeed = DriveConstants.LOW_ANGULAR_SPEED_RADIANS_PER_SECOND;
     }
 
-    driveSubsystem.drive(
+    swerveDrive.drive(
         leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
         leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
         rightJoystickX.getAsDouble() * angularSpeed,
