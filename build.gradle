@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.3.2"
+    id "edu.wpi.first.GradleRIO" version "2025.1.1-beta-1"
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "6.25.0"
     id "io.freefair.lombok" version "8.4"
@@ -108,22 +108,16 @@ task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
 }
 compileJava.finalizedBy checkAkitInstall
 
-// // Generate drive trajectories when building
-// task(generateDriveTrajectories, dependsOn: "classes", type: JavaExec) {
-//     mainClass = "org.littletonrobotics.frc2024.subsystems.drive.trajectory.GenerateTrajectories"
-//     classpath = sourceSets.main.runtimeClasspath
-// }
-// compileJava.finalizedBy generateDriveTrajectories
 
-// Check robot type when deploying
-// task(checkRobot, dependsOn: "classes", type: JavaExec) {
-//     main = "frc.robot.Constants"
-//     classpath = sourceSets.main.runtimeClasspath
-// }
+//Check robot type when deploying
+task(checkRobot, dependsOn: "classes", type: JavaExec) {
+    main = "frc.robot.Constants"
+    classpath = sourceSets.main.runtimeClasspath
+}
 
-// deployroborio.dependsOn(checkRobot)
+deployroborio.dependsOn(checkRobot)
 
-// Create commit with working changes on event branches
+//Create commit with working changes on event branches
 task(eventDeploy) {
     doLast {
         if (project.gradle.startParameter.taskNames.any({ it.toLowerCase().contains("deploy") })) {

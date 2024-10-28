@@ -1,6 +1,6 @@
-package frc.robot.extras.simulation.physicsSim;
+package frc.robot.extras.simulation.mechanismSim.swervePhysicsSim;
 
-import static frc.robot.extras.simulation.SimulatedField.*;
+import static frc.robot.extras.simulation.field.SimulatedField.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.extras.util.MathUtil;

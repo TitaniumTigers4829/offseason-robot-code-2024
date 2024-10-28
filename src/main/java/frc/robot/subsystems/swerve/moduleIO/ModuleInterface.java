@@ -2,7 +2,6 @@ package frc.robot.subsystems.swerve.moduleIO;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleInterface {
@@ -77,7 +76,7 @@ public interface ModuleInterface {
 
   default void stopModule() {}
 
-  default double getTurnRadians() {
+  default double getTurnRotations() {
     return 0.0;
   }
 
