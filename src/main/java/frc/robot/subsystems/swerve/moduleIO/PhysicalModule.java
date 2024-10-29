@@ -6,8 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -17,12 +16,10 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
@@ -35,12 +32,9 @@ public class PhysicalModule implements ModuleInterface {
   private final TalonFX turnMotor;
   private final CANcoder turnEncoder;
 
-  private String canBus = "";
-
-  private final VoltageOut voltageOut = new VoltageOut(0.0); // test: .withUpdateFreqHz(0.0);
-  private final DutyCycleOut percentOut = new DutyCycleOut(0.0);
+  private final VoltageOut voltageOut = new VoltageOut(0.0);
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
-  private final PositionVoltage mmPositionRequest = new PositionVoltage(0.0);
+  private final MotionMagicVoltage mmPositionRequest = new MotionMagicVoltage(0.0);
 
   private final Queue<Angle> drivePosition;
   private final StatusSignal<AngularVelocity> driveVelocity;
@@ -95,10 +89,10 @@ public class PhysicalModule implements ModuleInterface {
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.MotorOutput.Inverted = moduleConfig.turnReversed();
     turnConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
-    // turnConfig.MotionMagic.MotionMagicCruiseVelocity =
-    //     ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND;
-    // turnConfig.MotionMagic.MotionMagicAcceleration =
-    //     ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED;
+    turnConfig.MotionMagic.MotionMagicCruiseVelocity =
+        ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND;
+    turnConfig.MotionMagic.MotionMagicAcceleration =
+        ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
     turnConfig.CurrentLimits.SupplyCurrentLimit = 20;
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -122,8 +116,7 @@ public class PhysicalModule implements ModuleInterface {
           driveMotorCurrent,
           turnEncoderVelocity,
           turnMotorAppliedVolts,
-          turnMotorCurrent,
-          turnMotor.getPosition()
+          turnMotorCurrent
         };
 
     driveMotor.setPosition(0.0);
@@ -139,81 +132,58 @@ public class PhysicalModule implements ModuleInterface {
     inputs.isConnected = BaseStatusSignal.isAllGood(periodicallyRefreshedSignals);
 
     inputs.driveVelocity = driveVelocity.getValueAsDouble();
-    inputs.odometryDriveWheelRevolutions =
-        drivePosition.stream()
-            .mapToDouble(value -> value.in(Rotations) / ModuleConstants.DRIVE_GEAR_RATIO)
-            .toArray();
-    drivePosition.clear();
-    if (inputs.odometryDriveWheelRevolutions.length > 0)
-      inputs.drivePosition =
-          inputs.odometryDriveWheelRevolutions[inputs.odometryDriveWheelRevolutions.length - 1];
 
-    // inputs.odometryTurnPositions =
-    //     turnEncoderAbsolutePosition.stream()
-    //         .map(this::getTurnAbsolutePosition)
-    //         .toArray(Rotation2d[]::new);
-    // turnEncoderAbsolutePosition.clear();
-    // if (inputs.odometryTurnPositions.length > 0)
-    //   inputs.turnRotation = inputs.odometryTurnPositions[inputs.odometryTurnPositions.length -
-    // 1];
+    // Handle drive positions
+    if (!drivePosition.isEmpty()) {
+      Angle driveRelativePosition = Rotations.zero();
+      for (Angle angle : drivePosition) {
+        driveRelativePosition = angle;
+      }
+      inputs.drivePosition = driveRelativePosition.in(Rotations);
+      drivePosition.clear();
+    }
 
-    inputs.driveWheelFinalVelocityPerSec =
-        driveVelocity.getValueAsDouble() / ModuleConstants.DRIVE_GEAR_RATIO;
+    // Handle turn absolute positions
+    if (!turnEncoderAbsolutePosition.isEmpty()) {
+      Rotation2d turnPosition = new Rotation2d();
+      for (Angle angle : turnEncoderAbsolutePosition) {
+        turnPosition = Rotation2d.fromRotations(angle.in(Rotations));
+      }
+      inputs.turnAbsolutePosition = turnPosition;
+      turnEncoderAbsolutePosition.clear();
+    }
+
+    inputs.turnPosition = turnMotor.getPosition().getValueAsDouble();
+
     inputs.driveAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
     inputs.driveCurrentAmps = driveMotorCurrent.getValueAsDouble();
 
     inputs.turnPosition = turnMotor.getPosition().getValueAsDouble();
 
-    inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnEncoderVelocity.getValueAsDouble());
-    inputs.turnMotorAppliedVolts = turnMotorAppliedVolts.getValueAsDouble();
-    inputs.turnMotorCurrentAmps = turnMotorCurrent.getValueAsDouble();
+    inputs.turnVelocity = turnEncoderVelocity.getValueAsDouble();
+    inputs.turnAppliedVolts = turnMotorAppliedVolts.getValueAsDouble();
+    inputs.turnCurrentAmps = turnMotorCurrent.getValueAsDouble();
   }
 
   @Override
-  public void setTurnPosition(double position) {
-    position = Units.degreesToRotations(position);
-    turnMotor.setControl(mmPositionRequest.withPosition(position));
-  }
-
-  @Override
-  public double getDriveVelocity() {
-    return driveVelocity.refresh().getValueAsDouble();
-  }
-
-  @Override
-  public void setDriveVoltage(double volts) {
+  public void setDriveVoltage(Voltage volts) {
     driveMotor.setControl(voltageOut.withOutput(volts));
   }
 
   @Override
-  public void setTurnVoltage(double volts) {
+  public void setTurnVoltage(Voltage volts) {
     turnMotor.setControl(voltageOut.withOutput(volts));
   }
 
   @Override
-  public double getTurnAbsolutePosition() {
-    return turnEncoder.getAbsolutePosition().refresh().getValueAsDouble();
-  }
-
-  @Override
-  public double getDriveVoltage() {
-    return driveMotorAppliedVoltage.refresh().getValueAsDouble();
-  }
-
-  /**
-   * Sets the desired state for the module and sends calculated output from controller to the motor.
-   *
-   * @param desiredState Desired state with speed and angle.
-   */
-  @Override
   public void setDesiredState(SwerveModuleState desiredState) {
-    double turnRadians = getTurnRotations();
+    double turnRotations = getTurnRotations();
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState setpoint =
         new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
 
-    setpoint.optimize(Rotation2d.fromRotations(turnRadians));
-    setpoint.cosineScale(Rotation2d.fromRotations(turnRadians));
+    setpoint.optimize(Rotation2d.fromRotations(turnRotations));
+    setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
 
     if (Math.abs(setpoint.speedMetersPerSecond) < 0.01) {
       driveMotor.set(0);
@@ -227,16 +197,9 @@ public class PhysicalModule implements ModuleInterface {
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
 
-    driveMotor.setControl(velocityRequest.withVelocity(desiredDriveRPS));
-    turnMotor.setControl(mmPositionRequest.withPosition(setpoint.angle.getRotations()));
-
-    SmartDashboard.putNumber("desired State", desiredDriveRPS);
-    SmartDashboard.putNumber("desired turn pos", setpoint.angle.getRotations());
-  }
-
-  @Override
-  public void setDriveBrake(boolean enable) {
-    driveMotor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    driveMotor.setControl(velocityRequest.withVelocity(RotationsPerSecond.of(desiredDriveRPS)));
+    turnMotor.setControl(
+        mmPositionRequest.withPosition(Rotations.of(setpoint.angle.getRotations())));
   }
 
   public double getTurnRotations() {
@@ -246,18 +209,8 @@ public class PhysicalModule implements ModuleInterface {
   }
 
   @Override
-  public void setTurnBrake(boolean enable) {
-    turnMotor.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
-  }
-
-  @Override
   public void stopModule() {
     driveMotor.stopMotor();
     turnMotor.stopMotor();
-  }
-
-  @Override
-  public double getDrivePosition() {
-    return driveMotor.getPosition().refresh().getValueAsDouble();
   }
 }

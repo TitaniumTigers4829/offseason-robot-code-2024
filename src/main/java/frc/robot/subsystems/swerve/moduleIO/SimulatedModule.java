@@ -1,15 +1,20 @@
 package frc.robot.subsystems.swerve.moduleIO;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
-import frc.robot.extras.simulation.mechanismSim.swervePhysicsSim.SwerveModuleSimulation;
-import java.util.Arrays;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 
-/** Wrapper class around {@link SwerveModuleSimulation} that implements ModuleIO */
+/** Wrapper class around {@link SwerveModuleSimulation} */
 public class SimulatedModule implements ModuleInterface {
   private final SwerveModuleSimulation moduleSimulation;
 
@@ -26,94 +31,77 @@ public class SimulatedModule implements ModuleInterface {
   @Override
   public void updateInputs(ModuleInputs inputs) {
     inputs.drivePosition =
-        Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
+        Radians.of(moduleSimulation.getDriveEncoderFinalPositionRad()).in(Rotations);
     inputs.driveVelocity =
-        Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec());
+        RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
+            .in(RotationsPerSecond);
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
     inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 
-    inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
-    // inputs.turnPosition =
-    //     Rotation2d.fromRadians(moduleSimulation.getSteerRelativeEncoderPositionRad());
-    inputs.turnVelocityRadPerSec = moduleSimulation.getSteerRelativeEncoderSpeedRadPerSec();
-    inputs.turnAppliedVolts = moduleSimulation.getSteerMotorAppliedVolts();
-    inputs.turnCurrentAmps = Math.abs(moduleSimulation.getSteerMotorSupplyCurrentAmps());
+    // inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
+    inputs.turnPosition =
+        Radians.of(moduleSimulation.getTurnRelativeEncoderPositionRad()).in(Rotations);
+    inputs.turnVelocity =
+        RadiansPerSecond.of(moduleSimulation.getTurnRelativeEncoderSpeedRadPerSec())
+            .in(RotationsPerSecond);
+    inputs.turnAppliedVolts = moduleSimulation.getTurnMotorAppliedVolts();
+    inputs.turnCurrentAmps = Math.abs(moduleSimulation.getTurnMotorSupplyCurrentAmps());
 
-    inputs.odometryTimestamps = OdometryTimestampsSim.getTimeStamps();
-    inputs.odometryDrivePositionsRad = moduleSimulation.getCachedDriveWheelFinalPositionsRad();
-    // inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
-
-    inputs.odometryDriveWheelRevolutions =
-        Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
-            .map(Units::radiansToRotations)
-            .toArray();
+    inputs.odometryTimestamps = OdometryTimestampsSim.getTimestamps();
   }
 
   @Override
-  public void setDriveVoltage(double volts) {
+  public void setDriveVoltage(Voltage volts) {
     moduleSimulation.requestDriveVoltageOut(volts);
   }
 
   @Override
-  public double getDriveVelocity() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public void setTurnPosition(double position) {
-    // TODO Auto-generated method stub
-    // return 0;
-  }
-
-  @Override
-  public double getTurnAbsolutePosition() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public void setTurnVoltage(double volts) {
+  public void setTurnVoltage(Voltage volts) {
     moduleSimulation.requestTurnVoltageOut(volts);
   }
 
-  @Override
-  public double getDrivePosition() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getDrivePosition'");
+  public void setDesiredState(SwerveModuleState desiredState) {
+    double turnRotations = getTurnRotations();
+    // Optimize the reference state to avoid spinning further than 90 degrees
+    SwerveModuleState setpoint =
+        new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+
+    setpoint.optimize(Rotation2d.fromRotations(turnRotations));
+    setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
+
+    if (Math.abs(setpoint.speedMetersPerSecond) < 0.01) {
+      moduleSimulation.requestDriveVoltageOut(0);
+      moduleSimulation.requestTurnVoltageOut(0);
+      return;
+    }
+
+    // Converts meters per second to rotations per second
+    double desiredDriveRPS =
+        setpoint.speedMetersPerSecond
+            * ModuleConstants.DRIVE_GEAR_RATIO
+            / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
+
+    moduleSimulation.requestDriveVoltageOut(
+        Volts.of(
+                drivePID.calculate(
+                    Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()),
+                    desiredDriveRPS))
+            .plus(driveFF.calculate(RotationsPerSecond.of(desiredDriveRPS))));
+    moduleSimulation.requestTurnVoltageOut(
+        Volts.of(
+                turnPID.calculate(
+                    moduleSimulation.getTurnAbsolutePosition().getRotations(),
+                    desiredState.angle.getRotations()))
+            .plus(turnFF.calculate(RotationsPerSecond.of(turnPID.getSetpoint().velocity))));
   }
 
-  // public void setDesiredState(SwerveModuleState desiredState) {
-  //   Rotation2d turnRotations = getTurnRotations();
-  //   // Optimize the reference state to avoid spinning further than 90 degrees
-  //   SwerveModuleState optimizedDesiredState =
-  //       SwerveModuleState.optimize(desiredState, new Rotation2d(turnRotations));
+  public double getTurnRotations() {
+    return moduleSimulation.getTurnAbsolutePosition().getRotations();
+  }
 
-  //   if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.01) {
-  //     moduleSimulation.requestDriveVoltageOut(0);
-  //     moduleSimulation.requestTurnVoltageOut(0);
-  //     return;
-  //   }
-
-  //   // Converts meters per second to rotations per second
-  //   double desiredDriveRPS =
-  //       optimizedDesiredState.speedMetersPerSecond
-  //           * ModuleConstants.DRIVE_GEAR_RATIO
-  //           / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
-
-  //   moduleSimulation.requestDriveVoltageOut(
-  //       drivePID.calculate(
-  //               Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()),
-  //               desiredDriveRPS)
-  //           + driveFF.calculate(desiredDriveRPS));
-  //   moduleSimulation.requestTurnVoltageOut(
-  //       turnPID.calculate(
-  //               moduleSimulation.getTurnAbsolutePosition().getRotations(),
-  //               desiredState.angle.getRotations())
-  //           + turnFF.calculate(turnPID.getSetpoint().velocity));
-  // }
-
-  // public Rotation2d getTurnRotations() {
-  //   return new Ro(moduleSimulation.getTurnAbsolutePosition()).getRadians();
-  // }
+  @Override
+  public void stopModule() {
+    moduleSimulation.requestDriveVoltageOut(Volts.zero());
+    moduleSimulation.requestTurnVoltageOut(Volts.zero());
+  }
 }
