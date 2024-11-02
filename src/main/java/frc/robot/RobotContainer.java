@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.intake.ManualIntake;
 import frc.robot.commands.intake.ManualIntakePivot;
@@ -28,15 +29,17 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.swerve.SwerveConstants;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization;
 // import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
-// import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOReal;
 import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
-import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
+import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
+import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
+
 import java.util.function.DoubleSupplier;
 
 public class RobotContainer {
 
-  // private final Vision visionSubsystem;
+  private final Vision visionSubsystem;
   private final SwerveDrive swerveDrive;
   private final CommandXboxController operatorController = new CommandXboxController(1);
   private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
@@ -46,14 +49,14 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
 
   public RobotContainer() {
-    // visionSubsystem = new Vision();
+    visionSubsystem = new Vision(new VisionIOReal());
     swerveDrive =
         new SwerveDrive(
-            new GyroIONavX(),
-            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[0]),
-            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[1]),
-            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[2]),
-            new ModuleIOTalonFX(SwerveConstants.moduleConfigs[3]));
+            new PhysicalGyro(),
+            new PhysicalModule(SwerveConstants.moduleConfigs[0]),
+            new PhysicalModule(SwerveConstants.moduleConfigs[1]),
+            new PhysicalModule(SwerveConstants.moduleConfigs[2]),
+            new PhysicalModule(SwerveConstants.moduleConfigs[3]));
   }
 
   private static double deadband(double value, double deadband) {
@@ -72,7 +75,7 @@ public class RobotContainer {
     double value = supplierValue.getAsDouble();
 
     // Deadband
-    value = deadband(value, HardwareConstants.DEADBAND_VALUE);
+    value = deadband(value, JoystickConstants.DEADBAND_VALUE);
 
     // Cube the axis
     value = Math.copySign(value * value * value, value);
@@ -81,8 +84,8 @@ public class RobotContainer {
   }
 
   private static double[] modifyAxisCubedPolar(DoubleSupplier xJoystick, DoubleSupplier yJoystick) {
-    double xInput = deadband(xJoystick.getAsDouble(), HardwareConstants.DEADBAND_VALUE);
-    double yInput = deadband(yJoystick.getAsDouble(), HardwareConstants.DEADBAND_VALUE);
+    double xInput = deadband(xJoystick.getAsDouble(), JoystickConstants.DEADBAND_VALUE);
+    double yInput = deadband(yJoystick.getAsDouble(), JoystickConstants.DEADBAND_VALUE);
     if (Math.abs(xInput) > 0 && Math.abs(yInput) > 0) {
       double theta = Math.atan(xInput / yInput);
       double hypotenuse = Math.sqrt(xInput * xInput + yInput * yInput);
@@ -164,6 +167,7 @@ public class RobotContainer {
     Command driveCommand =
         new DriveCommand(
             swerveDrive,
+            visionSubsystem,
             driverLeftStick[1],
             driverLeftStick[0],
             () -> modifyAxisCubed(driverRightStickX),

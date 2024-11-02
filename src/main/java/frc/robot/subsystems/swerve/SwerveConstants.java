@@ -94,10 +94,6 @@ public class SwerveConstants {
 
     public static final double HEADING_ACCEPTABLE_ERROR_RADIANS = Units.degreesToRadians(2.5);
     public static final double HEADING_ACCEPTABLE_ERROR_MOVING_RADIANS = Units.degreesToRadians(4);
-
-    public static final double Y_RATE_LIMIT = 10.0;
-    public static final double X_RATE_LIMIT = 10.0;
-    public static final double ROT_RATE_LIMIT = 10.0;
   }
 
   public class ModuleConstants {
@@ -140,6 +136,7 @@ public class SwerveConstants {
 
     public static final double DRIVE_BASE_DIAMETER =
         Math.sqrt(Math.pow(DriveConstants.TRACK_WIDTH, 2) + Math.pow(DriveConstants.WHEEL_BASE, 2));
+
     public static final double MAX_SPEED = 5.0;
     public static final double MAX_ACCELERATION = 3;
 
@@ -181,7 +178,7 @@ public class SwerveConstants {
    * stores the constants and PID configs for chassis because we want an all-real simulation for the
    * chassis, the numbers are required to be considerably precise
    */
-  public class DriveTrainConstants {
+  public class SimulationConstants {
     /**
      * numbers that needs to be changed to fit each robot TODO: change these numbers to match your
      * robot
@@ -252,9 +249,6 @@ public class SwerveConstants {
     public static final double NORMAL_GYRO_DRIFT_IN_1_MIN_Std_Dev_RAD = Math.toRadians(1.2);
     public static final double AVERAGE_VELOCITY_RAD_PER_SEC_DURING_TEST = Math.toRadians(60);
 
-    public static final int ODOMETRY_CACHE_CAPACITY = 10;
-    public static final double ODOMETRY_FREQUENCY = 250;
-    public static final double ODOMETRY_WAIT_TIMEOUT_SECONDS = 0.02;
     public static final int SIMULATION_TICKS_IN_1_PERIOD = 5;
   }
 

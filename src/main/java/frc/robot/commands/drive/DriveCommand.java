@@ -3,14 +3,13 @@ package frc.robot.commands.drive;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.vision.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-// import frc.robot.subsystems.vision.VisionSubsystem;
+public class DriveCommand extends DriveCommandBase {
 
-public class DriveCommand extends Command {
-
-  private final SwerveDrive swerveDrive;
+  private final SwerveDrive driveSubsystem;
 
   private final DoubleSupplier leftJoystickY, leftJoystickX, rightJoystickX;
   private final BooleanSupplier isFieldRelative, isHighRotation;
@@ -29,14 +28,15 @@ public class DriveCommand extends Command {
    */
   public DriveCommand(
       SwerveDrive driveSubsystem,
+      Vision visionSubsystem,
       DoubleSupplier leftJoystickY,
       DoubleSupplier leftJoystickX,
       DoubleSupplier rightJoystickX,
       BooleanSupplier isFieldRelative,
       BooleanSupplier isHighRotation) {
-    // super(driveSubsystem, visionSubsystem);
-    this.swerveDrive = driveSubsystem;
-    addRequirements(driveSubsystem);
+    super(driveSubsystem, visionSubsystem);
+    this.driveSubsystem = driveSubsystem;
+    addRequirements(driveSubsystem, visionSubsystem);
     this.leftJoystickY = leftJoystickY;
     this.leftJoystickX = leftJoystickX;
     this.rightJoystickX = rightJoystickX;
@@ -56,7 +56,7 @@ public class DriveCommand extends Command {
       angularSpeed = DriveConstants.LOW_ANGULAR_SPEED_RADIANS_PER_SECOND;
     }
 
-    swerveDrive.drive(
+    driveSubsystem.drive(
         leftJoystickY.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
         leftJoystickX.getAsDouble() * DriveConstants.MAX_SPEED_METERS_PER_SECOND,
         rightJoystickX.getAsDouble() * angularSpeed,
@@ -67,10 +67,7 @@ public class DriveCommand extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    // When the command ends, it stops the robot
-    // driveSubsystem.drive(0, 0, 0, true);
-  }
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {
