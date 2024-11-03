@@ -221,7 +221,7 @@ public class RobotContainer {
 
     // // autodrive
     // Trigger driverAButton = new Trigger(driverController::getAButton);
-// lol whatever
+
     // // intake
     // Trigger operatorLeftTrigger = new Trigger(()->operatorController.getLeftTriggerAxis() > 0.2);
     // Trigger operatorLeftBumper = new Trigger(operatorController::getLeftBumper);
