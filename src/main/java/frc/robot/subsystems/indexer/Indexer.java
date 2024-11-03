@@ -20,7 +20,7 @@ public class Indexer extends SubsystemBase {
     io.setSpeed(speed);
     Logger.recordOutput("Indexer", speed);
   }
-
+  
   /** Stops the motor */
   public void stop() {
     io.stop();

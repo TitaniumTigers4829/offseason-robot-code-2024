@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -24,9 +20,9 @@ public class SwerveConstants {
     // Wheel base and track width are measured by the center of the swerve modules, not the frame of
     // the robot
     // Distance between centers of right and left wheels on robot
-    public static final double TRACK_WIDTH = Units.inchesToMeters(22);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(21.25);
     // Distance between front and back wheels on robot
-    public static final double WHEEL_BASE = Units.inchesToMeters(22);
+    public static final double WHEEL_BASE = Units.inchesToMeters(21.25);
 
     public static final Translation2d[] MODULE_TRANSLATIONS =
         new Translation2d[] {
@@ -39,25 +35,25 @@ public class SwerveConstants {
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =
         new SwerveDriveKinematics(MODULE_TRANSLATIONS);
 
-    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 6;
-    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 18;
+    public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 22;
+    public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 24;
     public static final int REAR_LEFT_DRIVE_MOTOR_ID = 23;
-    public static final int REAR_RIGHT_DRIVE_MOTOR_ID = 4;
+    public static final int REAR_RIGHT_DRIVE_MOTOR_ID = 21;
 
-    public static final int FRONT_LEFT_TURN_MOTOR_ID = 7;
-    public static final int FRONT_RIGHT_TURN_MOTOR_ID = 1;
-    public static final int REAR_LEFT_TURN_MOTOR_ID = 25;
-    public static final int REAR_RIGHT_TURN_MOTOR_ID = 3;
+    public static final int FRONT_LEFT_TURN_MOTOR_ID = 5;
+    public static final int FRONT_RIGHT_TURN_MOTOR_ID = 6;
+    public static final int REAR_LEFT_TURN_MOTOR_ID = 8;
+    public static final int REAR_RIGHT_TURN_MOTOR_ID = 7;
 
-    public static final int FRONT_LEFT_CANCODER_ID = 10;
-    public static final int FRONT_RIGHT_CANCODER_ID = 0;
+    public static final int FRONT_LEFT_CANCODER_ID = 14;
+    public static final int FRONT_RIGHT_CANCODER_ID = 12;
     public static final int REAR_LEFT_CANCODER_ID = 11;
-    public static final int REAR_RIGHT_CANCODER_ID = 12;
+    public static final int REAR_RIGHT_CANCODER_ID = 13;
 
-    public static final double FRONT_LEFT_ZERO_ANGLE = -0.09521484375;
-    public static final double FRONT_RIGHT_ZERO_ANGLE = -0.478271484375;
-    public static final double REAR_LEFT_ZERO_ANGLE = -0.318115234375;
-    public static final double REAR_RIGHT_ZERO_ANGLE = -0.473388671875;
+    public static final double FRONT_LEFT_ZERO_ANGLE = 0.137939453125;
+    public static final double FRONT_RIGHT_ZERO_ANGLE = -0.420654296875;
+    public static final double REAR_LEFT_ZERO_ANGLE = -0.475341796875;
+    public static final double REAR_RIGHT_ZERO_ANGLE = -0.05078125;
 
     public static final SensorDirectionValue FRONT_LEFT_CANCODER_REVERSED =
         SensorDirectionValue.CounterClockwise_Positive;
@@ -69,18 +65,18 @@ public class SwerveConstants {
         SensorDirectionValue.CounterClockwise_Positive;
 
     public static final InvertedValue FRONT_LEFT_TURN_MOTOR_REVERSED =
-        InvertedValue.Clockwise_Positive;
+        InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue FRONT_RIGHT_TURN_MOTOR_REVERSED =
-        InvertedValue.Clockwise_Positive;
+        InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue REAR_LEFT_TURN_MOTOR_REVERSED =
         InvertedValue.Clockwise_Positive;
     public static final InvertedValue REAR_RIGHT_TURN_MOTOR_REVERSED =
         InvertedValue.Clockwise_Positive;
 
     public static final InvertedValue FRONT_LEFT_DRIVE_ENCODER_REVERSED =
-        InvertedValue.Clockwise_Positive;
-    public static final InvertedValue FRONT_RIGHT_DRIVE_ENCODER_REVERSED =
         InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue FRONT_RIGHT_DRIVE_ENCODER_REVERSED =
+        InvertedValue.Clockwise_Positive;
     public static final InvertedValue REAR_LEFT_DRIVE_ENCODER_REVERSED =
         InvertedValue.Clockwise_Positive;
     public static final InvertedValue REAR_RIGHT_DRIVE_ENCODER_REVERSED =

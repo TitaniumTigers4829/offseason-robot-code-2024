@@ -14,7 +14,7 @@ public interface IndexerIO {
   }
 
   default void updateInputs(IndexerIOInputs inputs) {}
-
+  
   default boolean isIndexing() {
     return false;
   }

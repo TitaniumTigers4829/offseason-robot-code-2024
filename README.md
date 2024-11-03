@@ -1,10 +1,4 @@
-# 4829-BaseRobotCode
+# 2024-offseason-robot-code
+AdvantageKit code
 
-Base robot code for all 4829 robots.
-
-Includes code for:
-- Simulation
-- Swerve drive
-- Threaded vision
-- AdvantageKit
-  - & some Examples
+Uses a modified version of Maple-sim code.

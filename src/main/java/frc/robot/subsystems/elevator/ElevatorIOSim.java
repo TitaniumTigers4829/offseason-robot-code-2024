@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class ElevatorIOSim implements ElevatorIO {
   ElevatorSim elevatorSim;
-  LinearSystem<N2, N1, N1> elevatorSystem;
+  LinearSystem<N2, N1, N2> elevatorSystem;
   private double elevatorAppliedVolts = 0.0;
   private final PIDController elevatorPID = new PIDController(0.0, 0.0, 0.0);
 
