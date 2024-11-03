@@ -24,6 +24,7 @@ import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
+import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.vision.VisionConstants;
 import java.util.Optional;
 
