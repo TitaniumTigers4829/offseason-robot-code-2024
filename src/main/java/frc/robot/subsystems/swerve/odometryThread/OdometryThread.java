@@ -2,12 +2,10 @@ package frc.robot.subsystems.swerve.odometryThread;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import edu.wpi.first.units.measure.Angle;
-import frc.robot.Constants.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
-import frc.robot.subsystems.swerve.SwerveConstants.SimulationConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.DriveTrainConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -17,13 +15,12 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface OdometryThread {
   final class OdometryDoubleInput {
-    private final Supplier<Angle> supplier;
-    private final Queue<Angle> queue;
+    private final Supplier<Double> supplier;
+    private final Queue<Double> queue;
 
-    public OdometryDoubleInput(Supplier<Angle> signal) {
+    public OdometryDoubleInput(Supplier<Double> signal) {
       this.supplier = signal;
-      // Create a queue with a capacity of 10
-      this.queue = new ArrayBlockingQueue<>(10);
+      this.queue = new ArrayBlockingQueue<>(DriveTrainConstants.ODOMETRY_CACHE_CAPACITY);
     }
 
     public void cacheInputToQueue() {
@@ -34,13 +31,14 @@ public interface OdometryThread {
   List<OdometryDoubleInput> registeredInputs = new ArrayList<>();
   List<BaseStatusSignal> registeredStatusSignals = new ArrayList<>();
 
-  static Queue<Angle> registerSignalInput(StatusSignal<Angle> signal) {
-    signal.setUpdateFrequency(HardwareConstants.SIGNAL_FREQUENCY, HardwareConstants.TIMEOUT_S);
+  static Queue<Double> registerSignalInput(StatusSignal<Double> signal) {
+    signal.setUpdateFrequency(
+        DriveTrainConstants.ODOMETRY_FREQUENCY, DriveTrainConstants.ODOMETRY_WAIT_TIMEOUT_SECONDS);
     registeredStatusSignals.add(signal);
     return registerInput(signal.asSupplier());
   }
 
-  static Queue<Angle> registerInput(Supplier<Angle> supplier) {
+  static Queue<Double> registerInput(Supplier<Double> supplier) {
     final OdometryDoubleInput odometryDoubleInput = new OdometryDoubleInput(supplier);
     registeredInputs.add(odometryDoubleInput);
     return odometryDoubleInput.queue;
@@ -74,11 +72,11 @@ public interface OdometryThread {
   final class OdometryThreadSim implements OdometryThread {
     @Override
     public void updateInputs(OdometryThreadInputs inputs) {
-      inputs.measurementTimeStamps = new double[SimulationConstants.SIMULATION_TICKS_IN_1_PERIOD];
+      inputs.measurementTimeStamps = new double[DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD];
       final double robotStartingTimeStamps = TimeUtil.getLogTimeSeconds(),
           iterationPeriodSeconds =
-              Robot.defaultPeriodSecs / SimulationConstants.SIMULATION_TICKS_IN_1_PERIOD;
-      for (int i = 0; i < SimulationConstants.SIMULATION_TICKS_IN_1_PERIOD; i++)
+              Robot.defaultPeriodSecs / DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD;
+      for (int i = 0; i < DriveTrainConstants.SIMULATION_TICKS_IN_1_PERIOD; i++)
         inputs.measurementTimeStamps[i] = robotStartingTimeStamps + i * iterationPeriodSeconds;
     }
   }
