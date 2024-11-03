@@ -8,15 +8,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-// import frc.robot.Constants.HardwareConstants;
-import frc.robot.commands.auto.BlueFourNote;
+import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.characterization.FeedForwardCharacterization;
-import frc.robot.extras.simulation.SimulatedField;
-import frc.robot.extras.simulation.physicsSim.GyroSimulation;
-import frc.robot.extras.simulation.physicsSim.SwerveDriveSimulation;
-import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation;
-import frc.robot.extras.simulation.physicsSim.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+import frc.robot.extras.simulation.field.SimulatedField;
+import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
@@ -26,27 +25,18 @@ import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.FlywheelIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
-// import frc.robot.extras.characterization.WheelRadiusCharacterization;
-// import frc.robot.extras.characterization.WheelRadiusCharacterization.Direction;
-// import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
-// import frc.robot.subsystems.swerve.gyroIO.GyroIO;
-// import frc.robot.subsystems.swerve.gyroIO.GyroIONavX;
-// import frc.robot.subsystems.swerve.gyroIO.GyroIOSim;
-// import frc.robot.subsystems.swerve.moduleIO.ModuleIO;
-// import frc.robot.subsystems.swerve.moduleIO.ModuleIOSim;
-// import frc.robot.subsystems.swerve.moduleIO.ModuleIOTalonFX;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
-
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOReal;
-import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
+import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
+import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
-
-import java.util.function.DoubleSupplier;
+import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
 
 public class RobotContainer {
 
@@ -62,7 +52,7 @@ public class RobotContainer {
   // Simulation, we store them here in the robot container
   // private final SimulatedField simulatedArena;
   private final SwerveDriveSimulation swerveDriveSimulation;
-  private final GyroSimulation gyroSimulation;
+  private final frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation gyroSimulation;
 
   // Subsystems
   // private final XboxController driverController = new XboxController(0);

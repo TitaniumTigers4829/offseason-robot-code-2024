@@ -2,15 +2,18 @@ package frc.robot.subsystems.swerve.gyroIO;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import java.util.Queue;
 
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.AHRS.NavXUpdateRate;
+
 public class PhysicalGyro implements GyroInterface {
-  private final AHRS gyro = new AHRS(SPI.Port.kMXP, (byte) 250);
+  private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI, NavXUpdateRate.k200Hz);
   private final Queue<Angle> yawPositionInput;
 
   public PhysicalGyro() {

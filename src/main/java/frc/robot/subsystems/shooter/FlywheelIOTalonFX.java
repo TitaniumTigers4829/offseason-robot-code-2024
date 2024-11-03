@@ -8,6 +8,11 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.HardwareConstants;
 
@@ -24,11 +29,11 @@ public class FlywheelIOTalonFX
   private final VelocityVoltage velocityRequest;
   private final VoltageOut voltageRequest;
   // gives values for each thing that is set.
-  private final StatusSignal<Double> leaderPosition = leftFlywheelMotor.getPosition();
-  private final StatusSignal<Double> leaderVelocity = leftFlywheelMotor.getVelocity();
-  private final StatusSignal<Double> leaderAppliedVolts = leftFlywheelMotor.getMotorVoltage();
-  private final StatusSignal<Double> leaderCurrent = leftFlywheelMotor.getSupplyCurrent();
-  private final StatusSignal<Double> followerCurrent =
+  private final StatusSignal<Angle> leaderPosition = leftFlywheelMotor.getPosition();
+  private final StatusSignal<AngularVelocity> leaderVelocity = leftFlywheelMotor.getVelocity();
+  private final StatusSignal<Voltage> leaderAppliedVolts = leftFlywheelMotor.getMotorVoltage();
+  private final StatusSignal<Current> leaderCurrent = leftFlywheelMotor.getSupplyCurrent();
+  private final StatusSignal<Current> followerCurrent =
       rightFlywheelMotor
           .getSupplyCurrent(); // All of these are from TalonFX Phoenix 6 that assign values to
 

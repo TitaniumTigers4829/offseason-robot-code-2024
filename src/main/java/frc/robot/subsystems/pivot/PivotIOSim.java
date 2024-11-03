@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.HardwareConstants;
 
 public class PivotIOSim implements PivotIO {
-  private final double pivotGearing = PivotConstants.PIVOT_GEARING;
+  private final double pivotGearing = PivotConstants.PIVOT_GEAR_RATIO;
   private final double pivotMass = PivotConstants.PIVOT_MASS;
   private final double pivotLength = PivotConstants.PIVOT_LENGTH;
-  private final double armkS = PivotConstants.ARM_KS;
-  private final double armkG = PivotConstants.ARM_KG;
-  private final double armkV = PivotConstants.ARM_KV;
+  private final double armkS = 0.0;
+  private final double armkG = PivotConstants.PIVOT_G;
+  private final double armkV = 0.0;
 
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
@@ -38,7 +38,7 @@ public class PivotIOSim implements PivotIO {
    */
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    pivotSim.update(HardwareConstants.RIO_UPDATE_SECONDS);
+    pivotSim.update(HardwareConstants.TIMEOUT_S);
 
     inputs.leaderPosition = Units.radiansToRotations(pivotSim.getAngleRads());
     inputs.leaderVelocity = Units.radiansToRotations(pivotSim.getVelocityRadPerSec());

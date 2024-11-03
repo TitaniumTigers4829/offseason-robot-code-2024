@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 public class FlywheelIOSim
     implements FlywheelIO { // FlywheelIOSim makes Advantage kit log simulated movements using
   // physics
-  private FlywheelSim flywheelSim =
-      new FlywheelSim(
-          DCMotor.getKrakenX60(2), ShooterConstants.GEAR_RATIO, 0.004); // initiates virtual
+  private FlywheelSim flywheelSim = new FlywheelSim(null, DCMotor.getKrakenX60(2), 0);
   private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
   private PIDController pid =
       new PIDController(
@@ -47,7 +45,7 @@ public class FlywheelIOSim
   @Override
   public void setVelocity(double velocityRPM) { // ffvolts is feedorward
     double velocityRPS = velocityRPM / 60;
-    flywheelSim.setState(pid.calculate(velocityRPS) + feedForward.calculate(velocityRPS));
+    flywheelSim.setInput(pid.calculate(velocityRPS) + feedForward.calculate(velocityRPS));
   }
 
   @Override
