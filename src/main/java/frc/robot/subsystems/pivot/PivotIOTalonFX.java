@@ -3,6 +3,7 @@ package frc.robot.subsystems.pivot;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -14,12 +15,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.HardwareConstants;
 
 /** Add your docs here. */
@@ -30,23 +25,28 @@ public class PivotIOTalonFX implements PivotIO {
 
   private final CANcoder pivotEncoder;
 
-  private final StatusSignal<Angle> leaderPosition;
-  private final StatusSignal<AngularVelocity> leaderVelocity;
-  private final StatusSignal<Voltage> leaderAppliedVolts;
-  private final StatusSignal<Current> leaderSupplyCurrent;
-  private final StatusSignal<Temperature> leaderTempCelsius;
-  private final StatusSignal<Angle> followerPosition;
-  private final StatusSignal<AngularVelocity> followerVelocity;
-  private final StatusSignal<Voltage> followerAppliedVolts;
-  private final StatusSignal<Current> followerSupplyCurrent;
-  private final StatusSignal<Temperature> followerTempCelsius;
-  private final StatusSignal<Angle> pivotPos;
+  private final StatusSignal<Double> leaderPosition;
+  private final StatusSignal<Double> leaderVelocity;
+  private final StatusSignal<Double> leaderAppliedVolts;
+  private final StatusSignal<Double> leaderSupplyCurrent;
+  private final StatusSignal<Double> leaderTorqueCurrent;
+  private final StatusSignal<Double> leaderTempCelsius;
+  private final StatusSignal<Double> followerPosition;
+  private final StatusSignal<Double> followerVelocity;
+  private final StatusSignal<Double> followerAppliedVolts;
+  private final StatusSignal<Double> followerSupplyCurrent;
+  private final StatusSignal<Double> followerTorqueCurrent;
+  private final StatusSignal<Double> followerTempCelsius;
+  private final StatusSignal<Double> pivotPos;
 
   private final MotionMagicVoltage mmPositionRequest;
 
   private double pivotTargetAngle;
 
-  private final VoltageOut voltageControl = new VoltageOut(0);
+  private final Slot0Configs controllerConfig = new Slot0Configs();
+  private final VoltageOut voltageControl = new VoltageOut(0).withUpdateFreqHz(0.0);
+  private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
+  private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
   public PivotIOTalonFX() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
@@ -93,11 +93,13 @@ public class PivotIOTalonFX implements PivotIO {
     leaderVelocity = leaderPivotMotor.getVelocity();
     leaderAppliedVolts = leaderPivotMotor.getMotorVoltage();
     leaderSupplyCurrent = leaderPivotMotor.getSupplyCurrent();
+    leaderTorqueCurrent = leaderPivotMotor.getTorqueCurrent();
     leaderTempCelsius = leaderPivotMotor.getDeviceTemp();
     followerPosition = followerPivotMotor.getPosition();
     followerVelocity = followerPivotMotor.getVelocity();
     followerAppliedVolts = followerPivotMotor.getMotorVoltage();
     followerSupplyCurrent = followerPivotMotor.getSupplyCurrent();
+    followerTorqueCurrent = followerPivotMotor.getTorqueCurrent();
     followerTempCelsius = followerPivotMotor.getDeviceTemp();
 
     pivotPos = pivotEncoder.getAbsolutePosition();
@@ -108,11 +110,13 @@ public class PivotIOTalonFX implements PivotIO {
         leaderVelocity,
         leaderAppliedVolts,
         leaderSupplyCurrent,
+        leaderTorqueCurrent,
         leaderTempCelsius,
         followerPosition,
         followerVelocity,
         followerAppliedVolts,
         followerSupplyCurrent,
+        followerTorqueCurrent,
         followerTempCelsius,
         pivotPos);
   }
@@ -124,6 +128,22 @@ public class PivotIOTalonFX implements PivotIO {
    */
   @Override
   public void updateInputs(PivotIOInputs inputs) {
+
+    BaseStatusSignal.refreshAll(
+        leaderPosition,
+        leaderVelocity,
+        leaderAppliedVolts,
+        leaderSupplyCurrent,
+        leaderTorqueCurrent,
+        leaderTempCelsius,
+        followerPosition,
+        followerVelocity,
+        followerAppliedVolts,
+        followerSupplyCurrent,
+        followerTorqueCurrent,
+        followerTempCelsius,
+        pivotPos);
+
     inputs.leaderPosition = leaderPivotMotor.getPosition().getValueAsDouble();
     inputs.leaderVelocity = leaderPivotMotor.getVelocity().getValueAsDouble();
     inputs.leaderAppliedVolts = leaderPivotMotor.getMotorVoltage().getValueAsDouble();
@@ -135,22 +155,12 @@ public class PivotIOTalonFX implements PivotIO {
     inputs.followerSupplyCurrentAmps = followerPivotMotor.getSupplyCurrent().getValueAsDouble();
   }
 
-  /**
-   * Sets the voltage of the pivot motors
-   *
-   * @param volts the voltage
-   */
   @Override
   public void setVoltage(double volts) {
-    leaderPivotMotor.setControl(voltageControl.withOutput(volts));
-    followerPivotMotor.setControl(voltageControl.withOutput(volts));
+    leaderPivotMotor.setControl(new VoltageOut(volts));
+    followerPivotMotor.setControl(new VoltageOut(volts));
   }
 
-  /**
-   * Gets the angle of the pivot
-   *
-   * @return angle of pivot in rotations
-   */
   @Override
   public double getAngle() {
     pivotPos.refresh();
@@ -162,11 +172,6 @@ public class PivotIOTalonFX implements PivotIO {
     return Math.abs(pivotTargetAngle - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
   }
 
-  /**
-   * Sets the output of the pivot
-   *
-   * @param output output value from -1.0 to 1.0
-   */
   @Override
   public void setPivotSpeed(double output) {
     leaderPivotMotor.set(output);

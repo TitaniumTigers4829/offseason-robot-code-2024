@@ -8,12 +8,10 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.Constants.HardwareConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
+
   private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
   private final TalonFX leaderPivotMotor = new TalonFX(IntakeConstants.LEFT_INTAKE_PIVOT_MOTOR_ID);
   private final TalonFX followerPivotMotor =
@@ -21,16 +19,16 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private final MotionMagicVoltage mmPositionRequest = new MotionMagicVoltage(0);
 
-  private final StatusSignal<AngularVelocity> intakeVelocity;
-  private final StatusSignal<Angle> pivotPosition;
-  private final StatusSignal<AngularVelocity> pivotVelocity;
+  private final StatusSignal<Double> intakeVelocity;
+  private final StatusSignal<Double> pivotPosition;
+  private final StatusSignal<Double> pivotVelocity;
 
   public IntakeIOTalonFX() {
     TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
 
     intakeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    intakeConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
+    intakeConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.DEADBAND_VALUE;
 
     intakeConfig.CurrentLimits.StatorCurrentLimit = 0.0;
     intakeConfig.CurrentLimits.StatorCurrentLimitEnable = false;
@@ -43,7 +41,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     pivotConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    pivotConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.MIN_FALCON_DEADBAND;
+    pivotConfig.MotorOutput.DutyCycleNeutralDeadband = HardwareConstants.DEADBAND_VALUE;
 
     pivotConfig.CurrentLimits.StatorCurrentLimit = 0.0;
     pivotConfig.CurrentLimits.StatorCurrentLimitEnable = false;

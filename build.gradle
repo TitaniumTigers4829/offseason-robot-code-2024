@@ -66,6 +66,7 @@ deploy {
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
                     gcType = edu.wpi.first.gradlerio.deploy.roborio.GarbageCollectorType.G1_Base
                 }
+
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     predeploy << { execute 'rm -rf /home/lvuser/deploy' }
