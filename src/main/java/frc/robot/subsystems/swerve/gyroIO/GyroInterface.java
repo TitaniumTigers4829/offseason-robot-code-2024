@@ -21,5 +21,5 @@ public interface GyroInterface {
    *
    * @param inputs inputs to update
    */
-  default void updateInputs(GyroInputs inputs) {}
+  void updateInputs(GyroInputs inputs);
 }

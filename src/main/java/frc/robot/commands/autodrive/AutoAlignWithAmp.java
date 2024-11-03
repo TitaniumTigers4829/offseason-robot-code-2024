@@ -59,16 +59,16 @@ public class AutoAlignWithAmp extends Command {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     // This will default to blue if it alliance isn't present
     isRed = alliance.isPresent() && alliance.get() == Alliance.Red;
-    // ampPose =
-    //     isRed
-    //         ? new Pose2d(
-    //             FieldConstants.RED_AMP_SHOOT_X,
-    //             FieldConstants.RED_AMP_SHOOT_Y,
-    //             FieldConstants.RED_AMP_ROTATION)
-    //         : new Pose2d(
-    //             FieldConstants.BLUE_AMP_SHOOT_X,
-    //             FieldConstants.BLUE_AMP_SHOOT_Y,
-    //             FieldConstants.BLUE_AMP_ROTATION);
+    ampPose =
+        isRed
+            ? new Pose2d(
+                FieldConstants.RED_AMP_SHOOT_X,
+                FieldConstants.RED_AMP_SHOOT_Y,
+                FieldConstants.RED_AMP_ROTATION)
+            : new Pose2d(
+                FieldConstants.BLUE_AMP_SHOOT_X,
+                FieldConstants.BLUE_AMP_SHOOT_Y,
+                FieldConstants.BLUE_AMP_ROTATION);
     turnController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -112,11 +112,10 @@ public class AutoAlignWithAmp extends Command {
   }
 
   private double deadband(double val) {
-    // if (Math.abs(val) < HardwareConstants.DEADBAND_VALUE) {
-    //   return 0.0;
-    // } else {
-    //   return val;
-    // }
-    return val;
+    if (Math.abs(val) < HardwareConstants.DEADBAND_VALUE) {
+      return 0.0;
+    } else {
+      return val;
+    }
   }
 }

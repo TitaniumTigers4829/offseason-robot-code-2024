@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-public class ShootSpeaker extends Command {
+public class ShootOverDefenseSpeaker extends Command {
   private final SwerveDrive swerveDrive;
   private final Flywheel flywheel;
   private final Pivot pivot;
@@ -46,8 +46,8 @@ public class ShootSpeaker extends Command {
   private double desiredHeading = 0;
   private Translation2d speakerPos;
 
-  /** Creates a new ShootSpeaker. */
-  public ShootSpeaker(
+  /** Creates a new ShootOverDefenseSpeaker. */
+  public ShootOverDefenseSpeaker(
       SwerveDrive swerveDrive,
       Flywheel flywheel,
       Pivot pivot,
@@ -66,7 +66,7 @@ public class ShootSpeaker extends Command {
     this.leftY = leftY;
     this.isFieldRelative = isFieldRelative;
 
-    addRequirements(swerveDrive, flywheel, pivot, elevator, vision);
+    addRequirements(flywheel, pivot, elevator, swerveDrive, vision);
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -108,7 +108,6 @@ public class ShootSpeaker extends Command {
         turnOutput,
         !isFieldRelative.getAsBoolean());
 
-    // Sets flywheel speed based on distance
     // if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
     //   flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
     // } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
@@ -117,15 +116,12 @@ public class ShootSpeaker extends Command {
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
     // }
 
-    // Sets Pivot and Elevator
-    pivot.setPivotFromSpeakerDistance(distance);
-    elevator.setElevatorPosition(ElevatorConstants.SHOOT_SPEAKER_POSITION);
+    pivot.setPivotFromSpeakerDistanceOverDefense(distance);
+    elevator.setElevatorPosition(ElevatorConstants.ELEVATOR_OVER_DEFENSE);
 
     if (isReadyToShoot()) {
-      // Pushes note to flywheels once robot is ready
       flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
     } else {
-      // Don't shoot
     }
   }
 
@@ -145,7 +141,7 @@ public class ShootSpeaker extends Command {
   }
 
   public boolean isReadyToShoot() {
-    // TODO: heading and elevator?
+    // TODO: heading
     return true;
     // return flywheel.isShooterWithinAcceptableError()
     //     && pivot.isPivotWithinAcceptableError()
