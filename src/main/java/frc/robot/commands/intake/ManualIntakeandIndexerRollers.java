@@ -9,7 +9,6 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
-import java.util.function.DoubleSupplier;
 
 public class ManualIntakeandIndexerRollers extends Command {
   private final Intake intake;
@@ -33,7 +32,8 @@ public class ManualIntakeandIndexerRollers extends Command {
   @Override
   public void execute() {
     intake.setIntakeSpeed(direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
-    indexer.setIndexerSpeed(direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
+    indexer.setIndexerSpeed(
+        direction ? IntakeConstants.INTAKE_SPEED : -IntakeConstants.INTAKE_SPEED);
   }
 
   // Called once the command ends or is interrupted.

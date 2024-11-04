@@ -7,7 +7,6 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.ShooterConstants;
-
 import java.util.function.DoubleSupplier;
 
 public class SetFlywheelSpeed extends Command {
@@ -38,7 +37,6 @@ public class SetFlywheelSpeed extends Command {
   public void end(boolean interrupted) {
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
   }
-
 
   // Returns true when the command should end.
   @Override

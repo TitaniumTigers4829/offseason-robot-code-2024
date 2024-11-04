@@ -1,8 +1,6 @@
 package frc.robot.extras.util;
 
-import frc.robot.Constants.HardwareConstants;
 import frc.robot.Constants.JoystickConstants;
-
 import java.util.function.DoubleSupplier;
 
 public class JoystickUtil {

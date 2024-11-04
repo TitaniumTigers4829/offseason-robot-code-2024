@@ -23,8 +23,7 @@ public interface PivotIO {
   }
 
   public default void updateInputs(PivotIOInputs inputs) {}
-  
- 
+
   /**
    * Gets the angle of the pivot
    *
@@ -36,7 +35,7 @@ public interface PivotIO {
 
   /**
    * Default implementation of isPivotWithinAcceptableError()
-   * 
+   *
    * @return false
    */
   public default boolean isPivotWithinAcceptableError() {

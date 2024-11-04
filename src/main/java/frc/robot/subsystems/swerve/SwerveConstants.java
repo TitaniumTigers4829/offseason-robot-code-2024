@@ -109,9 +109,9 @@ public class SwerveConstants {
     public static final double TURN_I = 0.0;
     public static final double TURN_D = 0.0;
 
-    public static final double TURN_S = 0;   
-    public static final double TURN_V = 0.0;  
-    public static final double TURN_A = 0.0;   
+    public static final double TURN_S = 0;
+    public static final double TURN_V = 0.0;
+    public static final double TURN_A = 0.0;
 
     public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 30;
     public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 24;
