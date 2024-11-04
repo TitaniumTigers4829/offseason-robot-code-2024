@@ -53,7 +53,7 @@ public class RobotContainer {
   // Simulation, we store them here in the robot container
   // private final SimulatedField simulatedArena;
   private final SwerveDriveSimulation swerveDriveSimulation;
-  private final frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation gyroSimulation;
+  private final GyroSimulation gyroSimulation;
 
   // Subsystems
   // private final XboxController driverController = new XboxController(0);
@@ -147,31 +147,7 @@ public class RobotContainer {
     // swerveDrive.periodic();
     swerveDrive.setPose(startingPose);
   }
-
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
-
-  private static double modifyAxis(DoubleSupplier supplierValue, 3) {
-    double value = supplierValue.getAsDouble();
-
-    // Deadband
-    value = deadband(value, JoystickConstants.DEADBAND_VALUE);
-
-    // Cube the axis
-    value = Math.copySign(value * value * value, value);
-
-    return value;
-  }
-
+  
   public void teleopInit() {
     configureButtonBindings();
   }
@@ -327,7 +303,8 @@ public class RobotContainer {
       Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
     // return new DriveForwardAndBack(swerveDrive);
-    return null;}
+    return null;
+  }
   public void updateFieldSimAndDisplay() {
     if (swerveDriveSimulation == null) return;
     Logger.recordOutput(
