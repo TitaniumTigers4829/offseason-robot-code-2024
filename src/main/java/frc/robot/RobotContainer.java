@@ -104,7 +104,7 @@ public class RobotContainer {
         swerveDrive =
             new SwerveDrive(
                 new SimulatedGyro(
-                    gyroSimulation), // SimulateGyro is a wrapper around gyro simulation, that reads
+                    gyroSimulation), // SimulatedGyro is a wrapper around gyro simulation, that reads
                 // the simulation result
                 /* SimulatedModule are edited such that they also wraps around module simulations */
                 new SimulatedModule(swerveDriveSimulation.getModules()[0]),
