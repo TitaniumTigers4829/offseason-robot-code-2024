@@ -12,6 +12,10 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -42,9 +46,15 @@ public class PivotIOTalonFX implements PivotIO {
   private final MotionMagicVoltage mmPositionRequest;
 
   private double pivotTargetAngle;
-
   private final VoltageOut voltageControl = new VoltageOut(0);
-
+  private final Constraints pivotConstraints = new Constraints(0, 0);
+  private final double armkS = 0.0;
+  private final double armkG = PivotConstants.PIVOT_G;
+  private final double armkV = 0.0; 
+  private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
+  private final ProfiledPIDController pivotController =
+      new ProfiledPIDController(0, 0, 0, pivotConstraints);
+  
   public PivotIOTalonFX() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
     followerPivotMotor = new TalonFX(PivotConstants.FOLLOWER_PIVOT_MOTOR_ID);
@@ -163,6 +173,7 @@ public class PivotIOTalonFX implements PivotIO {
   @Override
   public void setPivotAngle(double angle) {
     pivotTargetAngle = angle;
+    double armFF = armFeedforward.calculate(angle, pivotController.getSetpoint().velocity);
     leaderPivotMotor.setControl(mmPositionRequest.withPosition(angle));
     followerPivotMotor.setControl(mmPositionRequest.withPosition(angle));
   }
