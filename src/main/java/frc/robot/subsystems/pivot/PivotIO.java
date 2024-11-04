@@ -23,21 +23,52 @@ public interface PivotIO {
   }
 
   public default void updateInputs(PivotIOInputs inputs) {}
-
+  
+ 
+  /**
+   * Gets the angle of the pivot
+   *
+   * @return angle of pivot in rotations
+   */
   public default double getAngle() {
     return 0.0;
   }
 
+  /**
+   * Default implementation of isPivotWithinAcceptableError()
+   * 
+   * @return false
+   */
   public default boolean isPivotWithinAcceptableError() {
     return false;
   }
 
+  /**
+   * Sets the output of the pivot
+   *
+   * @param output output value from -1.0 to 1.0
+   */
   public default void setPivotSpeed(double output) {}
 
+  /**
+   * Sets the voltage of the pivot motors
+   *
+   * @param volts the voltage
+   */
   public default void setVoltage(double volts) {}
 
+  /**
+   * sets the pivot angle(rotations) shooter
+   *
+   * @param angle the desired angle in rotations
+   */
   public default void setPivotAngle(double angle) {}
 
+  /**
+   * Gets the target angle of the pivot in degrees
+   *
+   * @return the target angle
+   */
   public default double getPivotTarget() {
     return 0.0;
   }
