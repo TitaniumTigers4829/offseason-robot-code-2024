@@ -241,7 +241,7 @@ public class RobotContainer {
             visionSubsystem,
             driverLeftStick[1],
             driverLeftStick[0],
-            () -> JoystickUtil.modifyAxis(driverRightStickX, 3),
+            () -> JoystickUtil.modifyAxis(driverRightStickX, 2),
             () -> !driverRightBumper.getAsBoolean(),
             () -> driverLeftBumper.getAsBoolean());
     swerveDrive.setDefaultCommand(driveCommand);
