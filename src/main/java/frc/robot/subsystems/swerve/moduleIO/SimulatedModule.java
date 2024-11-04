@@ -38,7 +38,7 @@ public class SimulatedModule implements ModuleInterface {
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
     inputs.driveCurrentAmps = Math.abs(moduleSimulation.getDriveMotorSupplyCurrentAmps());
 
-    // inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
+    inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
     inputs.turnPosition =
         Radians.of(moduleSimulation.getTurnRelativeEncoderPositionRad()).in(Rotations);
     inputs.turnVelocity =
@@ -71,7 +71,7 @@ public class SimulatedModule implements ModuleInterface {
 
     if (Math.abs(setpoint.speedMetersPerSecond) < 0.01) {
       moduleSimulation.requestDriveVoltageOut(0);
-      moduleSimulation.requestTurnVoltageOut(0);
+      // moduleSimulation.requestTurnVoltageOut(0);
       return;
     }
 
