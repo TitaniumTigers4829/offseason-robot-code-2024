@@ -29,6 +29,7 @@ import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.extras.util.JoystickUtil;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIOReal;
 import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
@@ -159,7 +160,7 @@ public class RobotContainer {
     }
   }
 
-  private static double modifyAxisCubed(DoubleSupplier supplierValue) {
+  private static double modifyAxis(DoubleSupplier supplierValue, 3) {
     double value = supplierValue.getAsDouble();
 
     // Deadband
@@ -169,23 +170,6 @@ public class RobotContainer {
     value = Math.copySign(value * value * value, value);
 
     return value;
-  }
-
-  private static double[] modifyAxisCubedPolar(DoubleSupplier xJoystick, DoubleSupplier yJoystick) {
-    double xInput = deadband(xJoystick.getAsDouble(), JoystickConstants.DEADBAND_VALUE);
-    double yInput = deadband(yJoystick.getAsDouble(), JoystickConstants.DEADBAND_VALUE);
-    if (Math.abs(xInput) > 0 && Math.abs(yInput) > 0) {
-      double theta = Math.atan(xInput / yInput);
-      double hypotenuse = Math.sqrt(xInput * xInput + yInput * yInput);
-      double cubedHypotenuse = Math.pow(hypotenuse, 3);
-      xInput = Math.copySign(Math.sin(theta) * cubedHypotenuse, xInput);
-      yInput = Math.copySign(Math.cos(theta) * cubedHypotenuse, yInput);
-      return new double[] {xInput, yInput};
-    }
-    return new double[] {
-      Math.copySign(xInput * xInput * xInput, xInput),
-      Math.copySign(yInput * yInput * yInput, yInput)
-    };
   }
 
   public void teleopInit() {
@@ -207,8 +191,8 @@ public class RobotContainer {
     DoubleSupplier driverRightStickX = driverController::getRightX;
     DoubleSupplier driverLeftStick[] =
         new DoubleSupplier[] {
-          () -> modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0],
-          () -> modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
+          () -> JoystickUtil.modifyAxisPolar(driverLeftStickX, driverLeftStickY, 3)[0],
+          () -> JoystickUtil.modifyAxisPolar(driverLeftStickX, driverLeftStickY, 3)[1]
         };
 
     DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
@@ -257,7 +241,7 @@ public class RobotContainer {
             visionSubsystem,
             driverLeftStick[1],
             driverLeftStick[0],
-            () -> modifyAxisCubed(driverRightStickX),
+            () -> JoystickUtil.modifyAxis(driverRightStickX, 3),
             () -> !driverRightBumper.getAsBoolean(),
             () -> driverLeftBumper.getAsBoolean());
     swerveDrive.setDefaultCommand(driveCommand);
@@ -325,7 +309,7 @@ public class RobotContainer {
     // shooterSubsystem, true, ledSubsystem, this::intakeCallback));
     // // manual pivot (possible climb, unlikely)
     // operatorAButton.whileTrue(new ManualPivot(pivotSubsystem,
-    // ()->modifyAxisCubed(operatorRightStickY)));
+    // ()->JoystickUtil.modifyAxis(operatorRightStickY, 3)));
     // operatorDownDirectionPad.whileTrue(new ManualPivot(pivotSubsystem, ()->-0.2));
     // // manual rollers
     // operatorYButton.whileTrue(new ManualIntake(intakeSubsystem, true));
