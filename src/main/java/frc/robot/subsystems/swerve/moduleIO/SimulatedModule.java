@@ -20,7 +20,7 @@ public class SimulatedModule implements ModuleInterface {
 
   private final PIDController drivePID = new PIDController(5, 0, 0);
   private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(5, 0, 0);
-  private final Constraints turnConstraints = new Constraints(5, 0);
+  private final Constraints turnConstraints = new Constraints(5,2);
   private final ProfiledPIDController turnPID = new ProfiledPIDController(5, 0, 0, turnConstraints);
   private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(5, 0, 0);
 

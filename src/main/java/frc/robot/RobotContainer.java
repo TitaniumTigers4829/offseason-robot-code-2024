@@ -30,6 +30,7 @@ import frc.robot.subsystems.swerve.SwerveDrive;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOReal;
 import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
@@ -40,13 +41,13 @@ import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
 
 public class RobotContainer {
 
-  private final Vision  visionSubsystem = new Vision(new VisionIOReal());
+  private final Vision visionSubsystem;
   private final SwerveDrive swerveDrive;
   private final CommandXboxController operatorController = new CommandXboxController(1);
-  private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
-  private final Intake intake = new Intake(new IntakeIOTalonFX());
-  private final Pivot pivot = new Pivot(new PivotIOTalonFX());
-  private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
+  // private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
+  // private final Intake intake = new Intake(new IntakeIOTalonFX());
+  // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
+  // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
    
   // Simulation, we store them here in the robot container
@@ -74,6 +75,7 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[1]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
+        visionSubsystem= new Vision(new VisionIOReal());
       }
 
       case SIM -> {
@@ -110,13 +112,16 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[2]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
 
+        // TODO: add sim impl
+        visionSubsystem = new Vision(new VisionIO() {});
+
         SimulatedField.getInstance().resetFieldForAuto();
         resetFieldAndOdometryForAuto(new Pose2d(
           1.3980597257614136, 5.493067741394043, Rotation2d.fromRadians(3.1415)));
-
       }
 
       default -> {
+        visionSubsystem = new Vision(new VisionIO() {});
         /* Replayed robot, disable IO implementations */
 
         /* physics simulations are also not needed */

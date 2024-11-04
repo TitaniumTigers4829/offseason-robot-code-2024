@@ -188,7 +188,6 @@ public class SwerveDrive extends SubsystemBase {
    * @param ySpeed Speed of the robot in the y direction, positive being left.
    * @param rotationSpeed Angular rate of the robot in radians per second.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
->>>>>>> 52fbf88798bd786d25dffff6b4769182ad9ea51c
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
     SwerveModuleState[] swerveModuleStates =
@@ -230,7 +229,7 @@ public class SwerveDrive extends SubsystemBase {
    * @param timestampIndex index of the timestamp to sample the pose at
    */
   private void addPoseEstimatorSwerveMeasurement(int timestampIndex) {
-    final SwerveModulePosition[] modulePositions = getModulesPosition(timestampIndex),
+    final SwerveModulePosition[] modulePositions = getModulePositions(),
         moduleDeltas = getModulesDelta(modulePositions);
 
     if (gyroInputs.isConnected) {
