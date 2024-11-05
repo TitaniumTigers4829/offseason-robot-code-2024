@@ -41,7 +41,19 @@ public class SwerveModule extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateOdometryPositions();
+  }
+
+  
+  private void updateOdometryPositions() {
+    odometryPositions = new SwerveModulePosition[inputs.odometryTimestamps.length];
+    for (int i = 0; i < odometryPositions.length; i++) {
+        double positionMeters = inputs.drivePosition;
+        Rotation2d angle = inputs.turnAbsolutePosition;
+        odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+    }
+}
 
   public void setVoltage(Voltage volts) {
     io.setDriveVoltage(volts);

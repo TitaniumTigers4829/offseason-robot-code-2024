@@ -6,6 +6,8 @@ import frc.robot.subsystems.vision.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj2.command.Command;
+
 public class DriveCommand extends DriveCommandBase {
 
   private final SwerveDrive driveSubsystem;
@@ -61,7 +63,7 @@ public class DriveCommand extends DriveCommandBase {
         rightJoystickX.getAsDouble() * angularSpeed,
         isFieldRelative.getAsBoolean());
 
-    // Runs all the code from DriveCommand that estimates pose
+    // Runs all the code from DriveCommandBase that estimates pose
     super.execute();
   }
 
