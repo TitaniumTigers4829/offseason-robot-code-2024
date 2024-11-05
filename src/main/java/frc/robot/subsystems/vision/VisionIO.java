@@ -16,19 +16,33 @@ public interface VisionIO {
 
   default void updateInputs(VisionIOInputs inputs) {}
 
-  default String getLimelightName(int limelightNumber) {return "";}
+  default String getLimelightName(int limelightNumber) {
+    return "";
+  }
 
-  default double getLatencySeconds(int limelightNumber) {return 0.0;}
+  default double getLatencySeconds(int limelightNumber) {
+    return 0.0;
+  }
 
-  default double getTimeStampSeconds(int limelightNumber) {return 0.0;}
+  default double getTimeStampSeconds(int limelightNumber) {
+    return 0.0;
+  }
 
-  default boolean canSeeAprilTags(int limelightNumber) {return false;}
+  default boolean canSeeAprilTags(int limelightNumber) {
+    return false;
+  }
 
-  default double getLimelightAprilTagDistance(int limelightNumber) {return 0.0;}
+  default double getLimelightAprilTagDistance(int limelightNumber) {
+    return 0.0;
+  }
 
-  default int getNumberOfAprilTags(int limelightNumber) {return 0;}
+  default int getNumberOfAprilTags(int limelightNumber) {
+    return 0;
+  }
 
-  default Pose2d getPoseFromAprilTags(int limelightNumber) {return null;}
+  default Pose2d getPoseFromAprilTags(int limelightNumber) {
+    return null;
+  }
 
   default void setHeadingInfo(double headingDegrees, double headingRateDegrees) {}
 }

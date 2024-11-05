@@ -4,14 +4,14 @@
 
 package frc.robot.commands.shooter;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.Flywheel;
+import java.util.function.DoubleSupplier;
 
 public class ManualShooterRoller extends Command {
   private Flywheel flywheel;
   private DoubleSupplier speed;
+
   /** Creates a new ManualShooterRoller. */
   public ManualShooterRoller(Flywheel flywheel, DoubleSupplier speed) {
     this.flywheel = flywheel;

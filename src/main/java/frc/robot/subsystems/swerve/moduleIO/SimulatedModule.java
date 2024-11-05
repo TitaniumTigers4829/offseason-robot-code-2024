@@ -8,7 +8,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
@@ -20,8 +19,10 @@ public class SimulatedModule implements ModuleInterface {
 
   private final PIDController drivePID = new PIDController(5, 0, 0);
   private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(5, 0, 0);
-  private final Constraints turnConstraints = new Constraints(5,2);
-  private final ProfiledPIDController turnPID = new ProfiledPIDController(5, 0, 0, turnConstraints);
+
+  private final Constraints turnConstraints = new Constraints(5, 2);
+  private final ProfiledPIDController turnPID =
+      new ProfiledPIDController(50, 0, 0, turnConstraints);
   private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(5, 0, 0);
 
   public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
@@ -84,7 +85,8 @@ public class SimulatedModule implements ModuleInterface {
     moduleSimulation.requestDriveVoltageOut(
         Volts.of(
                 drivePID.calculate(
-                    RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec()).in(RotationsPerSecond),
+                    RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
+                        .in(RotationsPerSecond),
                     desiredDriveRPS))
             .plus(driveFF.calculate(RotationsPerSecond.of(desiredDriveRPS))));
     moduleSimulation.requestTurnVoltageOut(

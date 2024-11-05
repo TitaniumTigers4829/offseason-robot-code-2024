@@ -4,40 +4,30 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.drive.DriveCommand;
-import frc.robot.extras.characterization.FeedForwardCharacterization;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
-import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.indexer.IndexerIOTalonFX;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.pivot.Pivot;
-import frc.robot.subsystems.pivot.PivotIOTalonFX;
-import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.FlywheelIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
-import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOReal;
 import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
 import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
 import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOReal;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
 
@@ -49,7 +39,7 @@ public class RobotContainer {
   // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
   // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
-   
+
   // Simulation, we store them here in the robot container
   // private final SimulatedField simulatedArena;
   private final SwerveDriveSimulation swerveDriveSimulation;
@@ -75,7 +65,7 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[1]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
-        visionSubsystem= new Vision(new VisionIOReal());
+        visionSubsystem = new Vision(new VisionIOReal());
       }
 
       case SIM -> {
@@ -104,7 +94,8 @@ public class RobotContainer {
         swerveDrive =
             new SwerveDrive(
                 new SimulatedGyro(
-                    gyroSimulation), // SimulatedGyro is a wrapper around gyro simulation, that reads
+                    gyroSimulation), // SimulatedGyro is a wrapper around gyro simulation, that
+                // reads
                 // the simulation result
                 /* SimulatedModule are edited such that they also wraps around module simulations */
                 new SimulatedModule(swerveDriveSimulation.getModules()[0]),
@@ -116,8 +107,8 @@ public class RobotContainer {
         visionSubsystem = new Vision(new VisionIO() {});
 
         SimulatedField.getInstance().resetFieldForAuto();
-        resetFieldAndOdometryForAuto(new Pose2d(
-          1.3980597257614136, 5.493067741394043, Rotation2d.fromRadians(3.1415)));
+        resetFieldAndOdometryForAuto(
+            new Pose2d(1.3980597257614136, 5.493067741394043, Rotation2d.fromRadians(3.1415)));
       }
 
       default -> {
@@ -148,7 +139,7 @@ public class RobotContainer {
       updateFieldSimAndDisplay();
     }
 
-    // swerveDrive.periodic();
+    swerveDrive.periodic();
     swerveDrive.setPose(startingPose);
   }
 
@@ -226,7 +217,7 @@ public class RobotContainer {
 
     // // autodrive
     // Trigger driverAButton = new Trigger(driverController::getAButton);
-// lol whatever
+    // lol whatever
     // // intake
     // Trigger operatorLeftTrigger = new Trigger(()->operatorController.getLeftTriggerAxis() > 0.2);
     // Trigger operatorLeftBumper = new Trigger(operatorController::getLeftBumper);
@@ -267,7 +258,6 @@ public class RobotContainer {
             () -> driverLeftBumper.getAsBoolean());
     swerveDrive.setDefaultCommand(driveCommand);
 
-    
     // // shooterSubsystem.setDefaultCommand(new FlywheelSpinUpAuto(shooterSubsystem,
     // visionSubsystem));
 
@@ -343,12 +333,16 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    swerveDrive.setPose(new Pose2d(swerveDrive.getPose().getX(),
-    swerveDrive.getPose().getY(),
-      Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())));
+    swerveDrive.setPose(
+        new Pose2d(
+            swerveDrive.getPose().getX(),
+            swerveDrive.getPose().getY(),
+            Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())));
     // return autoChooser.getSelected();
     // return new DriveForwardAndBack(swerveDrive);
-    return null;}
+    return null;
+  }
+
   public void updateFieldSimAndDisplay() {
     if (swerveDriveSimulation == null) return;
     Logger.recordOutput(
