@@ -47,10 +47,10 @@ public class SwerveModule extends SubsystemBase {
 
   
   private void updateOdometryPositions() {
-    odometryPositions = new SwerveModulePosition[inputs.odometryTimestamps.length];
+    odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
     for (int i = 0; i < odometryPositions.length; i++) {
-        double positionMeters = inputs.drivePosition;
-        Rotation2d angle = inputs.turnAbsolutePosition;
+        double positionMeters = inputs.odometryDriveWheelRevolutions[i];
+        Rotation2d angle = inputs.odometrySteerPositions[i];
         odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
 }

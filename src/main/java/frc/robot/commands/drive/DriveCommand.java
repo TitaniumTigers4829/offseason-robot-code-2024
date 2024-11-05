@@ -6,8 +6,6 @@ import frc.robot.subsystems.vision.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj2.command.Command;
-
 public class DriveCommand extends DriveCommandBase {
 
   private final SwerveDrive driveSubsystem;

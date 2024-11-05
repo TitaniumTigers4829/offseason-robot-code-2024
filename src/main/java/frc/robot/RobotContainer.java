@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
@@ -80,10 +81,10 @@ public class RobotContainer {
                 45,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
-                DriveConstants.TRACK_WIDTH,
-                DriveConstants.WHEEL_BASE,
+                DriveConstants.TRACK_WIDTH +.2,
+                DriveConstants.WHEEL_BASE + .2,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getKrakenX60(1),
+                    DCMotor.getFalcon500(1),
                     DCMotor.getFalcon500(1),
                     60,
                     DRIVE_WHEEL_TYPE.TIRE,
@@ -266,48 +267,48 @@ public class RobotContainer {
     // driverLeftTrigger.whileFalse(new TowerIntake(intakeSubsystem, pivotSubsystem,
     // shooterSubsystem, false, ledSubsystem, this::intakeCallback).withTimeout(0.3));
     // // Amp Lineup
-    // driverAButton.whileTrue(new AutoAlignWithAmp(driveSubsystem, visionSubsystem));
+    // driverAButton.whileTrue(new AutoAlignWithAmp(swerveDrive, visionSubsystem));
     // // Spinup for shoot
-    // driverRightTrigger.whileTrue(new SpinUpForSpeaker(driveSubsystem, shooterSubsystem,
+    // driverRightTrigger.whileTrue(new SpinUpForSpeaker(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightBumper,
     // ledSubsystem));
 
-    // // driverLeftBumper.whileTrue(new ShootSpeaker(driveSubsystem, shooterSubsystem,
+    // // driverLeftBumper.whileTrue(new ShootSpeaker(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, operatorLeftStickY, driverRightBumper,
     // ledSubsystem));
-    // // driverRightTrigger.whileTrue(new ShootWhileMove(driveSubsystem, shooterSubsystem,
+    // // driverRightTrigger.whileTrue(new ShootWhileMove(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStick, driverYButton, ledSubsystem));
 
     // // Resets the robot angle in the odometry, factors in which alliance the robot is on
-    // driverRightDirectionPad.onTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new
-    // Pose2d(driveSubsystem.getPose().getX(), driveSubsystem.getPose().getY(),
-    //       Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())))));
+    driverRightDirectionPad.onTrue(new InstantCommand(() -> swerveDrive.setPose(new
+    Pose2d(swerveDrive.getPose().getX(), swerveDrive.getPose().getY(),
+          Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
     // // // Reset robot odometry based on vision pose measurement from april tags
     // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
-    // driveSubsystem.resetOdometry(visionSubsystem.getLastSeenPose())));
-    // // driverLeftDpad.onTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new
+    // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));
+    // // driverLeftDpad.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry(new
     // Pose2d(15.251774787902832, 5.573054313659668, Rotation2d.fromRadians(3.14159265)))));
-    // // driverBButton.whileTrue(new ShootPass(driveSubsystem, shooterSubsystem, pivotSubsystem,
+    // // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,
     // visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightBumper, ledSubsystem));
 
     // // driverXButton.
-    // driverBButton.whileTrue(new ShootPass(driveSubsystem, shooterSubsystem, pivotSubsystem,
+    // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,
     // visionSubsystem, driverLeftStickY, operatorLeftStickY, driverYButton, ledSubsystem));
     // // driverDownDirectionPad.whileTrue(new IntakeFromShooter(shooterSubsystem,
     // intakeSubsystem));
-    // // driverYButton.whileTrue(new ShootSpeaker(driveSubsystem, shooterSubsystem, pivotSubsystem,
+    // // driverYButton.whileTrue(new ShootSpeaker(swerveDrive, shooterSubsystem, pivotSubsystem,
     // visionSubsystem, driverLeftStickX, operatorLeftStickY, driverRightBumper, ledSubsystem));
     // // OPERATOR BUTTONS
 
     // // speaker
-    // operatorRightTrigger.whileTrue(new ShootSpeaker(driveSubsystem, shooterSubsystem,
+    // operatorRightTrigger.whileTrue(new ShootSpeaker(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightBumper,
     // ledSubsystem));
     // // amp
     // operatorRightBumper.whileTrue(new ShootAmp(shooterSubsystem, pivotSubsystem, ledSubsystem,
     // operatorBButton));
     // // fender shot
-    // operatorUpDirectionPad.whileTrue(new SubwooferShot(driveSubsystem, shooterSubsystem,
+    // operatorUpDirectionPad.whileTrue(new SubwooferShot(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightStickX,
     // driverRightBumper, ledSubsystem));
     // // intake (aka SUCC_BUTTON)
