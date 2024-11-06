@@ -13,6 +13,7 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 public class ShootSubwoofer extends Command {
   private final Pivot pivot;
   private final Flywheel flywheel;
+
   /** Creates a new ShootSubwoofer. */
   public ShootSubwoofer(Pivot pivot, Flywheel flywheel) {
     this.pivot = pivot;
@@ -41,7 +42,7 @@ public class ShootSubwoofer extends Command {
     flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
-  } 
+  }
 
   // Returns true when the command should end.
   @Override

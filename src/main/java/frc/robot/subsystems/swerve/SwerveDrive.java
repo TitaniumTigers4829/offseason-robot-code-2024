@@ -1,4 +1,3 @@
-
 package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
@@ -24,10 +23,8 @@ import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
-import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.vision.VisionConstants;
 import java.util.Optional;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -188,7 +185,6 @@ public class SwerveDrive extends SubsystemBase {
    * @param ySpeed Speed of the robot in the y direction, positive being left.
    * @param rotationSpeed Angular rate of the robot in radians per second.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
->>>>>>> 52fbf88798bd786d25dffff6b4769182ad9ea51c
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
     SwerveModuleState[] swerveModuleStates =
@@ -201,7 +197,7 @@ public class SwerveDrive extends SubsystemBase {
         swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
     setModuleStates(swerveModuleStates);
-    Logger.recordOutput("SwerveStates/SwerveModuleStates", swerveModuleStates);
+    Logger.recordOutput("SwerveStates/DesiredStates", swerveModuleStates);
   }
 
   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */

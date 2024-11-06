@@ -14,21 +14,35 @@ public interface VisionIO {
     public int targetsCount = 0;
   }
 
-  void updateInputs(VisionIOInputs inputs);
+  default void updateInputs(VisionIOInputs inputs) {}
 
-  String getLimelightName(int limelightNumber);
+  default String getLimelightName(int limelightNumber) {
+    return "";
+  }
 
-  double getLatencySeconds(int limelightNumber);
+  default double getLatencySeconds(int limelightNumber) {
+    return 0.0;
+  }
 
-  double getTimeStampSeconds(int limelightNumber);
+  default double getTimeStampSeconds(int limelightNumber) {
+    return 0.0;
+  }
 
-  boolean canSeeAprilTags(int limelightNumber);
+  default boolean canSeeAprilTags(int limelightNumber) {
+    return false;
+  }
 
-  double getLimelightAprilTagDistance(int limelightNumber);
+  default double getLimelightAprilTagDistance(int limelightNumber) {
+    return 0.0;
+  }
 
-  int getNumberOfAprilTags(int limelightNumber);
+  default int getNumberOfAprilTags(int limelightNumber) {
+    return 0;
+  }
 
-  Pose2d getPoseFromAprilTags(int limelightNumber);
+  default Pose2d getPoseFromAprilTags(int limelightNumber) {
+    return null;
+  }
 
-  void setHeadingInfo(double headingDegrees, double headingRateDegrees);
+  default void setHeadingInfo(double headingDegrees, double headingRateDegrees) {}
 }

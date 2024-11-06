@@ -1,6 +1,5 @@
 package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
@@ -62,7 +61,7 @@ public class DriveCommand extends DriveCommandBase {
         rightJoystickX.getAsDouble() * angularSpeed,
         isFieldRelative.getAsBoolean());
 
-    // Runs all the code from DriveCommand that estimates pose
+    // Runs all the code from DriveCommandBase that estimates pose
     super.execute();
   }
 
