@@ -13,7 +13,6 @@ import frc.robot.extras.simulation.mechanismSim.IntakeSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.AbstractDriveTrainSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.BrushlessMotorSim;
 import frc.robot.extras.util.GeomUtil;
-
 import java.lang.ref.WeakReference;
 import java.util.*;
 import org.dyn4j.dynamics.Body;
@@ -284,10 +283,9 @@ public abstract class SimulatedField {
         "MapleArenaSimulation/Dyn4jEngineCPUTimeMS", (System.nanoTime() - t0) / 1000000.0);
   }
 
-  
-    public void addMotor(BrushlessMotorSim motor) {
-        motors.add(new WeakReference<>(motor));
-    }
+  public void addMotor(BrushlessMotorSim motor) {
+    motors.add(new WeakReference<>(motor));
+  }
 
   /**
    *
@@ -306,18 +304,17 @@ public abstract class SimulatedField {
    * </ul>
    */
   private void simulationSubTick() {
-        ArrayList<Double> motorCurrents = new ArrayList<>();
-        for (var motor : motors) {
-            BrushlessMotorSim motorRef = motor.get();
-            if (motorRef != null) {
-                motorRef.update();
-            }
-        }
-        double vin = BatterySim.calculateLoadedBatteryVoltage(
-                12.2,
-                0.015,
-                motorCurrents.stream().mapToDouble(Double::doubleValue).toArray());
-        RoboRioSim.setVInVoltage(vin);
+    ArrayList<Double> motorCurrents = new ArrayList<>();
+    for (var motor : motors) {
+      BrushlessMotorSim motorRef = motor.get();
+      if (motorRef != null) {
+        motorRef.update();
+      }
+    }
+    double vin =
+        BatterySim.calculateLoadedBatteryVoltage(
+            12.2, 0.015, motorCurrents.stream().mapToDouble(Double::doubleValue).toArray());
+    RoboRioSim.setVInVoltage(vin);
     for (AbstractDriveTrainSimulation driveTrainSimulation : driveTrainSimulations)
       driveTrainSimulation.simulationSubTick();
 

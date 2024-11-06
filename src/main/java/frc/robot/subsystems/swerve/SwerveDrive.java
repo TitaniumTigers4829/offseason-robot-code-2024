@@ -197,8 +197,7 @@ public class SwerveDrive extends SubsystemBase {
         swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
     setModuleStates(swerveModuleStates);
-    Logger.recordOutput("SwerveStates/SwerveModuleStates", swerveModuleStates);
-    Logger.recordOutput("SwerveStates/MeasuredStates", getModuleStates());
+    Logger.recordOutput("SwerveStates/DesiredStates", swerveModuleStates);
   }
 
   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
@@ -227,7 +226,6 @@ public class SwerveDrive extends SubsystemBase {
    * @param timestampIndex index of the timestamp to sample the pose at
    */
   private void addPoseEstimatorSwerveMeasurement(int timestampIndex) {
-    // if (timestampIndex == 0) return;
     final SwerveModulePosition[] modulePositions = getModulesPosition(timestampIndex),
         moduleDeltas = getModulesDelta(modulePositions);
 
@@ -252,11 +250,6 @@ public class SwerveDrive extends SubsystemBase {
    *     rotation at the sampled timestamp.
    */
   private SwerveModulePosition[] getModulesPosition(int timestampIndex) {
-    // Check if swerveModules is null or empty, return early if so
-    if (swerveModules == null || swerveModules.length == 0) {
-      // Logger.error("Swerve modules array is empty or not initialized properly!");
-      return new SwerveModulePosition[4]; // Return an empty array of the expected size
-    }
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
     for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++)
       swerveModulePositions[moduleIndex] =

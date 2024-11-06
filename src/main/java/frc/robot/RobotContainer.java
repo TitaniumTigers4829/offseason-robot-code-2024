@@ -14,9 +14,10 @@ import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
-import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WHEEL_GRIP;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
@@ -81,14 +82,14 @@ public class RobotContainer {
                 45,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
-                DriveConstants.TRACK_WIDTH +.2,
+                DriveConstants.TRACK_WIDTH + .2,
                 DriveConstants.WHEEL_BASE + .2,
                 SwerveModuleSimulation.getModule(
                     DCMotor.getFalcon500(1),
                     DCMotor.getFalcon500(1),
                     60,
-                    DRIVE_WHEEL_TYPE.TIRE,
-                    7.36),
+                    WHEEL_GRIP.TIRE_WHEEL,
+                    ModuleConstants.DRIVE_GEAR_RATIO),
                 gyroSimulation,
                 new Pose2d(3, 3, new Rotation2d()));
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
@@ -280,9 +281,14 @@ public class RobotContainer {
     // pivotSubsystem, visionSubsystem, driverLeftStick, driverYButton, ledSubsystem));
 
     // // Resets the robot angle in the odometry, factors in which alliance the robot is on
-    driverRightDirectionPad.onTrue(new InstantCommand(() -> swerveDrive.setPose(new
-    Pose2d(swerveDrive.getPose().getX(), swerveDrive.getPose().getY(),
-          Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
+    driverRightDirectionPad.onTrue(
+        new InstantCommand(
+            () ->
+                swerveDrive.setPose(
+                    new Pose2d(
+                        swerveDrive.getPose().getX(),
+                        swerveDrive.getPose().getY(),
+                        Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
     // // // Reset robot odometry based on vision pose measurement from april tags
     // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
     // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));

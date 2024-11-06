@@ -82,8 +82,8 @@ public class SwerveConstants {
     public static final InvertedValue REAR_RIGHT_DRIVE_ENCODER_REVERSED =
         InvertedValue.CounterClockwise_Positive;
 
-    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 3 * Math.PI;
-    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
+    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 6 * Math.PI;
+    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 3 * Math.PI;
 
     public static final double MAX_SPEED_METERS_PER_SECOND = 4.5;
     public static final double MAX_SHOOT_SPEED_METERS_PER_SECOND = 3;
@@ -186,7 +186,7 @@ public class SwerveConstants {
     public static final DCMotor DRIVE_MOTOR = DCMotor.getKrakenX60(1),
         STEER_MOTOR = DCMotor.getFalcon500(1);
 
-    public static final double WHEEL_RADIUS_METERS = ModuleConstants.WHEEL_DIAMETER_METERS / 2,
+    public static final double WHEEL_RADIUS_METERS = ModuleConstants.WHEEL_DIAMETER_METERS / 2.0,
         DRIVE_GEAR_RATIO = ModuleConstants.DRIVE_GEAR_RATIO,
         STEER_GEAR_RATIO = 16.0,
         TIME_ROBOT_STOP_ROTATING_SECONDS = 0.06,
