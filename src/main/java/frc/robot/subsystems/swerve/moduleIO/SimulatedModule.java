@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class SimulatedModule implements ModuleInterface {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(.07, 0, 0);
+  private final PIDController drivePID = new PIDController(.04, 0, 0);
   private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.0, .0, 0.0);
 
   private final Constraints turnConstraints =
@@ -28,7 +28,7 @@ public class SimulatedModule implements ModuleInterface {
           RadiansPerSecond.of(2 * Math.PI).in(RotationsPerSecond),
           RadiansPerSecondPerSecond.of(4 * Math.PI).in(RotationsPerSecondPerSecond));
   private final ProfiledPIDController turnPID =
-      new ProfiledPIDController(Radians.of(3.5).in(Rotations), 0, 0, turnConstraints);
+      new ProfiledPIDController(Radians.of(35).in(Rotations), 0, 0, turnConstraints);
   private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0.77, 0.75, 0);
 
   public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
@@ -85,16 +85,18 @@ public class SimulatedModule implements ModuleInterface {
     // setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
     desiredState.optimize(Rotation2d.fromRotations(turnRotations));
 
-    if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-      stopModule();
-      return;
-    }
-
+    
     // Converts meters per second to rotations per second
     double desiredDriveRPS =
         desiredState.speedMetersPerSecond
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
+
+    if (Math.abs(desiredDriveRPS) < 0.01) {
+      stopModule();
+      return;
+    }
+
     SmartDashboard.putNumber("desired drive RPS", desiredDriveRPS);
     SmartDashboard.putNumber(
         "current drive RPS",
