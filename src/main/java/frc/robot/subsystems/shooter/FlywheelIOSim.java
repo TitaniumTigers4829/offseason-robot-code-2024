@@ -38,10 +38,7 @@ public class FlywheelIOSim
     flywheelSim.setInputVoltage(volts);
   }
 
-  /**
-   * @param velocityRPM User inputs the desired velocity in RPM, gets converted in method for PID to
-   *     set value in RPS
-   */
+
   @Override
   public void setVelocity(double velocityRPM) { // ffvolts is feedorward
     double velocityRPS = velocityRPM / 60;

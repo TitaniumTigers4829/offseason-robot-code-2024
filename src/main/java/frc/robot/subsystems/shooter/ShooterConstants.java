@@ -4,18 +4,19 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 
+/** All of the constants called in the shooter subsystems. */
 public class ShooterConstants {
-  public static final int LEADER_FLYWHEEL_ID = 4;
-  public static final int FOLLOWER_FLYWHEEL_ID = 12;
-  public static final int ROLLER_MOTOR_ID = 2;
+  public static final int LEADER_FLYWHEEL_ID = 4; /**ID of the leader flywheel*/
+  public static final int FOLLOWER_FLYWHEEL_ID = 12; /**ID of the follower flywheel*/
+  public static final int ROLLER_MOTOR_ID = 2; /**ID of the roller motor*/
 
-  public static final double SHOOTER_SUPPLY_LIMIT = 60;
-  public static final double SHOOTER_STATOR_LIMIT = 60;
-  public static final boolean SHOOTER_STATOR_ENABLE = true;
-  public static final boolean SHOOTER_SUPPLY_ENABLE = true;
+  public static final double SHOOTER_SUPPLY_LIMIT = 60; /**Sets the limit for the shooter supply voltage*/
+  public static final double SHOOTER_STATOR_LIMIT = 60; /**Sets the limit for the shooter stator voltage*/
+  public static final boolean SHOOTER_STATOR_ENABLE = true; /**Enables the limit for stator*/
+  public static final boolean SHOOTER_SUPPLY_ENABLE = true; /**Enables the limit for supply*/
 
-  public static final double ROLLER_NEUTRAL_SPEED = 0;
-  public static final double SHOOTER_NEUTRAL_SPEED = 0;
+  public static final double ROLLER_NEUTRAL_SPEED = 0; /**Sets the speed of the roller motor for neutral mode*/
+  public static final double SHOOTER_NEUTRAL_SPEED = 0; /**Sets the speed of the shooter motor for neutral mode*/
 
   public static final double FLYWHEEL_SPINUP_SPEED = 4000;
   public static final double SHOOT_SPEAKER_RPM = 4000;

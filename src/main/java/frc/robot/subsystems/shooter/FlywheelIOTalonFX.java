@@ -24,10 +24,9 @@ public class FlywheelIOTalonFX
   private final DigitalInput noteSensor =
       new DigitalInput(ShooterConstants.NOTE_SENSOR_ID); // Note sensor
   private final TalonFX rollerMotor = new TalonFX(ShooterConstants.ROLLER_MOTOR_ID);
-
+  // gives values for each thing that is set.
   private final VelocityVoltage velocityRequest;
   private final VoltageOut voltageRequest;
-  // gives values for each thing that is set.
   private final StatusSignal<Angle> leaderPosition = leftFlywheelMotor.getPosition();
   private final StatusSignal<AngularVelocity> leaderVelocity = leftFlywheelMotor.getVelocity();
   private final StatusSignal<Voltage> leaderAppliedVolts = leftFlywheelMotor.getMotorVoltage();
@@ -90,9 +89,7 @@ public class FlywheelIOTalonFX
     voltageRequest = new VoltageOut(0.0);
   }
 
-  /**
-   * @param inputs has all the inputs, updates and logs them
-   */
+
   @Override
   public void updateInputs(
       FlywheelIOInputs inputs) { // gets current values for motors and puts them into a log
@@ -115,27 +112,23 @@ public class FlywheelIOTalonFX
     leftFlywheelMotor.setControl(voltageRequest.withOutput(volts));
   }
 
-  /**
-   * @param velocityRPM Recieve desired input in rounds per minute, and the method will convert to
-   *     RPS to match requirements for VelocityVoltage *
-   */
+
   @Override
   public void setVelocity(double velocityRPM) {
     leftFlywheelMotor.setControl(velocityRequest.withVelocity(velocityRPM / 60.0));
   }
 
   @Override
+
   public void stop() { // stops the motor
     leftFlywheelMotor.stopMotor();
   }
-
+  
   public void setRollerSpeed(double speed) {
     rollerMotor.set(speed);
   }
 
-  /**
-   * @return Whether the sensor can detect a note in there
-   */
+
   public boolean hasNote() {
     return !noteSensor.get();
   }

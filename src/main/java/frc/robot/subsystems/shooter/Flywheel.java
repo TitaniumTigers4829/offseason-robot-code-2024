@@ -8,7 +8,7 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
   // private final SimpleMotorFeedforward ffModel;
-
+  /** Constructor that creates initiates IO */
   public Flywheel(FlywheelIO io) {
     this.io = io;
   }
@@ -33,6 +33,11 @@ public class Flywheel extends SubsystemBase {
     Logger.recordOutput("Flywheel/RPM", desiredRPM);
   }
 
+  /**
+   * Returns whether or not a note is detected
+   *
+   * @return whether a note was detected or not
+   */
   public boolean hasNote() {
     return inputs.isNoteDetected;
   }
@@ -47,6 +52,7 @@ public class Flywheel extends SubsystemBase {
     Logger.recordOutput("Roller/DutyCycleOut", speed);
   }
 
+  /** updates and logs inputs periodically */
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -54,6 +60,9 @@ public class Flywheel extends SubsystemBase {
     Logger.processInputs("FlywheelSubsystem", inputs);
   }
 
+  /**
+   * @return periodic but for the simulation
+   */
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
