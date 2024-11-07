@@ -20,8 +20,8 @@ import java.util.Arrays;
 public class SimulatedModule implements ModuleInterface {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(.04, 0, 0);
-  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.0, .0, 0.0);
+  private final PIDController drivePID = new PIDController(.06, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.12, .012, 0.0012);
 
   private final Constraints turnConstraints =
       new Constraints(

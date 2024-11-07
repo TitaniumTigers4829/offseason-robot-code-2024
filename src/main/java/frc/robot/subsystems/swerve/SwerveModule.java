@@ -52,7 +52,7 @@ public class SwerveModule extends SubsystemBase {
     for (int i = 0; i < odometryPositions.length; i++) {
       double positionMeters = inputs.odometryDriveWheelRevolutions[i];
       Rotation2d angle = inputs.odometrySteerPositions[i];
-      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+      odometryPositions[i] = new SwerveModulePosition(driveRevolutionsToMeters(positionMeters), angle);
 
       SmartDashboard.putNumber("updated drive position", positionMeters);
       SmartDashboard.putNumber("updated angle", angle.getDegrees());

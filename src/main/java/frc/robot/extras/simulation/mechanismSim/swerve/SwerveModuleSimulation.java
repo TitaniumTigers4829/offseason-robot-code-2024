@@ -405,7 +405,7 @@ public class SwerveModuleSimulation {
    */
   public double[] getCachedDriveWheelFinalPositionsRad() {
     return cachedDriveEncoderUnGearedPositionsRad.stream()
-        .mapToDouble(value -> value * ModuleConstants.DRIVE_TO_METERS)
+        .mapToDouble(value -> value / ModuleConstants.DRIVE_GEAR_RATIO)
         .toArray();
   }
 
