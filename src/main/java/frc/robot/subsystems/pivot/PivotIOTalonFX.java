@@ -12,7 +12,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -50,11 +49,11 @@ public class PivotIOTalonFX implements PivotIO {
   private final Constraints pivotConstraints = new Constraints(0, 0);
   private final double armkS = 0.0;
   private final double armkG = PivotConstants.PIVOT_G;
-  private final double armkV = 0.0; 
+  private final double armkV = 0.0;
   private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
   private final ProfiledPIDController pivotController =
       new ProfiledPIDController(0, 0, 0, pivotConstraints);
-  
+
   public PivotIOTalonFX() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
     followerPivotMotor = new TalonFX(PivotConstants.FOLLOWER_PIVOT_MOTOR_ID);

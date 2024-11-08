@@ -18,7 +18,7 @@ public class PivotIOSim implements PivotIO {
   private final double pivotLength = PivotConstants.PIVOT_LENGTH;
   private final double armkS = 0.0;
   private final double armkG = PivotConstants.PIVOT_G;
-  private final double armkV = 0.0; 
+  private final double armkV = 0.0;
 
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
