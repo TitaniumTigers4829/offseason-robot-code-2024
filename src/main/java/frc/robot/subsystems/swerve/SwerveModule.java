@@ -54,14 +54,13 @@ public class SwerveModule extends SubsystemBase {
       Rotation2d angle = inputs.odometrySteerPositions[i];
       odometryPositions[i] = new SwerveModulePosition(driveRevolutionsToMeters(positionMeters), angle);
 
-      SmartDashboard.putNumber("updated drive position", positionMeters);
+      SmartDashboard.putNumber("updated drive position", driveRevolutionsToMeters(positionMeters));
       SmartDashboard.putNumber("updated angle", angle.getDegrees());
     }
   }
 
   private double driveRevolutionsToMeters(double driveWheelRevolutions) {
-    return Rotations.of(driveWheelRevolutions).in(Radians)
-        * SimulationConstants.WHEEL_RADIUS_METERS;
+    return driveWheelRevolutions * ModuleConstants.DRIVE_TO_METERS;
   }
 
   public void setVoltage(Voltage volts) {

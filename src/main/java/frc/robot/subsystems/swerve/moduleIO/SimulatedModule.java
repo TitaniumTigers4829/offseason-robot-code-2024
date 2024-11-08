@@ -20,8 +20,8 @@ import java.util.Arrays;
 public class SimulatedModule implements ModuleInterface {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(.06, 0, 0);
-  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.12, .012, 0.0012);
+  private final PIDController drivePID = new PIDController(.005, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.03155, 0.010831, 0.005);
 
   private final Constraints turnConstraints =
       new Constraints(
@@ -82,7 +82,7 @@ public class SimulatedModule implements ModuleInterface {
   @Override
   public void setDesiredState(SwerveModuleState desiredState) {
     double turnRotations = getTurnRotations();
-    // setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
+    // desiredState.cosineScale(Rotation2d.fromRotations(turnRotations));
     desiredState.optimize(Rotation2d.fromRotations(turnRotations));
 
     
@@ -92,7 +92,7 @@ public class SimulatedModule implements ModuleInterface {
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
 
-    if (Math.abs(desiredDriveRPS) < 0.01) {
+    if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
       stopModule();
       return;
     }
@@ -126,7 +126,7 @@ public class SimulatedModule implements ModuleInterface {
 
   @Override
   public void stopModule() {
-    moduleSimulation.requestDriveVoltageOut(Volts.of(0));
-    moduleSimulation.requestTurnVoltageOut(Volts.of(0));
+    moduleSimulation.requestDriveVoltageOut(Volts.zero());
+    moduleSimulation.requestTurnVoltageOut(Volts.zero());
   }
 }
