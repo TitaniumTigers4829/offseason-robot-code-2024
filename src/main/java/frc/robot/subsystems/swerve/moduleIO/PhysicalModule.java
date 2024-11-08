@@ -153,12 +153,8 @@ public class PhysicalModule implements ModuleInterface {
       turnEncoderAbsolutePosition.clear();
     }
 
-    inputs.turnPosition = turnMotor.getPosition().getValueAsDouble();
-
     inputs.driveAppliedVolts = driveMotorAppliedVoltage.getValueAsDouble();
     inputs.driveCurrentAmps = driveMotorCurrent.getValueAsDouble();
-
-    inputs.turnPosition = turnMotor.getPosition().getValueAsDouble();
 
     inputs.turnVelocity = turnEncoderVelocity.getValueAsDouble();
     inputs.turnAppliedVolts = turnMotorAppliedVolts.getValueAsDouble();

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.drive.DriveCommand;
@@ -12,7 +13,6 @@ import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
-import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
 import frc.robot.extras.util.JoystickUtil;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
@@ -24,6 +24,7 @@ import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.FlywheelIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
 import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOReal;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -39,12 +41,13 @@ import org.littletonrobotics.junction.Logger;
 public class RobotContainer {
 
   private final Vision visionSubsystem = new Vision(new VisionIOReal());
+  private final Vision visionSubsystem;
   private final SwerveDrive swerveDrive;
   private final CommandXboxController operatorController = new CommandXboxController(1);
-  private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
-  private final Intake intake = new Intake(new IntakeIOTalonFX());
-  private final Pivot pivot = new Pivot(new PivotIOTalonFX());
-  private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
+  // private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
+  // private final Intake intake = new Intake(new IntakeIOTalonFX());
+  // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
+  // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
 
   // Simulation, we store them here in the robot container
@@ -72,6 +75,7 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[1]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
+        visionSubsystem = new Vision(new VisionIOReal());
       }
 
       case SIM -> {
@@ -86,21 +90,22 @@ public class RobotContainer {
                 45,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
-                DriveConstants.TRACK_WIDTH,
-                DriveConstants.WHEEL_BASE,
+                DriveConstants.TRACK_WIDTH + .2,
+                DriveConstants.WHEEL_BASE + .2,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getKrakenX60(1),
+                    DCMotor.getFalcon500(1),
                     DCMotor.getFalcon500(1),
                     60,
-                    DRIVE_WHEEL_TYPE.TIRE,
-                    7.36),
+                    WHEEL_GRIP.TIRE_WHEEL,
+                    ModuleConstants.DRIVE_GEAR_RATIO),
                 gyroSimulation,
                 new Pose2d(3, 3, new Rotation2d()));
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
         swerveDrive =
             new SwerveDrive(
                 new SimulatedGyro(
-                    gyroSimulation), // SimulateGyro is a wrapper around gyro simulation, that reads
+                    gyroSimulation), // SimulatedGyro is a wrapper around gyro simulation, that
+                // reads
                 // the simulation result
                 /* SimulatedModule are edited such that they also wraps around module simulations */
                 new SimulatedModule(swerveDriveSimulation.getModules()[0]),
@@ -108,12 +113,18 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[2]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
 
+
+        // TODO: add sim impl
+        visionSubsystem = new Vision(new VisionIO() {});
+
+
         SimulatedField.getInstance().resetFieldForAuto();
         resetFieldAndOdometryForAuto(
             new Pose2d(1.3980597257614136, 5.493067741394043, Rotation2d.fromRadians(3.1415)));
       }
 
       default -> {
+        visionSubsystem = new Vision(new VisionIO() {});
         /* Replayed robot, disable IO implementations */
 
         /* physics simulations are also not needed */
@@ -140,7 +151,7 @@ public class RobotContainer {
       updateFieldSimAndDisplay();
     }
 
-    // swerveDrive.periodic();
+    swerveDrive.periodic();
     swerveDrive.setPose(startingPose);
   }
 
@@ -226,48 +237,53 @@ public class RobotContainer {
     // driverLeftTrigger.whileFalse(new TowerIntake(intakeSubsystem, pivotSubsystem,
     // shooterSubsystem, false, ledSubsystem, this::intakeCallback).withTimeout(0.3));
     // // Amp Lineup
-    // driverAButton.whileTrue(new AutoAlignWithAmp(driveSubsystem, visionSubsystem));
+    // driverAButton.whileTrue(new AutoAlignWithAmp(swerveDrive, visionSubsystem));
     // // Spinup for shoot
-    // driverRightTrigger.whileTrue(new SpinUpForSpeaker(driveSubsystem, shooterSubsystem,
+    // driverRightTrigger.whileTrue(new SpinUpForSpeaker(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightBumper,
     // ledSubsystem));
 
-    // // driverLeftBumper.whileTrue(new ShootSpeaker(driveSubsystem, shooterSubsystem,
+    // // driverLeftBumper.whileTrue(new ShootSpeaker(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, operatorLeftStickY, driverRightBumper,
     // ledSubsystem));
-    // // driverRightTrigger.whileTrue(new ShootWhileMove(driveSubsystem, shooterSubsystem,
+    // // driverRightTrigger.whileTrue(new ShootWhileMove(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStick, driverYButton, ledSubsystem));
 
     // // Resets the robot angle in the odometry, factors in which alliance the robot is on
-    // driverRightDirectionPad.onTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new
-    // Pose2d(driveSubsystem.getPose().getX(), driveSubsystem.getPose().getY(),
-    //       Rotation2d.fromDegrees(driveSubsystem.getAllianceAngleOffset())))));
+    driverRightDirectionPad.onTrue(
+        new InstantCommand(
+            () ->
+                swerveDrive.setPose(
+                    new Pose2d(
+                        swerveDrive.getPose().getX(),
+                        swerveDrive.getPose().getY(),
+                        Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
     // // // Reset robot odometry based on vision pose measurement from april tags
     // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
-    // driveSubsystem.resetOdometry(visionSubsystem.getLastSeenPose())));
-    // // driverLeftDpad.onTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new
+    // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));
+    // // driverLeftDpad.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry(new
     // Pose2d(15.251774787902832, 5.573054313659668, Rotation2d.fromRadians(3.14159265)))));
-    // // driverBButton.whileTrue(new ShootPass(driveSubsystem, shooterSubsystem, pivotSubsystem,
+    // // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,
     // visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightBumper, ledSubsystem));
 
     // // driverXButton.
-    // driverBButton.whileTrue(new ShootPass(driveSubsystem, shooterSubsystem, pivotSubsystem,
+    // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,
     // visionSubsystem, driverLeftStickY, operatorLeftStickY, driverYButton, ledSubsystem));
     // // driverDownDirectionPad.whileTrue(new IntakeFromShooter(shooterSubsystem,
     // intakeSubsystem));
-    // // driverYButton.whileTrue(new ShootSpeaker(driveSubsystem, shooterSubsystem, pivotSubsystem,
+    // // driverYButton.whileTrue(new ShootSpeaker(swerveDrive, shooterSubsystem, pivotSubsystem,
     // visionSubsystem, driverLeftStickX, operatorLeftStickY, driverRightBumper, ledSubsystem));
     // // OPERATOR BUTTONS
 
     // // speaker
-    // operatorRightTrigger.whileTrue(new ShootSpeaker(driveSubsystem, shooterSubsystem,
+    // operatorRightTrigger.whileTrue(new ShootSpeaker(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightBumper,
     // ledSubsystem));
     // // amp
     // operatorRightBumper.whileTrue(new ShootAmp(shooterSubsystem, pivotSubsystem, ledSubsystem,
     // operatorBButton));
     // // fender shot
-    // operatorUpDirectionPad.whileTrue(new SubwooferShot(driveSubsystem, shooterSubsystem,
+    // operatorUpDirectionPad.whileTrue(new SubwooferShot(swerveDrive, shooterSubsystem,
     // pivotSubsystem, visionSubsystem, driverLeftStickX, driverLeftStickY, driverRightStickX,
     // driverRightBumper, ledSubsystem));
     // // intake (aka SUCC_BUTTON)

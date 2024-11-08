@@ -23,7 +23,8 @@ public interface ModuleInterface {
 
     public double[] odometryTimestamps = new double[] {};
 
-    public double turnPosition = 0.0;
+    public double[] odometryDriveWheelRevolutions = new double[] {};
+    public Rotation2d[] odometrySteerPositions = new Rotation2d[] {};
   }
 
   /**

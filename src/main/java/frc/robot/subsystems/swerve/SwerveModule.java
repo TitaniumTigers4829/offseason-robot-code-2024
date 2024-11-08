@@ -1,15 +1,17 @@
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.SimulationConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInputsAutoLogged;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import org.littletonrobotics.junction.Logger;
@@ -41,7 +43,26 @@ public class SwerveModule extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    updateOdometryPositions();
+  }
+
+  private void updateOdometryPositions() {
+    odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
+    for (int i = 0; i < odometryPositions.length; i++) {
+      double positionMeters = inputs.odometryDriveWheelRevolutions[i];
+      Rotation2d angle = inputs.odometrySteerPositions[i];
+      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+
+      SmartDashboard.putNumber("updated drive position", positionMeters);
+      SmartDashboard.putNumber("updated angle", angle.getDegrees());
+    }
+  }
+
+  private double driveRevolutionsToMeters(double driveWheelRevolutions) {
+    return Rotations.of(driveWheelRevolutions).in(Radians)
+        * SimulationConstants.WHEEL_RADIUS_METERS;
+  }
 
   public void setVoltage(Voltage volts) {
     io.setDriveVoltage(volts);
