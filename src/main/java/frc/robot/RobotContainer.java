@@ -45,7 +45,7 @@ public class RobotContainer {
   // Simulation, we store them here in the robot container
   // private final SimulatedField simulatedArena;
   private final SwerveDriveSimulation swerveDriveSimulation;
-  private final frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation gyroSimulation;
+  private final GyroSimulation gyroSimulation;
 
   // Subsystems
   // private final XboxController driverController = new XboxController(0);
@@ -79,7 +79,7 @@ public class RobotContainer {
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                45,
+                60,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 DriveConstants.TRACK_WIDTH + .2,
@@ -141,8 +141,8 @@ public class RobotContainer {
       updateFieldSimAndDisplay();
     }
 
-    swerveDrive.periodic();
-    swerveDrive.setPose(startingPose);
+    // swerveDrive.periodic();
+    swerveDrive.resetPosition(startingPose);
   }
 
   private static double deadband(double value, double deadband) {
@@ -284,7 +284,7 @@ public class RobotContainer {
     driverRightDirectionPad.onTrue(
         new InstantCommand(
             () ->
-                swerveDrive.setPose(
+                swerveDrive.resetPosition(
                     new Pose2d(
                         swerveDrive.getPose().getX(),
                         swerveDrive.getPose().getY(),
@@ -340,7 +340,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    swerveDrive.setPose(
+    swerveDrive.resetPosition(
         new Pose2d(
             swerveDrive.getPose().getX(),
             swerveDrive.getPose().getY(),

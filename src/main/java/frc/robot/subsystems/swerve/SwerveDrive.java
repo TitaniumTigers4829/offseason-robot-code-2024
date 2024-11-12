@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
@@ -71,7 +72,7 @@ public class SwerveDrive extends SubsystemBase {
     this.poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.DRIVE_KINEMATICS,
-            rawGyroRotation,
+            getRawGyroYaw(),
             lastModulePositions,
             new Pose2d(),
             VecBuilder.fill(
@@ -97,12 +98,12 @@ public class SwerveDrive extends SubsystemBase {
     return gyroInputs.yawVelocity;
   }
 
-  /** Updates the pose estimator with the pose calculated from the swerve modules. */
-  public void addPoseEstimatorSwerveMeasurement() {
-    for (int timestampIndex = 0;
-        timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
-        timestampIndex++) addPoseEstimatorSwerveMeasurement(timestampIndex);
-  }
+  // /** Updates the pose estimator with the pose calculated from the swerve modules. */
+  // public void addPoseEstimatorSwerveMeasurement() {
+  //   for (int timestampIndex = 0;
+  //       timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
+  //       timestampIndex++) addPoseEstimatorSwerveMeasurement(timestampIndex);
+  // }
 
   /*
    * Updates the pose estimator with the pose calculated from the april tags. How much it
@@ -217,7 +218,6 @@ public class SwerveDrive extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     for (int i = 0; i < 4; i++) {
       swerveModules[i].runSetPoint(desiredStates[i]);
-      Logger.recordOutput("SwerveStates/desiredStatesagain", desiredStates[i]);
     }
   }
 
@@ -226,21 +226,21 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @param timestampIndex index of the timestamp to sample the pose at
    */
-  private void addPoseEstimatorSwerveMeasurement(int timestampIndex) {
-    final SwerveModulePosition[] modulePositions = getModulesPosition(timestampIndex),
+  public void addPoseEstimatorSwerveMeasurement() {
+    final SwerveModulePosition[] modulePositions = getModulePositions(),
         moduleDeltas = getModulesDelta(modulePositions);
 
     if (gyroInputs.isConnected) {
-      rawGyroRotation = gyroInputs.odometryYawPositions[timestampIndex];
+      // rawGyroRotation = gyroInputs.odometryYawPositions[timestampIndex];
+      rawGyroRotation = getRawGyroYaw();
     } else {
       Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(moduleDeltas);
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
 
     poseEstimator.updateWithTime(
-        odometryThreadInputs.measurementTimeStamps[timestampIndex],
-        rawGyroRotation,
-        modulePositions);
+        // odometryThreadInputs.measurementTimeStamps[timestampIndex],
+        Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
   }
 
   /**
@@ -302,7 +302,10 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @param pose pose to set
    */
-  public void setPose(Pose2d pose) {
+  public void resetPosition(Pose2d pose) {
+    // for (int timestampIndex = 0;
+    // timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
+    // timestampIndex++)
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 }

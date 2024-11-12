@@ -82,8 +82,8 @@ public class SwerveConstants {
     public static final InvertedValue REAR_RIGHT_DRIVE_ENCODER_REVERSED =
         InvertedValue.CounterClockwise_Positive;
 
-    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 6 * Math.PI;
-    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 3 * Math.PI;
+    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 3 * Math.PI;
+    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
 
     public static final double MAX_SPEED_METERS_PER_SECOND = 4.5;
     public static final double MAX_SHOOT_SPEED_METERS_PER_SECOND = 3;
