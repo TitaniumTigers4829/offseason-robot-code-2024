@@ -1,8 +1,10 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
 
 public final class VisionConstants {
+  public static final AprilTagFields APRIL_TAG_FIELD = AprilTagFields.k2024Crescendo;
 
   public static final double VISION_X_POS_TRUST = 0.5; // meters
   public static final double VISION_Y_POS_TRUST = 0.5; // meters
