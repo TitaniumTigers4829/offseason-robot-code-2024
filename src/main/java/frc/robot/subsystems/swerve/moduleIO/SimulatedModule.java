@@ -22,16 +22,16 @@ public class SimulatedModule implements ModuleInterface {
 
   private final Constraints turnConstraints =
       new Constraints(
-          RadiansPerSecond.of(2 * Math.PI).in(RotationsPerSecond) * 0,
-          RadiansPerSecondPerSecond.of(4 * Math.PI).in(RotationsPerSecondPerSecond) * 0);
+          RadiansPerSecond.of(2 * Math.PI).in(RotationsPerSecond),
+          RadiansPerSecondPerSecond.of(4 * Math.PI).in(RotationsPerSecondPerSecond));
   private final ProfiledPIDController turnPID =
-      new ProfiledPIDController(Radians.of(35).in(Rotations), 0, 0, turnConstraints);
+      new ProfiledPIDController(Radians.of(30).in(Rotations), 0, 0, turnConstraints);
   private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0.77, 0.75, 0);
 
   public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
     this.moduleSimulation = moduleSimulation;
     turnPID.enableContinuousInput(
-        Radians.of(-Math.PI).in(Rotations), Radians.of(Math.PI).in(Rotations));
+        -Math.PI, Math.PI);
   }
 
   @Override
@@ -70,19 +70,11 @@ public class SimulatedModule implements ModuleInterface {
 
   @Override
   public void setDesiredState(SwerveModuleState desiredState) {
-    double turnRotations = getTurnRotations();
-    desiredState.optimize(Rotation2d.fromRotations(turnRotations));
-
     // Converts meters per second to rotations per second
     double desiredDriveRPS =
         desiredState.speedMetersPerSecond
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
-
-    if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-      stopModule();
-      return;
-    }
 
     moduleSimulation.requestDriveVoltageOut(
         Volts.of(

@@ -152,6 +152,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /** Returns the average drive velocity in rotations/sec. */
+  // TODO: fix method
   public double getCharacterizationVelocity() {
     double velocity = 0.0;
     for (SwerveModule module : swerveModules) {
@@ -188,12 +189,15 @@ public class SwerveDrive extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
+    ChassisSpeeds discreteSpeeds = 
+    // ChassisSpeeds.discretize(
+      fieldRelative
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(
+              xSpeed, ySpeed, rotationSpeed, getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
+          : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
+          // , 0.02);
     SwerveModuleState[] swerveModuleStates =
-        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeed, ySpeed, rotationSpeed, getPose().getRotation())
-                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed));
+        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
@@ -294,7 +298,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /** Gets the current gyro yaw */
   public Rotation2d getRawGyroYaw() {
-    return gyroInputs.yawDegreesRotation2d;
+    return Rotation2d.fromDegrees(gyroInputs.yawDegrees);
   }
 
   /**
@@ -306,6 +310,6 @@ public class SwerveDrive extends SubsystemBase {
     // for (int timestampIndex = 0;
     // timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
     // timestampIndex++)
-    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    poseEstimator.resetPosition(getRawGyroYaw(), getModulePositions(), pose);
   }
 }
