@@ -189,13 +189,16 @@ public class SwerveDrive extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
-    ChassisSpeeds discreteSpeeds = 
-    // ChassisSpeeds.discretize(
-      fieldRelative
-          ? ChassisSpeeds.fromFieldRelativeSpeeds(
-              xSpeed, ySpeed, rotationSpeed, getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
-          : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
-          // , 0.02);
+    ChassisSpeeds discreteSpeeds =
+        // ChassisSpeeds.discretize(
+        fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeed,
+                ySpeed,
+                rotationSpeed,
+                getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
+            : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
+    // , 0.02);
     SwerveModuleState[] swerveModuleStates =
         DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(

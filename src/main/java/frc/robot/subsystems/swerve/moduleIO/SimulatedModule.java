@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.Voltage;
@@ -30,8 +29,7 @@ public class SimulatedModule implements ModuleInterface {
 
   public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
     this.moduleSimulation = moduleSimulation;
-    turnPID.enableContinuousInput(
-        -Math.PI, Math.PI);
+    turnPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
