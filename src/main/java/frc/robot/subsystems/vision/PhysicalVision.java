@@ -39,7 +39,6 @@ public class PhysicalVision implements VisionInterface {
   @Override
   public void updateInputs(VisionInputs inputs) {
     inputs.camerasAmount = limelightEstimates.length;
-    inputs.cameraConnected = true;
 
     for (int limelightNumber = 0; limelightNumber < limelightEstimates.length; limelightNumber++) {
       // Update camera connection status
