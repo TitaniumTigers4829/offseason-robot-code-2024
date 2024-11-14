@@ -25,12 +25,10 @@ import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
 import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionInterface;
 import frc.robot.subsystems.vision.PhysicalVision;
 import frc.robot.subsystems.vision.SimulatedVision;
-
-import java.io.IOException;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionInterface;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -53,7 +51,7 @@ public class RobotContainer {
   // Subsystems
   // private final XboxController driverController = new XboxController(0);
 
-  public RobotContainer() throws IOException {
+  public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL -> {
         /* Real robot, instantiate hardware IO implementations */
@@ -109,7 +107,7 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
 
         // TODO: add sim impl
-          visionSubsystem = new Vision(new SimulatedVision(swerveDrive::getPose));
+        visionSubsystem = new Vision(new SimulatedVision(swerveDrive::getPose));
 
         SimulatedField.getInstance().resetFieldForAuto();
         resetFieldAndOdometryForAuto(

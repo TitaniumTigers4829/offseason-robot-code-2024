@@ -1,10 +1,8 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +30,7 @@ public class SimulatedVision extends PhysicalVision {
   private final int kResWidth = 1280;
   private final int kResHeight = 800;
 
-  public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier)
-      throws IOException {
+  public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier) {
     this.robotActualPoseInSimulationSupplier = robotActualPoseInSimulationSupplier;
     // Create the vision system simulation which handles cameras and targets on the
     // field.
@@ -41,8 +38,7 @@ public class SimulatedVision extends PhysicalVision {
 
     // Add all the AprilTags inside the tag layout as visible targets to this
     // simulated field.
-    visionSim.addAprilTags(
-        AprilTagFieldLayout.loadFromResource(VisionConstants.APRIL_TAG_FIELD.m_resourceFile));
+    visionSim.addAprilTags(VisionConstants.FIELD_LAYOUT);
 
     // Create simulated camera properties. These can be set to mimic your actual
     // camera.
