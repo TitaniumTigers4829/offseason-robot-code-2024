@@ -6,6 +6,9 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionInterface {
   @AutoLog
   class VisionInputs {
+    public boolean isShooterLimelightConnected = false;
+    public boolean isFrontLeftLimelightConnected = false;
+    public boolean isFrontRightLimelightConnect = false;
     public boolean cameraConnected = false;
     public double latency = 0.0;
     public double fiducialMarksID = 0.0;

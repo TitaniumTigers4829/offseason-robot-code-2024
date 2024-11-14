@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FieldConstants;
@@ -13,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PhysicalVision implements VisionInterface {
 
@@ -21,6 +23,7 @@ public class PhysicalVision implements VisionInterface {
   private double headingRateDegreesPerSecond = 0;
   private final Map<Integer, AtomicBoolean> limelightThreads = new ConcurrentHashMap<>();
   private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+  private final AtomicReference<VisionInputs> latestInputs = new AtomicReference<>(new VisionInputs());
 
   /**
    * The pose estimates from the limelights in the following order {shooterLimelight,
@@ -36,9 +39,33 @@ public class PhysicalVision implements VisionInterface {
     }
   }
 
+//   private void setLLSettings() {
+//     double[] camerapose = { 0.0, 0.0, Constants.kCameraHeightOffGroundMeters, 0.0, Constants.kCameraPitchDegrees,
+//             0.0 };
+//     table.getEntry("camerapose_robotspace_set").setDoubleArray(camerapose);
+
+//     double[] cameraBpose = { 0.0, 0.0, Constants.kCameraBHeightOffGroundMeters, Constants.kCameraBRollDegrees,
+//             Constants.kCameraBPitchDegrees, 0.0 };
+//     tableB.getEntry("camerapose_robotspace_set").setDoubleArray(cameraBpose);
+
+//     var fieldToTurretRotation = robotState.getLatestFieldToRobot().getValue().getRotation()
+//             .rotateBy(robotState.getLatestRobotToTurret().getValue());
+//     var fieldToTurretVelocity = Units.radiansToDegrees(robotState.getLatestTurretAngularVelocity()
+//             + robotState.getLatestRobotRelativeChassisSpeed().omegaRadiansPerSecond);
+//     LimelightHelpers.SetRobotOrientation(Constants.kLimelightTableName, fieldToTurretRotation.getDegrees(),
+//             fieldToTurretVelocity, 0, 0, 0, 0);
+
+//     var gyroAngle = robotState.getLatestFieldToRobot().getValue().getRotation();
+//     var gyroAngularVelocity = Units
+//             .radiansToDegrees(robotState.getLatestRobotRelativeChassisSpeed().omegaRadiansPerSecond);
+//     LimelightHelpers.SetRobotOrientation(Constants.kLimelightBTableName, gyroAngle.getDegrees(),
+//             gyroAngularVelocity, 0, 0, 0, 0);
+// }
+
   @Override
   public void updateInputs(VisionInputs inputs) {
     inputs.camerasAmount = limelightEstimates.length;
+    inputs.isShooterLimelightConnected = isLimelightConnected(0);
 
     for (int limelightNumber = 0; limelightNumber < limelightEstimates.length; limelightNumber++) {
       // Update camera connection status
@@ -56,7 +83,7 @@ public class PhysicalVision implements VisionInterface {
 
     // Calculate average latency
     inputs.latency /= limelightEstimates.length;
-
+    latestInputs.set(inputs);
     periodic();
   }
 
@@ -293,6 +320,13 @@ public class PhysicalVision implements VisionInterface {
           throw new IllegalArgumentException("You entered a number for a non-existent limelight");
     };
   }
+
+  public boolean isLimelightConnected(int limelightNumber) {
+    NetworkTable limelightTable = LimelightHelpers.getLimelightNTTable(getLimelightName(limelightNumber));
+    if (limelightTable.containsKey("tx")) {
+      return true;
+    } return false;
+    }
 
   /**
    * This checks is there is new pose detected by a limelight, and if so, updates the pose estimate
