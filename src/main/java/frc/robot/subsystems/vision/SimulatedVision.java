@@ -19,7 +19,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 // Simulate the vision system.
 // Please see the following link for example code
 // https://github.com/PhotonVision/photonvision/blob/2a6fa1b6ac81f239c59d724da5339f608897c510/photonlib-java-examples/swervedriveposeestsim/src/main/java/frc/robot/Vision.java
-public class VisionIOSimPhoton extends VisionIOReal {
+public class SimulatedVision extends PhysicalVision {
   private final PhotonCamera shooterCamera = new PhotonCamera("shooterCamera");
   private final PhotonCamera frontLeftCamera = new PhotonCamera("frontLeftCamera");
   private final PhotonCamera frontRightCamera = new PhotonCamera("frontRightCamera");
@@ -32,7 +32,7 @@ public class VisionIOSimPhoton extends VisionIOReal {
   private final int kResWidth = 1280;
   private final int kResHeight = 800;
 
-  public VisionIOSimPhoton(Supplier<Pose2d> robotActualPoseInSimulationSupplier)
+  public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier)
       throws IOException {
     this.robotActualPoseInSimulationSupplier = robotActualPoseInSimulationSupplier;
     // Create the vision system simulation which handles cameras and targets on the
@@ -87,7 +87,7 @@ public class VisionIOSimPhoton extends VisionIOReal {
   }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionInputs inputs) {
     // Abuse the updateInputs periodic call to update the sim
 
     // Move the vision sim robot on the field
