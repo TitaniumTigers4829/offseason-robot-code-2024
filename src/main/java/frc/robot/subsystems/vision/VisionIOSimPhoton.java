@@ -18,6 +18,7 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +40,7 @@ public class VisionIOSimPhoton extends VisionIOReal {
     private final int kResWidth = 1280;
     private final int kResHeight = 800;
 
-    public VisionIOSimPhoton(Supplier<Pose2d> robotActualPoseInSimulationSupplier) {
+    public VisionIOSimPhoton(Supplier<Pose2d> robotActualPoseInSimulationSupplier) throws IOException {
         this.robotActualPoseInSimulationSupplier = robotActualPoseInSimulationSupplier;
         // Create the vision system simulation which handles cameras and targets on the
         // field.
@@ -74,10 +75,10 @@ public class VisionIOSimPhoton extends VisionIOReal {
 
         Transform3d robotToElevatorCamera = new Transform3d(
                 new Translation3d(
-                        Constants.kTurretToCameraBX,
-                        Constants.kTurretToCameraBY,
-                        Constants.kCameraBHeightOffGroundMeters),
-                new Rotation3d(0.0, -Constants.kCameraBPitchRads, 0.0));
+                        0.0,
+                        0.0,
+                        0.0),
+                new Rotation3d(0.0, 0.0, 0.0));
         visionSim.addCamera(frontLeftCameraSim, robotToElevatorCamera);
 
 
@@ -122,7 +123,7 @@ public class VisionIOSimPhoton extends VisionIOReal {
         //write to ll table
         for (PhotonPipelineResult result : results) {
         if (result.getMultiTagResult().isPresent()) {
-            Transform3d best = result.getMultiTagResult().estimatedPose.isPresent;
+            Transform3d best = result.getMultiTagResult().get().estimatedPose.best;
             Pose2d fieldToCamera = new Pose2d(best.getTranslation().toTranslation2d(),
                     best.getRotation().toRotation2d());
             List<Double> pose_data = new ArrayList<>(Arrays.asList(
@@ -132,8 +133,8 @@ public class VisionIOSimPhoton extends VisionIOReal {
                     0.0, // 3: roll
                     0.0, // 4: pitch
                     fieldToCamera.getRotation().getDegrees(), // 5: yaw
-                    result.getLatencyMillis(), // 6: latency ms,
-                    (double) result.getMultiTagResult().fiducialIDsUsed.size(), // 7: tag count
+                    result.getTimestampSeconds(), // 6: latency ms,
+                    (double) result.getMultiTagResult().get().fiducialIDsUsed.size(), // 7: tag count
                     0.0, // 8: tag span
                     0.0, // 9: tag dist
                     result.getBestTarget().getArea() // 10: tag area
