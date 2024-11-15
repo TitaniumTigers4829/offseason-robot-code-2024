@@ -8,7 +8,6 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -334,8 +333,7 @@ public class PhysicalVision implements VisionInterface {
   }
 
   public boolean isLimelightConnected(Limelight limelight) {
-    NetworkTable limelightTable =
-        LimelightHelpers.getLimelightNTTable(getLimelightName(limelight));
+    NetworkTable limelightTable = LimelightHelpers.getLimelightNTTable(getLimelightName(limelight));
     if (limelightTable.containsKey("tx")) {
       return true;
     }
@@ -369,8 +367,7 @@ public class PhysicalVision implements VisionInterface {
         // very demanding whereas this only has to get the Network Table entries for TX and TY.
         if (current_TX != last_TX || current_TY != last_TY) {
           updatePoseEstimate(limelight);
-          limelightThreads.computeIfPresent(
-              limelight.id, (key, value) -> new AtomicBoolean(true));
+          limelightThreads.computeIfPresent(limelight.id, (key, value) -> new AtomicBoolean(true));
           // This is to keep track of the last valid pose calculated by the limelights
           // it is used when the driver resets the robot odometry to the limelight calculated
           // position
@@ -391,10 +388,7 @@ public class PhysicalVision implements VisionInterface {
         last_TY = current_TY;
       } catch (Exception e) {
         System.err.println(
-            "Error communicating with the: "
-                + getLimelightName(limelight)
-                + ": "
-                + e.getMessage());
+            "Error communicating with the: " + getLimelightName(limelight) + ": " + e.getMessage());
       }
     }
   }
@@ -445,10 +439,7 @@ public class PhysicalVision implements VisionInterface {
       limelightThreads.get(limelight.id).set(false);
     } catch (Exception e) {
       System.err.println(
-          "Error stopping thread for the: "
-              + getLimelightName(limelight)
-              + ": "
-              + e.getMessage());
+          "Error stopping thread for the: " + getLimelightName(limelight) + ": " + e.getMessage());
     }
   }
 
