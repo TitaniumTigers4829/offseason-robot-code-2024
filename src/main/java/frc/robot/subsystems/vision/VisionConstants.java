@@ -5,9 +5,20 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
 
 public final class VisionConstants {
+  public enum Limelight {
+    SHOOTER(0),
+    FRONT_LEFT(1),
+    FRONT_RIGHT(2);
+
+    public final int id;
+
+    Limelight(int id) {
+      this.id = id;
+    }
+  }
+
   public static final AprilTagFieldLayout FIELD_LAYOUT =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-
   public static final double VISION_X_POS_TRUST = 0.5; // meters
   public static final double VISION_Y_POS_TRUST = 0.5; // meters
   public static final double VISION_ANGLE_TRUST = Units.degreesToRadians(50); // radians

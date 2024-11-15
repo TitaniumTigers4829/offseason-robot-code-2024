@@ -122,7 +122,7 @@ public class SimulatedVision extends PhysicalVision {
                     0.0, // 3: roll
                     0.0, // 4: pitch
                     fieldToCamera.getRotation().getDegrees(), // 5: yaw
-                    result.getTimestampSeconds(), // 6: latency ms,
+                    super.getLatencySeconds(0), // 6: latency ms,
                     (double)
                         result.getMultiTagResult().get().fiducialIDsUsed.size(), // 7: tag count
                     0.0, // 8: tag span
@@ -150,7 +150,7 @@ public class SimulatedVision extends PhysicalVision {
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
-      table.getEntry("cl").setDouble(result.getTimestampSeconds());
+      table.getEntry("cl").setDouble(super.getLatencySeconds(0));
     }
   }
 }
