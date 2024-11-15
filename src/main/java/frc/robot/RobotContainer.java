@@ -25,9 +25,9 @@ import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
 import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
+import frc.robot.subsystems.vision.PhysicalVision;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionInterface;
-import frc.robot.subsystems.vision.PhysicalVision;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 

@@ -6,7 +6,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.subsystems.intake.IntakeInterface;
 
 public class SimulatedIntake implements IntakeInterface {
   DCMotorSim intakeSim = new DCMotorSim(null, DCMotor.getFalcon500(1), 0);

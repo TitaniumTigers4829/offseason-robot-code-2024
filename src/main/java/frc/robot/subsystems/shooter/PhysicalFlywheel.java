@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.HardwareConstants;
 
 public class PhysicalFlywheel
-    implements FlywheelInterface { // FlywheelIOTalonFX makes Advantagekit log physical hardware movement
+    implements FlywheelInterface { // FlywheelIOTalonFX makes Advantagekit log physical hardware
+  // movement
   private final TalonFX leftFlywheelMotor =
       new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_ID); // Leader=left motor
   private final TalonFX rightFlywheelMotor =

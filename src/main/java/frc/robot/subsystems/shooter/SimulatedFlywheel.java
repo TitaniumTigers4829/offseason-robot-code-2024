@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class SimulatedFlywheel
-    implements FlywheelInterface { // FlywheelIOSim makes Advantage kit log simulated movements using
+    implements FlywheelInterface { // FlywheelIOSim makes Advantage kit log simulated movements
+  // using
   // physics
   private FlywheelSim flywheelSim = new FlywheelSim(null, DCMotor.getKrakenX60(2), 0);
   private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
