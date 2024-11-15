@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.HardwareConstants;
 
-public class IndexerIOTalonFX implements IndexerIO {
+public class PhysicalIndexer implements IndexerInterface {
   private final TalonFX indexerMotor = new TalonFX(0);
 
   private final StatusSignal<AngularVelocity> indexerVelocity;
@@ -21,7 +21,7 @@ public class IndexerIOTalonFX implements IndexerIO {
   private final StatusSignal<Current> indexerSupplyCurrentAmps;
   private final StatusSignal<Temperature> indexerTemp;
 
-  public IndexerIOTalonFX() {
+  public PhysicalIndexer() {
     TalonFXConfiguration indexerConfiguration = new TalonFXConfiguration();
     indexerConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     indexerConfiguration.MotorOutput.DutyCycleNeutralDeadband =
@@ -52,7 +52,7 @@ public class IndexerIOTalonFX implements IndexerIO {
   }
 
   @Override
-  public void updateInputs(IndexerIOInputs inputs) {
+  public void updateInputs(IndexerInterfaceInputs inputs) {
     inputs.indexerAppliedVolts = indexerAppliedVolts.getValueAsDouble();
     inputs.indexerStatorCurrentAmps = indexerStatorCurrentAmps.getValueAsDouble();
     inputs.indexerSupplyCurrentAmps = indexerSupplyCurrentAmps.getValueAsDouble();

@@ -3,12 +3,12 @@ package frc.robot.subsystems.indexer;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-public class IndexerIOSim implements IndexerIO {
+public class SimulatedIndexer implements IndexerInterface {
   private final DCMotorSim indexerSim = new DCMotorSim(null, DCMotor.getFalcon500(1), 0);
 
   private double indexerAppliedVolts = 0.0;
 
-  public IndexerIOSim(IndexerIOInputs inputs) {
+  public SimulatedIndexer(IndexerInterfaceInputs inputs) {
     indexerSim.update(0.02);
 
     inputs.isConnected = true;

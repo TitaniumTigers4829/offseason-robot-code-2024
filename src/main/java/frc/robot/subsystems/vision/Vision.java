@@ -6,8 +6,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
-  private final VisionIO visionIO;
-  private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
+  private final VisionInterface visionIO;
+  private final VisionInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 
   public Vision(VisionIO visionIO) {
     // Initializing Fields

@@ -9,13 +9,13 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
-public class ElevatorIOSim implements ElevatorIO {
+public class SimulatedElevator implements ElevatorInterface {
   ElevatorSim elevatorSim;
   LinearSystem<N2, N1, N2> elevatorSystem;
   private double elevatorAppliedVolts = 0.0;
   private final PIDController elevatorPID = new PIDController(0.0, 0.0, 0.0);
 
-  public ElevatorIOSim() {
+  public SimulatedElevator() {
     this.elevatorSystem = LinearSystemId.createElevatorSystem(DCMotor.getFalcon500(2), 0, 0, 0);
     this.elevatorSim =
         new ElevatorSim(
@@ -28,7 +28,7 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
-  public void updateInputs(ElevatorIOInputs inputs) {
+  public void updateInputs(ElevatorInterfaceInputs inputs) {
     elevatorSim.update(0.02);
 
     inputs.isConnected = true;

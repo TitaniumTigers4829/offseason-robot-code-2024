@@ -2,9 +2,9 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface FlywheelIO {
+public interface FlywheelInterface {
   @AutoLog
-  public static class FlywheelIOInputs { // variables that we want to log
+  public static class FlywheelInputs { // variables that we want to log
     public double positionRotations = 0.0; // positions in radians | convert to rpms
     public double velocityRPM = 0.0;
     public double appliedVolts = 0.0;
@@ -13,7 +13,7 @@ public interface FlywheelIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(FlywheelIOInputs inputs) {}
+  public default void updateInputs(FlywheelInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(double volts) {}

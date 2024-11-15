@@ -15,8 +15,8 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.HardwareConstants;
 
-public class FlywheelIOTalonFX
-    implements FlywheelIO { // FlywheelIOTalonFX makes Advantagekit log physical hardware movement
+public class PhysicalFlywheel
+    implements FlywheelInterface { // FlywheelIOTalonFX makes Advantagekit log physical hardware movement
   private final TalonFX leftFlywheelMotor =
       new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_ID); // Leader=left motor
   private final TalonFX rightFlywheelMotor =
@@ -38,7 +38,7 @@ public class FlywheelIOTalonFX
 
   // advantagekit log variables
 
-  public FlywheelIOTalonFX() { // Object to set different flywheel configs
+  public PhysicalFlywheel() { // Object to set different flywheel configs
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
     flywheelConfig.CurrentLimits.SupplyCurrentLimit =
         ShooterConstants
@@ -95,7 +95,7 @@ public class FlywheelIOTalonFX
    */
   @Override
   public void updateInputs(
-      FlywheelIOInputs inputs) { // gets current values for motors and puts them into a log
+      FlywheelInputs inputs) { // gets current values for motors and puts them into a log
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
     inputs.positionRotations =

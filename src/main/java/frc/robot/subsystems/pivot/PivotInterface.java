@@ -2,9 +2,9 @@ package frc.robot.subsystems.pivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface PivotIO {
+public interface PivotInterface {
   @AutoLog
-  public static class PivotIOInputs {
+  public static class PivotInterfaceInputs {
     public boolean leaderMotorConnected = true;
     public boolean followerMotorConnected = true;
     public double leaderPosition = 0.0;
@@ -22,7 +22,7 @@ public interface PivotIO {
     public double followerTempCelsius = 0.0;
   }
 
-  public default void updateInputs(PivotIOInputs inputs) {}
+  public default void updateInputs(PivotInterfaceInputs inputs) {}
 
   public default double getAngle() {
     return 0.0;

@@ -2,9 +2,9 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ElevatorIO {
+public interface ElevatorInterface {
   @AutoLog
-  public static class ElevatorIOInputs {
+  public static class ElevatorInterfaceInputs {
     public boolean isConnected = false;
 
     public double leaderMotorPosition = 0.0;
@@ -18,7 +18,7 @@ public interface ElevatorIO {
     public double followerMotorCurrentAmps = 0.0;
   }
 
-  public default void updateInputs(ElevatorIOInputs inputs) {}
+  public default void updateInputs(ElevatorInterfaceInputs inputs) {}
 
   public default double getElevatorPosition() {
     return 0.0;
