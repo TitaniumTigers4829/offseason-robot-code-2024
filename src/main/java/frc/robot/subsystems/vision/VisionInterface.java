@@ -28,11 +28,7 @@ public interface VisionInterface {
     public double frontRightLatency = 0.0;
     public double frontRightTargets = 0.0;
 
-    public double latency = 0.0;
-    public double fiducialMarksID = 0.0;
-
-    public int camerasAmount = 0;
-    public int targetsCount = 0;
+    public double camerasAmount = 0.0;
   }
 
   default void updateInputs(VisionInputs inputs) {}

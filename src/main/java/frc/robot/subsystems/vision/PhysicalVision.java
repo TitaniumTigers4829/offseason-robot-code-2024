@@ -79,22 +79,27 @@ public class PhysicalVision implements VisionInterface {
     if (inputs.isShooterLimelightConnected) {
       inputs.shooterMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.SHOOTER).pose;
       inputs.shooterMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.SHOOTER).pose;
-      // inputs.
+      inputs.shooterLatency = getLatencySeconds(Limelight.SHOOTER);
+      inputs.shooterTargets = getNumberOfAprilTags(Limelight.SHOOTER);
       visionThread(Limelight.SHOOTER);
     }
-    for (int limelightNumber = 0; limelightNumber < limelightEstimates.length; limelightNumber++) {
-      // Add number of April tags seen by this limelight
-      inputs.targetsCount += getNumberOfAprilTags(limelightNumber);
 
-      // Add fiducial mark ID
-      inputs.fiducialMarksID = LimelightHelpers.getFiducialID(getLimelightName(limelightNumber));
-
-      // Add latency for this limelight
-      inputs.latency += getLatencySeconds(limelightNumber) / 1000.0;
+    if (inputs.isFrontLeftLimelightConnected) {
+      inputs.frontLeftMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.FRONT_LEFT).pose;
+      inputs.frontLeftMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.FRONT_LEFT).pose;
+      inputs.frontLeftLatency = getLatencySeconds(Limelight.FRONT_LEFT);
+      inputs.frontLeftTargets = getNumberOfAprilTags(Limelight.FRONT_LEFT);
+      visionThread(Limelight.FRONT_LEFT);
     }
 
-    // Calculate average latency
-    inputs.latency /= limelightEstimates.length;
+    if (inputs.isFrontRightLimelightConnected) {
+      inputs.frontRightMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.FRONT_RIGHT).pose;
+      inputs.frontRightMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.FRONT_RIGHT).pose;
+      inputs.frontRightLatency = getLatencySeconds(Limelight.FRONT_RIGHT);
+      inputs.frontRightTargets = getNumberOfAprilTags(Limelight.FRONT_RIGHT);
+      visionThread(Limelight.FRONT_RIGHT);
+    }
+
     latestInputs.set(inputs);
   }
 
@@ -250,19 +255,19 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Gets the pose of the robot calculated by specified limelight via any April Tags it sees
    *
-   * @param limelightNumber the number of the limelight
+   * @param limelight the number of the limelight
    * @return the pose of the robot, if the limelight can't see any April Tags, it will return 0 for
    *     x, y, and theta
    */
-  @Override
-  public Pose2d getPoseFromAprilTags(int limelightNumber) {
-    return limelightEstimates[limelightNumber].pose;
+  // @Override
+  public Pose2d getPoseFromAprilTags(Limelight limelight) {
+    return limelightEstimates[limelight.id].pose;
   }
 
   /** Returns how many april tags the limelight that is being used for pose estimation can see. */
   // @Override
-  public int getNumberOfAprilTags(Limelight limelightNumber) {
-    return limelightEstimates[limelightNumber.id].tagCount;
+  public int getNumberOfAprilTags(Limelight limelight) {
+    return limelightEstimates[limelight.id].tagCount;
   }
 
   /**
