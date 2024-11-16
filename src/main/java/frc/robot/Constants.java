@@ -3,12 +3,12 @@ package frc.robot;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerve.SwerveConstants.*;
 
+/** Values are statically stored here used globally throughout the code. */
 public final class Constants {
 
   public static final class LogPaths {
     public static final String SYSTEM_PERFORMANCE_PATH = "SystemPerformance/";
     public static final String PHYSICS_SIMULATION_PATH = "MaplePhysicsSimulation/";
-    public static final String APRIL_TAGS_VISION_PATH = "Vision/AprilTags/";
   }
 
   public static final Mode currentMode = Mode.SIM;
@@ -51,8 +51,8 @@ public final class Constants {
   public static final class FieldConstants {
     // TODO: Now that I think about it, I'm pretty sure these measurements stay the same every year,
     // so consider setting them in the base code
-    public static final double FIELD_LENGTH_METERS = Units.inchesToMeters(0 - 9);
-    public static final double FIELD_WIDTH_METERS = Units.inchesToMeters(0 - 9);
+    public static final double FIELD_LENGTH_METERS = Units.inchesToMeters(653);
+    public static final double FIELD_WIDTH_METERS = Units.inchesToMeters(325);
   }
 
   public static final class JoystickConstants {

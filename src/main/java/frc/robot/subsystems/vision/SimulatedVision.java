@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

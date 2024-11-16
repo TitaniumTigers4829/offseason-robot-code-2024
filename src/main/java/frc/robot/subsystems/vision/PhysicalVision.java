@@ -6,7 +6,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.extras.vision.LimelightHelpers;
-import frc.robot.extras.vision.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import java.util.Map;
@@ -81,7 +80,7 @@ public class PhysicalVision implements VisionInterface {
       inputs.shooterMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.SHOOTER).pose;
       inputs.shooterMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.SHOOTER).pose;
       inputs.shooterLatency = getLatencySeconds(Limelight.SHOOTER);
-      inputs.shooterTargets = getNumberOfAprilTags(Limelight.SHOOTER); 
+      inputs.shooterTargets = getNumberOfAprilTags(Limelight.SHOOTER);
       inputs.shooterCameraToTargets = getAprilTagPositionToLimelight(Limelight.SHOOTER);
       inputs.shooterRobotToTargets = getAprilTagPositionToRobot(Limelight.SHOOTER);
       visionThread(Limelight.SHOOTER);
