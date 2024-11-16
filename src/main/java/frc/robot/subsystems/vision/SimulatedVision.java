@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.subsystems.vision.VisionConstants.Limelight;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,13 +27,13 @@ public class SimulatedVision extends PhysicalVision {
   PhotonCameraSim frontLeftCameraSim;
   PhotonCameraSim frontRightCameraSim;
   private final VisionSystemSim visionSim;
-  private final Supplier<Pose2d> robotActualPoseInSimulationSupplier;
+  private final Supplier<Pose2d> robotSimulationPose;
 
   private final int kResWidth = 1280;
   private final int kResHeight = 800;
 
   public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier) {
-    this.robotActualPoseInSimulationSupplier = robotActualPoseInSimulationSupplier;
+    this.robotSimulationPose = robotActualPoseInSimulationSupplier;
     // Create the vision system simulation which handles cameras and targets on the
     // field.
     visionSim = new VisionSystemSim("main");
@@ -87,17 +89,17 @@ public class SimulatedVision extends PhysicalVision {
     // Abuse the updateInputs periodic call to update the sim
 
     // Move the vision sim robot on the field
-    if (robotActualPoseInSimulationSupplier.get() != null) {
-      visionSim.update(robotActualPoseInSimulationSupplier.get());
-      Logger.recordOutput("Vision/SimIO/updateSimPose", robotActualPoseInSimulationSupplier.get());
+    if (robotSimulationPose.get() != null) {
+      visionSim.update(robotSimulationPose.get());
+      Logger.recordOutput("Vision/SimIO/updateSimPose", robotSimulationPose.get());
     }
 
     NetworkTable shooterTable =
-        NetworkTableInstance.getDefault().getTable(super.getLimelightName(0));
+        NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.SHOOTER));
     NetworkTable frontLeftTable =
-        NetworkTableInstance.getDefault().getTable(super.getLimelightName(1));
+        NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.FRONT_LEFT));
     NetworkTable frontRightTable =
-        NetworkTableInstance.getDefault().getTable(super.getLimelightName(2));
+        NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.FRONT_RIGHT));
     // Write to limelight table
     writeToTable(shooterCamera.getAllUnreadResults(), shooterTable);
     writeToTable(frontLeftCamera.getAllUnreadResults(), frontLeftTable);

@@ -18,7 +18,7 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     // Updates limelight inputs
     visionInterface.updateInputs(inputs);
-    Logger.processInputs(visionInterface.getLimelightName(0), inputs);
+    Logger.processInputs("Vision/", inputs);
   }
 
   // Add methods to support DriveCommand
