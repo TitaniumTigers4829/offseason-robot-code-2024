@@ -8,6 +8,7 @@ import frc.robot.extras.interpolators.MultiLinearInterpolator;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionConstants.Limelight;
 
 public abstract class DriveCommandBase extends Command {
   private final MultiLinearInterpolator oneAprilTagLookupTable =
@@ -39,19 +40,19 @@ public abstract class DriveCommandBase extends Command {
     swerveDrive.addPoseEstimatorSwerveMeasurement();
     vision.setHeadingInfo(
         swerveDrive.getPose().getRotation().getDegrees(), swerveDrive.getGyroRate());
-    calculatePoseFromLimelight(VisionConstants.SHOOTER_LIMELIGHT_NUMBER);
-    calculatePoseFromLimelight(VisionConstants.FRONT_LEFT_LIMELIGHT_NUMBER);
-    calculatePoseFromLimelight(VisionConstants.FRONT_RIGHT_LIMELIGHT_NUMBER);
+    calculatePoseFromLimelight(Limelight.SHOOTER);
+    calculatePoseFromLimelight(Limelight.FRONT_LEFT);
+    calculatePoseFromLimelight(Limelight.FRONT_RIGHT);
   }
 
-  public void calculatePoseFromLimelight(int limelightNumber) {
+  public void calculatePoseFromLimelight(Limelight limelight) {
     double currentTimeStampSeconds = lastTimeStampSeconds;
 
     // Updates the robot's odometry with april tags
-    if (vision.canSeeAprilTags(limelightNumber)) {
-      currentTimeStampSeconds = vision.getTimeStampSeconds(limelightNumber);
+    if (vision.canSeeAprilTags(limelight)) {
+      currentTimeStampSeconds = vision.getTimeStampSeconds(limelight);
 
-      double distanceFromClosestAprilTag = vision.getLimelightAprilTagDistance(limelightNumber);
+      double distanceFromClosestAprilTag = vision.getLimelightAprilTagDistance(limelight);
 
       // Depending on how many april tags we see, we change our confidence as more april tags
       // results in a much more accurate pose estimate
@@ -59,12 +60,12 @@ public abstract class DriveCommandBase extends Command {
       //  so it only uses 1 april tag, if they set up the field wrong (they can set april tags +-1
       // inch I believe)
       //  using multiple *could* really mess things up.
-      if (vision.getNumberOfAprilTags(limelightNumber) == 1) {
+      if (vision.getNumberOfAprilTags(limelight) == 1) {
         double[] standardDeviations =
             oneAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
         swerveDrive.setPoseEstimatorVisionConfidence(
             standardDeviations[0], standardDeviations[1], standardDeviations[2]);
-      } else if (vision.getNumberOfAprilTags(limelightNumber) > 1) {
+      } else if (vision.getNumberOfAprilTags(limelight) > 1) {
         double[] standardDeviations =
             twoAprilTagLookupTable.getLookupValue(distanceFromClosestAprilTag);
         swerveDrive.setPoseEstimatorVisionConfidence(
@@ -72,8 +73,8 @@ public abstract class DriveCommandBase extends Command {
       }
 
       swerveDrive.addPoseEstimatorVisionMeasurement(
-          vision.getPoseFromAprilTags(limelightNumber),
-          Timer.getFPGATimestamp() - vision.getLatencySeconds(limelightNumber));
+          vision.getPoseFromAprilTags(limelight),
+          Timer.getFPGATimestamp() - vision.getLatencySeconds(limelight));
     }
 
     lastTimeStampSeconds = currentTimeStampSeconds;

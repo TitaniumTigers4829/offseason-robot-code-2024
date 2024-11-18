@@ -106,7 +106,6 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[2]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
 
-        // TODO: add sim impl
         visionSubsystem = new Vision(new SimulatedVision(swerveDrive::getPose));
 
         SimulatedField.getInstance().resetFieldForAuto();
@@ -297,8 +296,8 @@ public class RobotContainer {
                 () ->
                     swerveDrive.resetPosition(swerveDriveSimulation.getSimulatedDriveTrainPose())));
     // // // Reset robot odometry based on vision pose measurement from april tags
-    // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
-    // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));
+    driverLeftDirectionPad.onTrue(
+        new InstantCommand(() -> swerveDrive.resetPosition(visionSubsystem.getLastSeenPose())));
     // // driverLeftDpad.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry(new
     // Pose2d(15.251774787902832, 5.573054313659668, Rotation2d.fromRadians(3.14159265)))));
     // // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
+import frc.robot.extras.vision.MegatagPoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -77,33 +78,39 @@ public class PhysicalVision implements VisionInterface {
     inputs.isFrontRightLimelightConnected = isLimelightConnected(Limelight.FRONT_RIGHT);
 
     if (inputs.isShooterLimelightConnected) {
-      inputs.shooterMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.SHOOTER).pose;
-      inputs.shooterMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.SHOOTER).pose;
+      inputs.shooterMegaTag1Pose =
+          MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.SHOOTER));
+      inputs.shooterMegaTag2Pose =
+          MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.SHOOTER));
       inputs.shooterLatency = getLatencySeconds(Limelight.SHOOTER);
       inputs.shooterTargets = getNumberOfAprilTags(Limelight.SHOOTER);
       inputs.shooterCameraToTargets = getAprilTagPositionToLimelight(Limelight.SHOOTER);
       inputs.shooterRobotToTargets = getAprilTagPositionToRobot(Limelight.SHOOTER);
-      visionThread(Limelight.SHOOTER);
+      // visionThread(Limelight.SHOOTER);
     }
 
     if (inputs.isFrontLeftLimelightConnected) {
-      inputs.frontLeftMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.FRONT_LEFT).pose;
-      inputs.frontLeftMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.FRONT_LEFT).pose;
+      inputs.frontLeftMegaTag1Pose =
+          MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_LEFT));
+      inputs.frontLeftMegaTag2Pose =
+          MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_LEFT));
       inputs.frontLeftLatency = getLatencySeconds(Limelight.FRONT_LEFT);
       inputs.frontLeftTargets = getNumberOfAprilTags(Limelight.FRONT_LEFT);
       inputs.frontLeftCameraToTargets = getAprilTagPositionToLimelight(Limelight.FRONT_LEFT);
       inputs.frontLeftRobotToTargets = getAprilTagPositionToRobot(Limelight.FRONT_LEFT);
-      visionThread(Limelight.FRONT_LEFT);
+      // visionThread(Limelight.FRONT_LEFT);
     }
 
     if (inputs.isFrontRightLimelightConnected) {
-      inputs.frontRightMegaTag1Pose = getMegaTag1PoseEstimate(Limelight.FRONT_RIGHT).pose;
-      inputs.frontRightMegaTag2Pose = getMegaTag2PoseEstimate(Limelight.FRONT_RIGHT).pose;
+      inputs.frontRightMegaTag1Pose =
+          MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_RIGHT));
+      inputs.frontRightMegaTag2Pose =
+          MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_RIGHT));
       inputs.frontRightLatency = getLatencySeconds(Limelight.FRONT_RIGHT);
       inputs.frontRightTargets = getNumberOfAprilTags(Limelight.FRONT_RIGHT);
       inputs.frontRightCameraToTargets = getAprilTagPositionToLimelight(Limelight.FRONT_RIGHT);
       inputs.frontRightRobotToTargets = getAprilTagPositionToRobot(Limelight.FRONT_RIGHT);
-      visionThread(Limelight.FRONT_RIGHT);
+      // visionThread(Limelight.FRONT_RIGHT);
     }
 
     latestInputs.set(inputs);
@@ -115,7 +122,7 @@ public class PhysicalVision implements VisionInterface {
    * @param limelight the number of the limelight
    * @return true if the limelight can fully see one or more April Tag
    */
-  // @Override
+  @Override
   public boolean canSeeAprilTags(Limelight limelight) {
     // First checks if it can see an april tag, then checks if it is fully in frame
     // Different Limelights have different FOVs
@@ -265,7 +272,7 @@ public class PhysicalVision implements VisionInterface {
    * @return the pose of the robot, if the limelight can't see any April Tags, it will return 0 for
    *     x, y, and theta
    */
-  // @Override
+  @Override
   public Pose2d getPoseFromAprilTags(Limelight limelight) {
     return limelightEstimates[limelight.id].pose;
   }
@@ -279,7 +286,7 @@ public class PhysicalVision implements VisionInterface {
   }
 
   /** Returns how many april tags the limelight that is being used for pose estimation can see. */
-  // @Override
+  @Override
   public int getNumberOfAprilTags(Limelight limelight) {
     return limelightEstimates[limelight.id].tagCount;
   }
@@ -288,7 +295,7 @@ public class PhysicalVision implements VisionInterface {
    * Returns the timestamp for the vision measurement from the limelight that is being used for pose
    * estimation.
    */
-  // @Override
+  @Override
   public double getTimeStampSeconds(Limelight limelight) {
     return limelightEstimates[limelight.id].timestampSeconds / 1000.0;
   }
@@ -298,12 +305,13 @@ public class PhysicalVision implements VisionInterface {
    * calculated the robot's pose. It adds the pipeline latency, capture latency, and json parsing
    * latency.
    */
-  // @Override
+  @Override
   public double getLatencySeconds(Limelight limelight) {
     return (limelightEstimates[limelight.id].latency) / 1000.0;
   }
 
   /** Gets the pose calculated the last time a limelight saw an April Tag */
+  @Override
   public Pose2d getLastSeenPose() {
     return lastSeenPose;
   }

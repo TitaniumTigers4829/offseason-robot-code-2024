@@ -1,71 +1,80 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.extras.vision.MegatagPoseEstimate;
+import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionInterface {
   @AutoLog
   class VisionInputs {
-    public boolean isShooterLimelightConnected = false;
-    public boolean isFrontLeftLimelightConnected = false;
-    public boolean isFrontRightLimelightConnected = false;
+    public boolean isShooterLimelightConnected;
+    public boolean isFrontLeftLimelightConnected;
+    public boolean isFrontRightLimelightConnected;
 
-    public Pose2d shooterMegaTag1Pose = new Pose2d();
-    public double shooterTagCount = 0.0;
-    public Pose2d shooterMegaTag2Pose = new Pose2d();
-    public double shooterLatency = 0.0;
-    public double shooterTargets = 0.0;
-    public Pose2d shooterCameraToTargets = new Pose2d();
-    public Pose2d shooterRobotToTargets = new Pose2d();
+    public MegatagPoseEstimate shooterMegaTag1Pose;
+    public double shooterTagCount;
+    public MegatagPoseEstimate shooterMegaTag2Pose;
+    public double shooterLatency;
+    public double shooterTargets;
+    public Pose2d shooterCameraToTargets;
+    public Pose2d shooterRobotToTargets;
+    public Limelight shooter;
 
-    public Pose2d frontLeftMegaTag1Pose = new Pose2d();
-    public double frontLeftTagCount = 0.0;
-    public Pose2d frontLeftMegaTag2Pose = new Pose2d();
-    public double frontLeftLatency = 0.0;
-    public double frontLeftTargets = 0.0;
-    public Pose2d frontLeftCameraToTargets = new Pose2d();
-    public Pose2d frontLeftRobotToTargets = new Pose2d();
+    public MegatagPoseEstimate frontLeftMegaTag1Pose;
+    public double frontLeftTagCount;
+    public MegatagPoseEstimate frontLeftMegaTag2Pose;
+    public double frontLeftLatency;
+    public double frontLeftTargets;
+    public Pose2d frontLeftCameraToTargets;
+    public Pose2d frontLeftRobotToTargets;
+    public Limelight frontLeft;
 
-    public Pose2d frontRightMegaTag1Pose = new Pose2d();
-    public double frontRightTagCount = 0.0;
-    public Pose2d frontRightMegaTag2Pose = new Pose2d();
-    public double frontRightLatency = 0.0;
-    public double frontRightTargets = 0.0;
-    public Pose2d frontRightCameraToTargets = new Pose2d();
-    public Pose2d frontRightRobotToTargets = new Pose2d();
+    public MegatagPoseEstimate frontRightMegaTag1Pose;
+    public double frontRightTagCount;
+    public MegatagPoseEstimate frontRightMegaTag2Pose;
+    public double frontRightLatency;
+    public double frontRightTargets;
+    public Pose2d frontRightCameraToTargets;
+    public Pose2d frontRightRobotToTargets;
+    public Limelight frontRight;
 
-    public double camerasAmount = 0.0;
+    public double camerasAmount;
   }
 
   default void updateInputs(VisionInputs inputs) {}
 
-  default String getLimelightName(int limelightNumber) {
+  default String getLimelightName(Limelight limelight) {
     return "";
   }
 
-  default double getLatencySeconds(int limelightNumber) {
+  default double getLatencySeconds(Limelight limelight) {
     return 0.0;
   }
 
-  default double getTimeStampSeconds(int limelightNumber) {
+  default double getTimeStampSeconds(Limelight limelight) {
     return 0.0;
   }
 
-  default boolean canSeeAprilTags(int limelightNumber) {
+  default boolean canSeeAprilTags(Limelight limelight) {
     return false;
   }
 
-  default double getLimelightAprilTagDistance(int limelightNumber) {
+  default double getLimelightAprilTagDistance(Limelight limelight) {
     return 0.0;
   }
 
-  default int getNumberOfAprilTags(int limelightNumber) {
+  default int getNumberOfAprilTags(Limelight limelight) {
     return 0;
   }
 
-  default Pose2d getPoseFromAprilTags(int limelightNumber) {
+  default Pose2d getPoseFromAprilTags(Limelight limelight) {
     return null;
   }
 
   default void setHeadingInfo(double headingDegrees, double headingRateDegrees) {}
+
+  default Pose2d getLastSeenPose() {
+    return null;
+  }
 }

@@ -100,14 +100,15 @@ public class SimulatedVision extends PhysicalVision {
     NetworkTable frontRightTable =
         NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.FRONT_RIGHT));
     // Write to limelight table
-    writeToTable(shooterCamera.getAllUnreadResults(), shooterTable);
-    writeToTable(frontLeftCamera.getAllUnreadResults(), frontLeftTable);
-    writeToTable(frontRightCamera.getAllUnreadResults(), frontRightTable);
+    writeToTable(shooterCamera.getAllUnreadResults(), shooterTable, Limelight.SHOOTER);
+    writeToTable(frontLeftCamera.getAllUnreadResults(), frontLeftTable, Limelight.FRONT_LEFT);
+    writeToTable(frontRightCamera.getAllUnreadResults(), frontRightTable, Limelight.FRONT_RIGHT);
 
     super.updateInputs(inputs);
   }
 
-  private void writeToTable(List<PhotonPipelineResult> results, NetworkTable table) {
+  private void writeToTable(
+      List<PhotonPipelineResult> results, NetworkTable table, Limelight limelight) {
     // write to ll table
     for (PhotonPipelineResult result : results) {
       if (result.getMultiTagResult().isPresent()) {
@@ -123,7 +124,7 @@ public class SimulatedVision extends PhysicalVision {
                     0.0, // 3: roll
                     0.0, // 4: pitch
                     fieldToCamera.getRotation().getDegrees(), // 5: yaw
-                    super.getLatencySeconds(0), // 6: latency ms,
+                    super.getLatencySeconds(limelight), // 6: latency ms,
                     (double)
                         result.getMultiTagResult().get().fiducialIDsUsed.size(), // 7: tag count
                     0.0, // 8: tag span
@@ -151,7 +152,43 @@ public class SimulatedVision extends PhysicalVision {
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
-      table.getEntry("cl").setDouble(super.getLatencySeconds(0));
+      table.getEntry("cl").setDouble(super.getLatencySeconds(limelight));
     }
+  }
+
+  public String getLimelightName(Limelight limelight) {
+    return super.getLimelightName(limelight);
+  }
+
+  public double getLatencySeconds(Limelight limelight) {
+    return super.getLatencySeconds(limelight);
+  }
+
+  public double getTimeStampSeconds(Limelight limelight) {
+    return super.getTimeStampSeconds(limelight);
+  }
+
+  public boolean canSeeAprilTags(Limelight limelight) {
+    return super.canSeeAprilTags(limelight);
+  }
+
+  public double getLimelightAprilTagDistance(Limelight limelight) {
+    return super.getLimelightAprilTagDistance(limelight);
+  }
+
+  public int getNumberOfAprilTags(Limelight limelight) {
+    return super.getNumberOfAprilTags(limelight);
+  }
+
+  public Pose2d getPoseFromAprilTags(Limelight limelight) {
+    return getPoseFromAprilTags(limelight);
+  }
+
+  public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
+    super.setHeadingInfo(headingDegrees, headingRateDegrees);
+  }
+
+  public Pose2d getLastSeenPose() {
+    return super.getLastSeenPose();
   }
 }
