@@ -9,9 +9,10 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
 public class IntakeIOSim implements IntakeIO {
-  DCMotorSim intakeSim = new DCMotorSim(null, 0, 0);
+  DCMotorSim intakeSim = new DCMotorSim(null, DCMotor.getFalcon500(1), 0);
   SingleJointedArmSim pivotSim =
-      new SingleJointedArmSim(DCMotor.getFalcon500(2), 0, 0, 0, 0, 0, false, 0);
+      new SingleJointedArmSim(
+          DCMotor.getFalcon500(2), IntakeConstants.INTAKE_PIVOT_GEAR_RATIO, 0, 0, 0, 0, false, 0);
   private final Constraints pivotConstraints = new Constraints(0, 0);
   private final ProfiledPIDController pivotController =
       new ProfiledPIDController(0, 0, 0, pivotConstraints);

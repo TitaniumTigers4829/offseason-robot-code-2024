@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -23,9 +10,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 public class FlywheelIOSim
     implements FlywheelIO { // FlywheelIOSim makes Advantage kit log simulated movements using
   // physics
-  private FlywheelSim flywheelSim =
-      new FlywheelSim(
-          DCMotor.getKrakenX60(2), ShooterConstants.GEAR_RATIO, 0.004); // initiates virtual
+  private FlywheelSim flywheelSim = new FlywheelSim(null, DCMotor.getKrakenX60(2), 0);
   private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
   private PIDController pid =
       new PIDController(
@@ -60,7 +45,7 @@ public class FlywheelIOSim
   @Override
   public void setVelocity(double velocityRPM) { // ffvolts is feedorward
     double velocityRPS = velocityRPM / 60;
-    flywheelSim.setState(pid.calculate(velocityRPS) + feedForward.calculate(velocityRPS));
+    flywheelSim.setInput(pid.calculate(velocityRPS) + feedForward.calculate(velocityRPS));
   }
 
   @Override

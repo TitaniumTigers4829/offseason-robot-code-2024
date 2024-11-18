@@ -9,8 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.HardwareConstants;
+import frc.robot.Constants.JoystickConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.pivot.Pivot;
@@ -78,10 +77,10 @@ public class ShootSpeaker extends Command {
     // sets alliance to red
     isRed = alliance.isPresent() && alliance.get() == Alliance.Red;
 
-    speakerPos =
-        isRed
-            ? new Translation2d(FieldConstants.RED_SPEAKER_X, FieldConstants.RED_SPEAKER_Y)
-            : new Translation2d(FieldConstants.BLUE_SPEAKER_X, FieldConstants.BLUE_SPEAKER_Y);
+    speakerPos = new Translation2d(0, 0);
+    // isRed
+    // ? new Translation2d(FieldConstants.RED_SPEAKER_X, FieldConstants.RED_SPEAKER_Y)
+    // : new Translation2d(FieldConstants.BLUE_SPEAKER_X, FieldConstants.BLUE_SPEAKER_Y);
     turnController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -153,7 +152,7 @@ public class ShootSpeaker extends Command {
   }
 
   private double deadband(double val) {
-    if (Math.abs(val) < HardwareConstants.DEADBAND_VALUE) {
+    if (Math.abs(val) < JoystickConstants.DEADBAND_VALUE) {
       return 0.0;
     } else {
       return val;

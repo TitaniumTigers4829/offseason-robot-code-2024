@@ -9,57 +9,46 @@ public class Vision extends SubsystemBase {
   private final VisionIO visionIO;
   private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 
-  /**
-   * Position of camera on the robot. This is calculated through the horizontal distance (in meters)
-   * from the fiducial to the lens of the camera.
-   */
-  private Pose2d cameraToAprilTagPose = new Pose2d();
-
-  /** Horizontal Distance (in meters) from the Fiducial marker to the Lens of the camera. */
-  private double horizontalDistanceToTargetMeters = 0;
-
-  /**
-   * Contains information about the mounting of the limelight on the robot. This is required when
-   * calculating the horizontalDistanceToTargetMeters.
-   */
-  private final LimelightConfiguration limelightConfiguration;
-
-  public Vision(VisionIO visionIO, LimelightConfiguration limelightConfiguration) {
+  public Vision(VisionIO visionIO) {
     // Initializing Fields
     this.visionIO = visionIO;
-
-    this.limelightConfiguration = limelightConfiguration;
   }
 
   @Override
   public void periodic() {
     // Updates limelight inputs
     visionIO.updateInputs(inputs);
-    Logger.processInputs(limelightConfiguration.Name, inputs);
+    Logger.processInputs(visionIO.getLimelightName(0), inputs);
   }
 
-  @AutoLogOutput(key = "Vision/Horizontal Distance to Target")
-  public double getHorizontalDistanceToTargetMeters() {
-    return horizontalDistanceToTargetMeters;
+  // Add methods to support DriveCommand
+  public int getNumberOfAprilTags(int limelightNumber) {
+    return visionIO.getNumberOfAprilTags(limelightNumber);
+  }
+
+  public double getLimelightAprilTagDistance(int limelightNumber) {
+    return visionIO.getLimelightAprilTagDistance(limelightNumber);
+  }
+
+  public double getTimeStampSeconds(int limelightNumber) {
+    return visionIO.getTimeStampSeconds(limelightNumber);
+  }
+
+  public double getLatencySeconds(int limelightNumber) {
+    return visionIO.getLatencySeconds(limelightNumber);
+  }
+
+  public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
+    visionIO.setHeadingInfo(headingDegrees, headingRateDegrees);
   }
 
   @AutoLogOutput(key = "Vision/Has Targets")
-  public boolean hasTargets() {
-    return getPitchRadians() != 0.00;
-    //        return inputs.hasTargets;
+  public boolean canSeeAprilTags(int limelightNumber) {
+    return visionIO.canSeeAprilTags(
+        limelightNumber); // Assuming we're checking the shooter limelight
   }
 
-  @AutoLogOutput(key = "Vision/Yaw (tx)")
-  public double getYawRadians() {
-    return inputs.horizontalAngleRadians;
-  }
-
-  @AutoLogOutput(key = "Vision/Pitch (ty)")
-  public double getPitchRadians() {
-    return inputs.verticalAngleRadians;
-  }
-
-  public void setLeds(boolean on) {
-    visionIO.setLeds(on);
+  public Pose2d getPoseFromAprilTags(int limelightNumber) {
+    return visionIO.getPoseFromAprilTags(limelightNumber);
   }
 }

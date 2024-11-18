@@ -1,30 +1,48 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
-  default void updateInputs(VisionIOInputs inputs) {}
-
-  default void setLeds(boolean on) {}
-
   @AutoLog
   class VisionIOInputs {
-    /** Last timestamp of photo taken from LL */
-    public double lastTimeStamp = 0.0;
+    public boolean cameraConnected = false;
+    public double latency = 0.0;
+    public double fiducialMarksID = 0.0;
 
-    /** True if limelight sees target in its frame */
-    public boolean hasTargets = false;
-
-    /** Vertical angle from center of lens to target. */
-    public double verticalAngleRadians = 0.0;
-
-    /** Horizontal angle from center of lens to target. */
-    public double horizontalAngleRadians = 0.0;
-
-    /** Botpose taken from LL. */
-    public double[] botpose = new double[6];
-
-    /** TagID of target fiducial marker. */
-    public int tagId = -1;
+    public int camerasAmount = 0;
+    public int targetsCount = 0;
   }
+
+  default void updateInputs(VisionIOInputs inputs) {}
+
+  default String getLimelightName(int limelightNumber) {
+    return "";
+  }
+
+  default double getLatencySeconds(int limelightNumber) {
+    return 0.0;
+  }
+
+  default double getTimeStampSeconds(int limelightNumber) {
+    return 0.0;
+  }
+
+  default boolean canSeeAprilTags(int limelightNumber) {
+    return false;
+  }
+
+  default double getLimelightAprilTagDistance(int limelightNumber) {
+    return 0.0;
+  }
+
+  default int getNumberOfAprilTags(int limelightNumber) {
+    return 0;
+  }
+
+  default Pose2d getPoseFromAprilTags(int limelightNumber) {
+    return null;
+  }
+
+  default void setHeadingInfo(double headingDegrees, double headingRateDegrees) {}
 }

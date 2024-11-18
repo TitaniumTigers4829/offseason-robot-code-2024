@@ -1,14 +1,12 @@
 package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.vision.Vision;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-// import frc.robot.subsystems.vision.VisionSubsystem;
-
-public class DriveCommand extends Command {
+public class DriveCommand extends DriveCommandBase {
 
   private final SwerveDrive driveSubsystem;
 
@@ -29,14 +27,15 @@ public class DriveCommand extends Command {
    */
   public DriveCommand(
       SwerveDrive driveSubsystem,
+      Vision visionSubsystem,
       DoubleSupplier leftJoystickY,
       DoubleSupplier leftJoystickX,
       DoubleSupplier rightJoystickX,
       BooleanSupplier isFieldRelative,
       BooleanSupplier isHighRotation) {
-    // super(driveSubsystem, visionSubsystem);
+    super(driveSubsystem, visionSubsystem);
     this.driveSubsystem = driveSubsystem;
-    addRequirements(driveSubsystem);
+    addRequirements(driveSubsystem, visionSubsystem);
     this.leftJoystickY = leftJoystickY;
     this.leftJoystickX = leftJoystickX;
     this.rightJoystickX = rightJoystickX;
@@ -67,10 +66,7 @@ public class DriveCommand extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    // When the command ends, it stops the robot
-    // driveSubsystem.drive(0, 0, 0, true);
-  }
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {

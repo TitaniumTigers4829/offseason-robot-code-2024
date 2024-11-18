@@ -12,6 +12,10 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.HardwareConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
@@ -22,15 +26,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final VoltageOut voltageRequest;
   private final NeutralOut neutralOut;
 
-  StatusSignal<Double> leaderPosition;
-  StatusSignal<Double> leaderVelocity;
-  StatusSignal<Double> leaderAppliedVolts;
-  StatusSignal<Double> leaderCurrentAmps;
+  StatusSignal<Angle> leaderPosition;
+  StatusSignal<AngularVelocity> leaderVelocity;
+  StatusSignal<Voltage> leaderAppliedVolts;
+  StatusSignal<Current> leaderCurrentAmps;
 
-  StatusSignal<Double> followerPosition;
-  StatusSignal<Double> followerVelocity;
-  StatusSignal<Double> followerAppliedVolts;
-  StatusSignal<Double> followerCurrentAmps;
+  StatusSignal<Angle> followerPosition;
+  StatusSignal<AngularVelocity> followerVelocity;
+  StatusSignal<Voltage> followerAppliedVolts;
+  StatusSignal<Current> followerCurrentAmps;
 
   public ElevatorIOTalonFX() {
     leaderElevatorMotor = new TalonFX(0);
@@ -60,6 +64,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     elevatorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = false;
 
     elevatorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    elevatorConfiguration.Feedback.SensorToMechanismRatio =
+        ElevatorConstants.ENCODER_CONVERSION_FACTOR;
     // elevatorConfiguration.Feedback.FeedbackRotorOffset = 0.0;
 
     elevatorConfiguration.MotorOutput.DutyCycleNeutralDeadband =
@@ -135,7 +141,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   private double metersToRotations(double value) {
-    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
+    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO;
   }
 
   @Override

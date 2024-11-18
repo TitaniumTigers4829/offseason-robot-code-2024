@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class ElevatorIOSim implements ElevatorIO {
   ElevatorSim elevatorSim;
-  LinearSystem<N2, N1, N1> elevatorSystem;
+  LinearSystem<N2, N1, N2> elevatorSystem;
   private double elevatorAppliedVolts = 0.0;
   private final PIDController elevatorPID = new PIDController(0.0, 0.0, 0.0);
 
@@ -45,7 +45,8 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   private double metersToRotations(double value) {
-    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)) * ElevatorConstants.GEAR_RATIO;
+    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO;
   }
 
   @Override
