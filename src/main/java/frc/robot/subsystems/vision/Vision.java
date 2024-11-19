@@ -2,26 +2,9 @@
 
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.extras.vision.FiducialObservation;
-import frc.robot.extras.vision.MegatagPoseEstimate;
-import frc.robot.extras.vision.VisionFieldPoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -61,9 +44,11 @@ public class Vision extends SubsystemBase {
   //       boolean used_megatag = false;
   //       if (megatagEstimate.isPresent()) {
   //         if (shouldUseMegatag(
-  //             cameraMegatagPoseEstimate, cameraFiducialObservations, isTurretCamera, logPreface)) {
+  //             cameraMegatagPoseEstimate, cameraFiducialObservations, isTurretCamera, logPreface))
+  // {
   //           Logger.recordOutput(
-  //               logPreface + "MegatagEstimate", megatagEstimate.get().getVisionRobotPoseMeters());
+  //               logPreface + "MegatagEstimate",
+  // megatagEstimate.get().getVisionRobotPoseMeters());
   //           state.updateMegatagEstimate(megatagEstimate.get());
   //           used_megatag = true;
   //         } else {
@@ -78,7 +63,8 @@ public class Vision extends SubsystemBase {
   //       if (megatag2Estimate.isPresent() && !used_megatag) {
   //         if (shouldUseMegatag2(cameraMegatag2PoseEstimate, logPreface)) {
   //           Logger.recordOutput(
-  //               logPreface + "Megatag2Estimate", megatag2Estimate.get().getVisionRobotPoseMeters());
+  //               logPreface + "Megatag2Estimate",
+  // megatag2Estimate.get().getVisionRobotPoseMeters());
   //           state.updateMegatagEstimate(megatag2Estimate.get());
   //         } else {
   //           if (megatagEstimate.isPresent()) {
@@ -171,7 +157,8 @@ public class Vision extends SubsystemBase {
   //     Matrix<N3, N1> visionMeasurementStdDevs =
   //         VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(50.0));
   //     fieldToRobotEstimate =
-  //         new Pose2d(fieldToRobotEstimate.getTranslation(), loggedFieldToRobot.get().getRotation());
+  //         new Pose2d(fieldToRobotEstimate.getTranslation(),
+  // loggedFieldToRobot.get().getRotation());
   //     return Optional.of(
   //         new VisionFieldPoseEstimate(
   //             fieldToRobotEstimate, poseEstimate.timestampSeconds, visionMeasurementStdDevs));
@@ -233,7 +220,8 @@ public class Vision extends SubsystemBase {
   //     boolean isTurretCamera) {
   //   Transform2d cameraToTargetFixed =
   //       MathHelpers.transform2dFromTranslation(cameraToTarget.rotateBy(cameraYawOffset));
-  //   Transform2d turretToTarget = state.getTurretToCamera(isTurretCamera).plus(cameraToTargetFixed);
+  //   Transform2d turretToTarget =
+  // state.getTurretToCamera(isTurretCamera).plus(cameraToTargetFixed);
   //   // In robot frame
   //   Transform2d robotToTarget = turretToTarget;
   //   if (isTurretCamera) {
@@ -242,7 +230,8 @@ public class Vision extends SubsystemBase {
 
   //   // In field frame
   //   Transform2d robotToTargetField =
-  //       MathHelpers.transform2dFromTranslation(robotToTarget.getTranslation().rotateBy(gyroAngle));
+  //
+  // MathHelpers.transform2dFromTranslation(robotToTarget.getTranslation().rotateBy(gyroAngle));
 
   //   // In field frame
   //   Pose2d fieldToTarget2d =
