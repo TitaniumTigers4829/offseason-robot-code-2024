@@ -39,319 +39,223 @@ public class Vision extends SubsystemBase {
     // Updates limelight inputs
     visionInterface.updateInputs(inputs);
     Logger.processInputs("Vision/", inputs);
-
-    updateVision(inputs.shooterMegaTag1Pose, inputs.shooterMegaTag2Pose, inputs.shooter);
-
-    updateVision(inputs.frontLeftMegaTag1Pose, inputs.frontLeftMegaTag2Pose, inputs.frontLeft);
-
-    updateVision(inputs.frontRightMegaTag1Pose, inputs.frontRightMegaTag2Pose, inputs.frontRight);
   }
 
-  private void updateVision(
-      MegatagPoseEstimate cameraMegatagPoseEstimate,
-      MegatagPoseEstimate cameraMegatag2PoseEstimate,
-      Limelight limelightName) {
-    if (cameraMegatagPoseEstimate != null) {
+  // private void updateVision(
+  //     MegatagPoseEstimate cameraMegatagPoseEstimate,
+  //     MegatagPoseEstimate cameraMegatag2PoseEstimate,
+  //     Limelight limelightName) {
+  //   if (cameraMegatagPoseEstimate != null) {
 
-      String logPreface = "Vision/" + visionInterface.getLatencySeconds(limelightName);
-      var updateTimestamp = cameraMegatagPoseEstimate.timestampSeconds;
-      boolean alreadyProcessedTimestamp =
-          visionInterface.getTimeStampSeconds(limelightName) == updateTimestamp;
-      if (!alreadyProcessedTimestamp && canSeeAprilTags(limelightName)) {
-        // if (!isTurretCamera && !Util.epsilonEquals(state.getElevatorHeight(), 0.0, 0.05)) return;
-        Optional<VisionFieldPoseEstimate> pinholeEstimate =
-            Optional.empty(); // processPinholeVisionEstimate(pinholeObservations,
-        // updateTimestamp,
-        // isTurretCamera);
+  //     String logPreface = "Vision/" + visionInterface.getLimelightName(limelightName);
+  //     var updateTimestamp = cameraMegatagPoseEstimate.timestampSeconds;
+  //     boolean alreadyProcessedTimestamp =
+  //         visionInterface.getTimeStampSeconds(limelightName) == updateTimestamp;
+  //     if (!alreadyProcessedTimestamp && canSeeAprilTags(limelightName)) {
 
-        Optional<VisionFieldPoseEstimate> megatagEstimate =
-            processMegatagPoseEstimate(cameraMegatagPoseEstimate);
-        Optional<VisionFieldPoseEstimate> megatag2Estimate =
-            processMegatag2PoseEstimate(cameraMegatag2PoseEstimate, logPreface);
+  //       Optional<VisionFieldPoseEstimate> megatagEstimate =
+  //           processMegatagPoseEstimate(cameraMegatagPoseEstimate);
+  //       Optional<VisionFieldPoseEstimate> megatag2Estimate =
+  //           processMegatag2PoseEstimate(cameraMegatag2PoseEstimate, logPreface);
 
-        boolean used_megatag = false;
-        if (megatagEstimate.isPresent()) {
-          if (shouldUseMegatag(
-              cameraMegatagPoseEstimate, cameraFiducialObservations, isTurretCamera, logPreface)) {
-            Logger.recordOutput(
-                logPreface + "MegatagEstimate", megatagEstimate.get().getVisionRobotPoseMeters());
-            state.updateMegatagEstimate(megatagEstimate.get());
-            used_megatag = true;
-          } else {
-            if (megatagEstimate.isPresent()) {
-              Logger.recordOutput(
-                  logPreface + "MegatagEstimateRejected",
-                  megatagEstimate.get().getVisionRobotPoseMeters());
-            }
-          }
-        }
+  //       boolean used_megatag = false;
+  //       if (megatagEstimate.isPresent()) {
+  //         if (shouldUseMegatag(
+  //             cameraMegatagPoseEstimate, cameraFiducialObservations, isTurretCamera, logPreface)) {
+  //           Logger.recordOutput(
+  //               logPreface + "MegatagEstimate", megatagEstimate.get().getVisionRobotPoseMeters());
+  //           state.updateMegatagEstimate(megatagEstimate.get());
+  //           used_megatag = true;
+  //         } else {
+  //           if (megatagEstimate.isPresent()) {
+  //             Logger.recordOutput(
+  //                 logPreface + "MegatagEstimateRejected",
+  //                 megatagEstimate.get().getVisionRobotPoseMeters());
+  //           }
+  //         }
+  //       }
 
-        if (megatag2Estimate.isPresent() && !used_megatag) {
-          if (shouldUseMegatag2(cameraMegatag2PoseEstimate, logPreface)) {
-            Logger.recordOutput(
-                logPreface + "Megatag2Estimate", megatag2Estimate.get().getVisionRobotPoseMeters());
-            state.updateMegatagEstimate(megatag2Estimate.get());
-          } else {
-            if (megatagEstimate.isPresent()) {
-              Logger.recordOutput(
-                  logPreface + "Megatag2EstimateRejected",
-                  megatag2Estimate.get().getVisionRobotPoseMeters());
-            }
-          }
-        }
-      }
-    }
-  }
+  //       if (megatag2Estimate.isPresent() && !used_megatag) {
+  //         if (shouldUseMegatag2(cameraMegatag2PoseEstimate, logPreface)) {
+  //           Logger.recordOutput(
+  //               logPreface + "Megatag2Estimate", megatag2Estimate.get().getVisionRobotPoseMeters());
+  //           state.updateMegatagEstimate(megatag2Estimate.get());
+  //         } else {
+  //           if (megatagEstimate.isPresent()) {
+  //             Logger.recordOutput(
+  //                 logPreface + "Megatag2EstimateRejected",
+  //                 megatag2Estimate.get().getVisionRobotPoseMeters());
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
-  private boolean shouldUseMegatag(
-      MegatagPoseEstimate poseEstimate,
-      FiducialObservation[] fiducials,
-      boolean isTurretCamera,
-      String logPreface) {
-    final double kMinAreaForTurretMegatagEnabled = 0.4;
-    final double kMinAreaForTurretMegatagDisabled = 0.05;
+  // private Optional<Pose2d> getFieldToRobotEstimate(
+  //     MegatagPoseEstimate poseEstimate, boolean isTurretCamera) {
+  //   var fieldToCamera = poseEstimate.fieldToCamera;
+  //   if (fieldToCamera.getX() == 0.0) {
+  //     return Optional.empty();
+  //   }
+  //   var cameraToTurretTransform = turretToCameraTransform.inverse();
+  //   var fieldToTurretPose = fieldToCamera.plus(cameraToTurretTransform);
+  //   var fieldToRobotEstimate = Pose2d.kZero;
+  //   if (isTurretCamera) {
+  //     var robotToTurretObservation = state.getRobotToTurret(poseEstimate.timestampSeconds);
+  //     if (robotToTurretObservation.isEmpty()) {
+  //       return Optional.empty();
+  //     }
+  //     var turretToRobot =
+  //         MathHelpers.transform2dFromRotation(robotToTurretObservation.get().unaryMinus());
+  //     fieldToRobotEstimate = fieldToTurretPose.plus(turretToRobot);
+  //   } else {
+  //     fieldToRobotEstimate = fieldToCamera.plus(turretToCameraTransform.inverse());
+  //   }
 
-    final double kMinAreaForElevatorMegatagEnabled = 0.4;
-    final double kMinAreaForElevatorMegatagDisabled = 0.05;
+  //   return Optional.of(fieldToRobotEstimate);
+  // }
 
-    double kMinAreaForMegatag = 0.0;
-    if (DriverStation.isDisabled()) {
-      kMinAreaForMegatag =
-          isTurretCamera ? kMinAreaForTurretMegatagDisabled : kMinAreaForElevatorMegatagDisabled;
-    } else {
-      kMinAreaForMegatag =
-          isTurretCamera ? kMinAreaForTurretMegatagEnabled : kMinAreaForElevatorMegatagEnabled;
-    }
+  // private Optional<VisionFieldPoseEstimate> processMegatag2PoseEstimate(
+  //     MegatagPoseEstimate poseEstimate, String logPreface) {
+  //   var loggedFieldToRobot = state.getFieldToRobot(poseEstimate.timestampSeconds);
+  //   if (loggedFieldToRobot.isEmpty()) {
+  //     return Optional.empty();
+  //   }
 
-    final int kExpectedTagCount = 2;
+  //   var maybeFieldToRobotEstimate = getFieldToRobotEstimate(poseEstimate, isTurretCamera);
+  //   if (maybeFieldToRobotEstimate.isEmpty()) return Optional.empty();
+  //   var fieldToRobotEstimate = maybeFieldToRobotEstimate.get();
 
-    final double kLargeYawThreshold = Units.degreesToRadians(200.0);
-    final double kLargeYawEventTimeWindowS = 0.05;
+  //   // distance from current pose to vision estimated pose
+  //   double poseDifference =
+  //       fieldToRobotEstimate
+  //           .getTranslation()
+  //           .getDistance(loggedFieldToRobot.get().getTranslation());
 
-    if (!isTurretCamera) {
-      var maxYawVel =
-          state.getMaxAbsDriveYawAngularVelocityInRange(
-              poseEstimate.timestampSeconds - kLargeYawEventTimeWindowS,
-              poseEstimate.timestampSeconds);
-      if (maxYawVel.isPresent() && Math.abs(maxYawVel.get()) > kLargeYawThreshold) {
-        Logger.recordOutput("Vision/Elevator/MegatagYawAngular", false);
-        return false;
-      }
-      Logger.recordOutput("Vision/Elevator/MegatagYawAngular", true);
-    }
+  //   var defaultSet = state.isRedAlliance() ? kTagsRedSpeaker : kTagsBlueSpeaker;
+  //   Set<Integer> speakerTags = new HashSet<>(defaultSet);
+  //   speakerTags.removeAll(
+  //       Arrays.stream(poseEstimate.fiducialIds)
+  //           .boxed()
+  //           .collect(Collectors.toCollection(HashSet::new)));
+  //   boolean seesSpeakerTags = speakerTags.size() < 2;
 
-    if (poseEstimate.avgTagArea < kMinAreaForMegatag) {
-      Logger.recordOutput(logPreface + "megaTagAvgTagArea", false);
-      return false;
-    }
-    Logger.recordOutput(logPreface + "megaTagAvgTagArea", true);
+  //   double xyStds;
+  //   if (poseEstimate.fiducialIds.length > 0) {
+  //     // multiple targets detected
+  //     if (poseEstimate.fiducialIds.length >= 2 && poseEstimate.avgTagArea > 0.1) {
+  //       xyStds = 0.2;
+  //     }
+  //     // we detect at least one of our speaker tags and we're close to it.
+  //     else if (seesSpeakerTags && poseEstimate.avgTagArea > 0.2) {
+  //       xyStds = 0.5;
+  //     }
+  //     // 1 target with large area and close to estimated pose
+  //     else if (poseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
+  //       xyStds = 0.5;
+  //     }
+  //     // 1 target farther away and estimated pose is close
+  //     else if (poseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
+  //       xyStds = 1.0;
+  //     } else if (poseEstimate.fiducialIds.length > 1) {
+  //       xyStds = 1.2;
+  //     } else {
+  //       xyStds = 2.0;
+  //     }
 
-    if (poseEstimate.fiducialIds.length != kExpectedTagCount) {
-      Logger.recordOutput(logPreface + "fiducialLength", false);
-      return false;
-    }
-    Logger.recordOutput(logPreface + "fiducialLength", true);
+  //     Logger.recordOutput(logPreface + "Megatag2StdDev", xyStds);
+  //     Logger.recordOutput(logPreface + "Megatag2AvgTagArea", poseEstimate.avgTagArea);
+  //     Logger.recordOutput(logPreface + "Megatag2PoseDifference", poseDifference);
 
-    if (poseEstimate.fiducialIds.length < 1) {
-      Logger.recordOutput(logPreface + "fiducialLengthLess1", false);
-      return false;
-    }
-    Logger.recordOutput(logPreface + "fiducialLengthLess1", true);
+  //     Matrix<N3, N1> visionMeasurementStdDevs =
+  //         VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(50.0));
+  //     fieldToRobotEstimate =
+  //         new Pose2d(fieldToRobotEstimate.getTranslation(), loggedFieldToRobot.get().getRotation());
+  //     return Optional.of(
+  //         new VisionFieldPoseEstimate(
+  //             fieldToRobotEstimate, poseEstimate.timestampSeconds, visionMeasurementStdDevs));
+  //   }
+  //   return Optional.empty();
+  // }
 
-    if (poseEstimate.fieldToCamera.getTranslation().getNorm() < 1.0) {
-      Logger.recordOutput(logPreface + "NormCheck", false);
-      return false;
-    }
-    Logger.recordOutput(logPreface + "NormCheck", true);
+  // private Optional<VisionFieldPoseEstimate> processMegatagPoseEstimate(
+  //     MegatagPoseEstimate poseEstimate, boolean isTurretCamera) {
+  //   var loggedFieldToRobot = state.getFieldToRobot(poseEstimate.timestampSeconds);
+  //   if (loggedFieldToRobot.isEmpty()) {
+  //     return Optional.empty();
+  //   }
 
-    for (var fiducial : fiducials) {
-      if (fiducial.ambiguity > .9) {
-        Logger.recordOutput(logPreface + "Ambiguity", false);
-        return false;
-      }
-    }
-    Logger.recordOutput(logPreface + "Ambiguity", true);
+  //   var maybeFieldToRobotEstimate = getFieldToRobotEstimate(poseEstimate, isTurretCamera);
+  //   if (maybeFieldToRobotEstimate.isEmpty()) return Optional.empty();
+  //   var fieldToRobotEstimate = maybeFieldToRobotEstimate.get();
 
-    Set<Integer> seenTags =
-        Arrays.stream(poseEstimate.fiducialIds)
-            .boxed()
-            .collect(Collectors.toCollection(HashSet::new));
-    Set<Integer> expectedTags = state.isRedAlliance() ? kTagsRedSpeaker : kTagsBlueSpeaker;
-    var result = expectedTags.equals(seenTags);
-    Logger.recordOutput(logPreface + "SeenTags", result);
-    return result;
-  }
+  //   // distance from current pose to vision estimated pose
+  //   double poseDifference =
+  //       fieldToRobotEstimate
+  //           .getTranslation()
+  //           .getDistance(loggedFieldToRobot.get().getTranslation());
 
-  private boolean shouldUseMegatag2(
-      MegatagPoseEstimate poseEstimate, boolean isTurretCamera, String logPreface) {
-    return shouldUsePinhole(poseEstimate.timestampSeconds, isTurretCamera, logPreface);
-  }
+  //   if (poseEstimate.fiducialIds.length > 0) {
+  //     double xyStds = 1.0;
+  //     double degStds = 12;
+  //     // multiple targets detected
+  //     if (poseEstimate.fiducialIds.length >= 2) {
+  //       xyStds = 0.5;
+  //       degStds = 6;
+  //     }
+  //     // 1 target with large area and close to estimated pose
+  //     else if (poseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
+  //       xyStds = 1.0;
+  //       degStds = 12;
+  //     }
+  //     // 1 target farther away and estimated pose is close
+  //     else if (poseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
+  //       xyStds = 2.0;
+  //       degStds = 30;
+  //     }
 
-  private Optional<Pose2d> getFieldToRobotEstimate(
-      MegatagPoseEstimate poseEstimate, boolean isTurretCamera) {
-    var fieldToCamera = poseEstimate.fieldToCamera;
-    if (fieldToCamera.getX() == 0.0) {
-      return Optional.empty();
-    }
-    var turretToCameraTransform = state.getTurretToCamera(isTurretCamera);
-    var cameraToTurretTransform = turretToCameraTransform.inverse();
-    var fieldToTurretPose = fieldToCamera.plus(cameraToTurretTransform);
-    var fieldToRobotEstimate = MathHelpers.kPose2dZero;
-    if (isTurretCamera) {
-      var robotToTurretObservation = state.getRobotToTurret(poseEstimate.timestampSeconds);
-      if (robotToTurretObservation.isEmpty()) {
-        return Optional.empty();
-      }
-      var turretToRobot =
-          MathHelpers.transform2dFromRotation(robotToTurretObservation.get().unaryMinus());
-      fieldToRobotEstimate = fieldToTurretPose.plus(turretToRobot);
-    } else {
-      fieldToRobotEstimate = fieldToCamera.plus(turretToCameraTransform.inverse());
-    }
+  //     Matrix<N3, N1> visionMeasurementStdDevs =
+  //         VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds));
+  //     return Optional.of(
+  //         new VisionFieldPoseEstimate(
+  //             fieldToRobotEstimate, poseEstimate.timestampSeconds, visionMeasurementStdDevs));
+  //   }
+  //   return Optional.empty();
+  // }
 
-    return Optional.of(fieldToRobotEstimate);
-  }
+  // private Pose2d estimateFieldToRobot(
+  //     Translation2d cameraToTarget,
+  //     Pose3d fieldToTarget,
+  //     Rotation2d robotToTurret,
+  //     Rotation2d gyroAngle,
+  //     Rotation2d cameraYawOffset,
+  //     boolean isTurretCamera) {
+  //   Transform2d cameraToTargetFixed =
+  //       MathHelpers.transform2dFromTranslation(cameraToTarget.rotateBy(cameraYawOffset));
+  //   Transform2d turretToTarget = state.getTurretToCamera(isTurretCamera).plus(cameraToTargetFixed);
+  //   // In robot frame
+  //   Transform2d robotToTarget = turretToTarget;
+  //   if (isTurretCamera) {
+  //     robotToTarget = MathHelpers.transform2dFromRotation(robotToTurret).plus(turretToTarget);
+  //   }
 
-  private Optional<VisionFieldPoseEstimate> processMegatag2PoseEstimate(
-      MegatagPoseEstimate poseEstimate, String logPreface) {
-    var loggedFieldToRobot = state.getFieldToRobot(poseEstimate.timestampSeconds);
-    if (loggedFieldToRobot.isEmpty()) {
-      return Optional.empty();
-    }
+  //   // In field frame
+  //   Transform2d robotToTargetField =
+  //       MathHelpers.transform2dFromTranslation(robotToTarget.getTranslation().rotateBy(gyroAngle));
 
-    var maybeFieldToRobotEstimate = getFieldToRobotEstimate(poseEstimate, isTurretCamera);
-    if (maybeFieldToRobotEstimate.isEmpty()) return Optional.empty();
-    var fieldToRobotEstimate = maybeFieldToRobotEstimate.get();
+  //   // In field frame
+  //   Pose2d fieldToTarget2d =
+  //       MathHelpers.pose2dFromTranslation(fieldToTarget.toPose2d().getTranslation());
 
-    // distance from current pose to vision estimated pose
-    double poseDifference =
-        fieldToRobotEstimate
-            .getTranslation()
-            .getDistance(loggedFieldToRobot.get().getTranslation());
+  //   Pose2d fieldToRobot =
+  //       fieldToTarget2d.transformBy(
+  //           MathHelpers.transform2dFromTranslation(
+  //               robotToTargetField.getTranslation().unaryMinus()));
 
-    var defaultSet = state.isRedAlliance() ? kTagsRedSpeaker : kTagsBlueSpeaker;
-    Set<Integer> speakerTags = new HashSet<>(defaultSet);
-    speakerTags.removeAll(
-        Arrays.stream(poseEstimate.fiducialIds)
-            .boxed()
-            .collect(Collectors.toCollection(HashSet::new)));
-    boolean seesSpeakerTags = speakerTags.size() < 2;
-
-    double xyStds;
-    if (poseEstimate.fiducialIds.length > 0) {
-      // multiple targets detected
-      if (poseEstimate.fiducialIds.length >= 2 && poseEstimate.avgTagArea > 0.1) {
-        xyStds = 0.2;
-      }
-      // we detect at least one of our speaker tags and we're close to it.
-      else if (seesSpeakerTags && poseEstimate.avgTagArea > 0.2) {
-        xyStds = 0.5;
-      }
-      // 1 target with large area and close to estimated pose
-      else if (poseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
-        xyStds = 0.5;
-      }
-      // 1 target farther away and estimated pose is close
-      else if (poseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
-        xyStds = 1.0;
-      } else if (poseEstimate.fiducialIds.length > 1) {
-        xyStds = 1.2;
-      } else {
-        xyStds = 2.0;
-      }
-
-      Logger.recordOutput(logPreface + "Megatag2StdDev", xyStds);
-      Logger.recordOutput(logPreface + "Megatag2AvgTagArea", poseEstimate.avgTagArea);
-      Logger.recordOutput(logPreface + "Megatag2PoseDifference", poseDifference);
-
-      Matrix<N3, N1> visionMeasurementStdDevs =
-          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(50.0));
-      fieldToRobotEstimate =
-          new Pose2d(fieldToRobotEstimate.getTranslation(), loggedFieldToRobot.get().getRotation());
-      return Optional.of(
-          new VisionFieldPoseEstimate(
-              fieldToRobotEstimate, poseEstimate.timestampSeconds, visionMeasurementStdDevs));
-    }
-    return Optional.empty();
-  }
-
-  private Optional<VisionFieldPoseEstimate> processMegatagPoseEstimate(
-      MegatagPoseEstimate poseEstimate, boolean isTurretCamera) {
-    var loggedFieldToRobot = state.getFieldToRobot(poseEstimate.timestampSeconds);
-    if (loggedFieldToRobot.isEmpty()) {
-      return Optional.empty();
-    }
-
-    var maybeFieldToRobotEstimate = getFieldToRobotEstimate(poseEstimate, isTurretCamera);
-    if (maybeFieldToRobotEstimate.isEmpty()) return Optional.empty();
-    var fieldToRobotEstimate = maybeFieldToRobotEstimate.get();
-
-    // distance from current pose to vision estimated pose
-    double poseDifference =
-        fieldToRobotEstimate
-            .getTranslation()
-            .getDistance(loggedFieldToRobot.get().getTranslation());
-
-    if (poseEstimate.fiducialIds.length > 0) {
-      double xyStds = 1.0;
-      double degStds = 12;
-      // multiple targets detected
-      if (poseEstimate.fiducialIds.length >= 2) {
-        xyStds = 0.5;
-        degStds = 6;
-      }
-      // 1 target with large area and close to estimated pose
-      else if (poseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
-        xyStds = 1.0;
-        degStds = 12;
-      }
-      // 1 target farther away and estimated pose is close
-      else if (poseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
-        xyStds = 2.0;
-        degStds = 30;
-      }
-
-      Matrix<N3, N1> visionMeasurementStdDevs =
-          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds));
-      return Optional.of(
-          new VisionFieldPoseEstimate(
-              fieldToRobotEstimate, poseEstimate.timestampSeconds, visionMeasurementStdDevs));
-    }
-    return Optional.empty();
-  }
-
-  private Pose2d estimateFieldToRobot(
-      Translation2d cameraToTarget,
-      Pose3d fieldToTarget,
-      Rotation2d robotToTurret,
-      Rotation2d gyroAngle,
-      Rotation2d cameraYawOffset,
-      boolean isTurretCamera) {
-    Transform2d cameraToTargetFixed =
-        MathHelpers.transform2dFromTranslation(cameraToTarget.rotateBy(cameraYawOffset));
-    Transform2d turretToTarget = state.getTurretToCamera(isTurretCamera).plus(cameraToTargetFixed);
-    // In robot frame
-    Transform2d robotToTarget = turretToTarget;
-    if (isTurretCamera) {
-      robotToTarget = MathHelpers.transform2dFromRotation(robotToTurret).plus(turretToTarget);
-    }
-
-    // In field frame
-    Transform2d robotToTargetField =
-        MathHelpers.transform2dFromTranslation(robotToTarget.getTranslation().rotateBy(gyroAngle));
-
-    // In field frame
-    Pose2d fieldToTarget2d =
-        MathHelpers.pose2dFromTranslation(fieldToTarget.toPose2d().getTranslation());
-
-    Pose2d fieldToRobot =
-        fieldToTarget2d.transformBy(
-            MathHelpers.transform2dFromTranslation(
-                robotToTargetField.getTranslation().unaryMinus()));
-
-    Pose2d fieldToRobotYawAdjusted = new Pose2d(fieldToRobot.getTranslation(), gyroAngle);
-    return fieldToRobotYawAdjusted;
-  }
+  //   Pose2d fieldToRobotYawAdjusted = new Pose2d(fieldToRobot.getTranslation(), gyroAngle);
+  //   return fieldToRobotYawAdjusted;
+  // }
 
   // Add methods to support DriveCommand
   public int getNumberOfAprilTags(Limelight limelight) {
