@@ -47,36 +47,7 @@ public class PhysicalVision implements VisionInterface {
       visionThread(limelightNumber);
     }
   }
-
-  //   private void setLLSettings() {
-  //     double[] camerapose = { 0.0, 0.0, Constants.kCameraHeightOffGroundMeters, 0.0,
-  // Constants.kCameraPitchDegrees,
-  //             0.0 };
-  //     table.getEntry("camerapose_robotspace_set").setDoubleArray(camerapose);
-
-  //     double[] cameraBpose = { 0.0, 0.0, Constants.kCameraBHeightOffGroundMeters,
-  // Constants.kCameraBRollDegrees,
-  //             Constants.kCameraBPitchDegrees, 0.0 };
-  //     tableB.getEntry("camerapose_robotspace_set").setDoubleArray(cameraBpose);
-
-  //     var fieldToTurretRotation = robotState.getLatestFieldToRobot().getValue().getRotation()
-  //             .rotateBy(robotState.getLatestRobotToTurret().getValue());
-  //     var fieldToTurretVelocity =
-  // Units.radiansToDegrees(robotState.getLatestTurretAngularVelocity()
-  //             + robotState.getLatestRobotRelativeChassisSpeed().omegaRadiansPerSecond);
-  //     LimelightHelpers.SetRobotOrientation(Constants.kLimelightTableName,
-  // fieldToTurretRotation.getDegrees(),
-  //             fieldToTurretVelocity, 0, 0, 0, 0);
-
-  //     var gyroAngle = robotState.getLatestFieldToRobot().getValue().getRotation();
-  //     var gyroAngularVelocity = Units
-  //
-  // .radiansToDegrees(robotState.getLatestRobotRelativeChassisSpeed().omegaRadiansPerSecond);
-  //     LimelightHelpers.SetRobotOrientation(Constants.kLimelightBTableName,
-  // gyroAngle.getDegrees(),
-  //             gyroAngularVelocity, 0, 0, 0, 0);
-  // }
-
+  
   @Override
   public void updateInputs(VisionInputs inputs) {
     limelightThreads.forEach((limelightId, inputRef) -> {

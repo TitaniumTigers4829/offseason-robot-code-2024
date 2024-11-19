@@ -43,30 +43,31 @@ public class SimulatedVision extends PhysicalVision {
 
     // Create simulated camera properties. These can be set to mimic your actual
     // camera.
-    var turretProp = new SimCameraProperties();
-    turretProp.setCalibration(kResWidth, kResHeight, Rotation2d.fromDegrees(97.7));
-    turretProp.setCalibError(0.35, 0.10);
-    turretProp.setFPS(15);
-    turretProp.setAvgLatencyMs(20);
-    turretProp.setLatencyStdDevMs(5);
-
-    var elevatorProp = new SimCameraProperties();
-    elevatorProp = turretProp.copy();
+    var cameraProperties = new SimCameraProperties();
+    cameraProperties.setCalibration(kResWidth, kResHeight, Rotation2d.fromDegrees(97.7));
+    cameraProperties.setCalibError(0.35, 0.10);
+    cameraProperties.setFPS(15);
+    cameraProperties.setAvgLatencyMs(20);
+    cameraProperties.setLatencyStdDevMs(5);
 
     // Create a PhotonCameraSim which will update the linked PhotonCamera's values
     // with visible
     // targets.
     // Instance variables
-    shooterCameraSim = new PhotonCameraSim(shooterCamera, turretProp);
-    frontLeftCameraSim = new PhotonCameraSim(frontLeftCamera, elevatorProp);
-    frontRightCameraSim = new PhotonCameraSim(frontRightCamera, elevatorProp);
+    shooterCameraSim = new PhotonCameraSim(shooterCamera, cameraProperties);
+    frontLeftCameraSim = new PhotonCameraSim(frontLeftCamera, cameraProperties);
+    frontRightCameraSim = new PhotonCameraSim(frontRightCamera, cameraProperties);
 
-    // Add the simulated camera to view the targets on this simulated field.
-    visionSim.addCamera(shooterCameraSim, new Transform3d());
-
-    Transform3d robotToElevatorCamera =
+    Transform3d robotToShooterCamera =
         new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
-    visionSim.addCamera(frontLeftCameraSim, robotToElevatorCamera);
+    visionSim.addCamera(shooterCameraSim, robotToShooterCamera);
+
+    Transform3d robotToFrontLeftCamera =
+        new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
+    visionSim.addCamera(frontLeftCameraSim, robotToFrontLeftCamera);
+    Transform3d robotToFrontRightCamera =
+        new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
+    visionSim.addCamera(frontRightCameraSim, robotToFrontRightCamera);
 
     // Enable the raw and processed streams. (http://localhost:1181 / 1182)
     shooterCameraSim.enableRawStream(true);
@@ -124,7 +125,7 @@ public class SimulatedVision extends PhysicalVision {
                     0.0, // 3: roll
                     0.0, // 4: pitch
                     fieldToCamera.getRotation().getDegrees(), // 5: yaw
-                    super.getLatencySeconds(limelight), // 6: latency ms,
+                    result.metadata.getLatencyMillis(), // 6: latency ms,
                     (double)
                         result.getMultiTagResult().get().fiducialIDsUsed.size(), // 7: tag count
                     0.0, // 8: tag span
@@ -152,7 +153,7 @@ public class SimulatedVision extends PhysicalVision {
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
-      table.getEntry("cl").setDouble(super.getLatencySeconds(limelight));
+      table.getEntry("cl").setDouble(result.metadata.getLatencyMillis());
     }
   }
 
