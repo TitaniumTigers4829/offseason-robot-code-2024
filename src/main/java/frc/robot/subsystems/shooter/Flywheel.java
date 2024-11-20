@@ -7,7 +7,6 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
-  // private final SimpleMotorFeedforward ffModel;
   /** Constructor that creates initiates IO */
   public Flywheel(FlywheelIO io) {
     this.io = io;
@@ -16,10 +15,10 @@ public class Flywheel extends SubsystemBase {
   /**
    * Sets the flywheel voltage
    *
-   * @param desiredVoltage
+   * @param desiredVoltage Desired Voltage in double
    */
   public void setFlywheelVoltage(double desiredVoltage) {
-    io.setVoltage(desiredVoltage); // /io calls the functions
+    io.setVoltage(desiredVoltage); // /IO calls the functions
     Logger.recordOutput("Flywheel/voltage", desiredVoltage);
   }
 

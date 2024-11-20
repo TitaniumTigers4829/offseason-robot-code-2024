@@ -5,8 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface FlywheelIO {
   @AutoLog
   /** Creates new variables necessary for logging */
-  public static class FlywheelIOInputs { // variables that we want to log
-    public double positionRotations = 0.0; // positions in radians | convert to rpms
+  public static class FlywheelIOInputs { // Variables that we want to log
+    public double positionRotations = 0.0; // Positions in radians | convert to rpms
     public double velocityRPM = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
