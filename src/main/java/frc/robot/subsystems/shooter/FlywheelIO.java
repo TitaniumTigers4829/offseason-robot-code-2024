@@ -28,8 +28,10 @@ public interface FlywheelIO {
 
   /** Stop in open loop. */
   public default void stop() {}
+
   /**
    * Sets speed of the roller
+   *
    * @param speed Range is -1 to 1
    */
   default void setRollerSpeed(double speed) {}
