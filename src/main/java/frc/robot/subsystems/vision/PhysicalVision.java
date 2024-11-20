@@ -33,7 +33,6 @@ public class PhysicalVision implements VisionInterface {
       new PoseEstimate[] {new PoseEstimate(), new PoseEstimate(), new PoseEstimate()};
 
   public PhysicalVision() {
-    limelightEstimates = new PoseEstimate[3];
     for (int limelightNumber = 0; limelightNumber < limelightEstimates.length; limelightNumber++) {
       Limelight limelight = Limelight.values()[limelightNumber];
       limelightThreads.put(limelight, new AtomicReference<>(new VisionInputs()));
