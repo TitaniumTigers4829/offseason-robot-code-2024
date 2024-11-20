@@ -10,8 +10,9 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import frc.robot.subsystems.swerve.moduleIO.ModuleInputsAutoLogged;
-import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
+import frc.robot.subsystems.swerve.module.ModuleInterface;
+import frc.robot.subsystems.swerve.module.ModuleInputsAutoLogged;
+
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule extends SubsystemBase {

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swerve.gyroIO;
+package frc.robot.subsystems.swerve.gyro;
 
 import static edu.wpi.first.units.Units.*;
 
