@@ -10,11 +10,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.commands.intake.SetIntakePos;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WHEEL_GRIP;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
@@ -37,7 +41,7 @@ public class RobotContainer {
   private final SwerveDrive swerveDrive;
   private final CommandXboxController operatorController = new CommandXboxController(1);
   // private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
-  // private final Intake intake = new Intake(new IntakeIOTalonFX());
+  private final Intake intake;
   // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
   // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -59,6 +63,8 @@ public class RobotContainer {
         // this.simulatedArena = null;
         this.gyroSimulation = null;
         this.swerveDriveSimulation = null;
+
+        intake = new Intake(new IntakeIOTalonFX());
 
         swerveDrive =
             new SwerveDrive(
@@ -92,6 +98,7 @@ public class RobotContainer {
                     ModuleConstants.DRIVE_GEAR_RATIO),
                 gyroSimulation,
                 new Pose2d(3, 3, new Rotation2d()));
+                intake = new Intake(new IntakeIOSim());
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
         swerveDrive =
             new SwerveDrive(
@@ -115,6 +122,7 @@ public class RobotContainer {
 
       default -> {
         visionSubsystem = new Vision(new VisionIO() {});
+        intake = null;
         /* Replayed robot, disable IO implementations */
 
         /* physics simulations are also not needed */
@@ -221,6 +229,7 @@ public class RobotContainer {
     // Trigger driverAButton = new Trigger(driverController::getAButton);
     // lol whatever
     // // intake
+    driverController.a().whileTrue(new SetIntakePos(intake));
     // Trigger operatorLeftTrigger = new Trigger(()->operatorController.getLeftTriggerAxis() > 0.2);
     // Trigger operatorLeftBumper = new Trigger(operatorController::getLeftBumper);
     // // amp and speaker
@@ -241,7 +250,7 @@ public class RobotContainer {
     // Trigger operatorDownDirectionPad = new Trigger(()->operatorController.getPOV() == 180);
     // Trigger driverLeftTrigger = new Trigger(()->driverController.getLeftTriggerAxis() > 0.2);
     Trigger driverLeftBumper = new Trigger(driverController.leftBumper());
-    // Trigger driverBButton = new Trigger(driverController::getBButton);
+    Trigger driverBButton = new Trigger(driverController.b());
     // Trigger driverYButton = new Trigger(driverController::getYButton);
     // DoubleSupplier operatorLeftStickY = operatorController::getLeftY;
 
