@@ -6,9 +6,9 @@ import edu.wpi.first.math.util.Units;
 
 public final class VisionConstants {
   public enum Limelight {
-    SHOOTER(0),
-    FRONT_LEFT(1),
-    FRONT_RIGHT(2);
+    SHOOTER(SHOOTER_LIMELIGHT_NUMBER),
+    FRONT_LEFT(FRONT_LEFT_LIMELIGHT_NUMBER),
+    FRONT_RIGHT(FRONT_RIGHT_LIMELIGHT_NUMBER);
 
     public final int id;
 
