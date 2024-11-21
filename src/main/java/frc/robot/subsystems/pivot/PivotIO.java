@@ -21,7 +21,7 @@ public interface PivotIO {
     public double followerTorqueCurrentAmps = 0.0;
     public double followerTempCelsius = 0.0;
   }
-  
+
   /**
    * Updates Inputs
    *
