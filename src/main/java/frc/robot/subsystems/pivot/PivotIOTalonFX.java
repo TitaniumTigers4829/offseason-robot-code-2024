@@ -114,11 +114,7 @@ public class PivotIOTalonFX implements PivotIO {
         pivotPos);
   }
 
-  /**
-   * Updates Inputs
-   *
-   * @param inputs inputs for logging
-   */
+
   @Override
   public void updateInputs(PivotIOInputs inputs) {
     inputs.leaderPosition = leaderPivotMotor.getPosition().getValueAsDouble();
