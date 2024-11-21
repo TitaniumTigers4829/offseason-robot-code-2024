@@ -12,7 +12,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.HardwareConstants;
 
-public class PivotIOSim implements PivotIO {
+public class SimulatedPivot implements PivotInterface {
   private final double pivotGearing = PivotConstants.PIVOT_GEAR_RATIO;
   private final double pivotMass = PivotConstants.PIVOT_MASS;
   private final double pivotLength = PivotConstants.PIVOT_LENGTH;
@@ -37,7 +37,7 @@ public class PivotIOSim implements PivotIO {
    * @param inputs inputs for logging
    */
   @Override
-  public void updateInputs(PivotIOInputs inputs) {
+  public void updateInputs(PivotInterfaceInputs inputs) {
     pivotSim.update(HardwareConstants.TIMEOUT_S);
 
     inputs.leaderPosition = Units.radiansToRotations(pivotSim.getAngleRads());

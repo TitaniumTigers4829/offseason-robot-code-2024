@@ -6,9 +6,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
-public class IntakeIOSim implements IntakeIO {
+public class SimulatedIntake implements IntakeInterface {
   DCMotorSim intakeSim = new DCMotorSim(null, DCMotor.getFalcon500(1), 0);
   SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
@@ -22,7 +21,7 @@ public class IntakeIOSim implements IntakeIO {
   private double intakeAppliedVolts = 0.0;
   private double pivotAppliedVolts = 0.0;
 
-  public IntakeIOSim(IntakeIOInputs inputs) {
+  public SimulatedIntake(IntakeInterfaceInputs inputs) {
     intakeSim.update(0.02);
     pivotSim.update(0.02);
 

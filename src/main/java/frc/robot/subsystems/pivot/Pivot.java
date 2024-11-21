@@ -1,21 +1,19 @@
 package frc.robot.subsystems.pivot;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.interpolators.SingleLinearInterpolator;
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
-  private final PivotIO io;
-  private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
+  private final PivotInterface io;
+  private final PivotInterfaceInputsAutoLogged inputs = new PivotInterfaceInputsAutoLogged();
 
   private final SingleLinearInterpolator speakerAngleLookupValues;
   private final SingleLinearInterpolator speakerOverDefenseAngleLookupValues;
   private final SingleLinearInterpolator passAngleLookupValues;
 
   /** Creates a new Pivot. */
-  public Pivot(PivotIO io) {
+  public Pivot(PivotInterface io) {
     this.io = io;
     speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
     speakerOverDefenseAngleLookupValues =

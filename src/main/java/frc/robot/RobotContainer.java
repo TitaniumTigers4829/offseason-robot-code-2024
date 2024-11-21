@@ -25,9 +25,9 @@ import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
 import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
+import frc.robot.subsystems.vision.PhysicalVision;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOReal;
+import frc.robot.subsystems.vision.VisionInterface;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -67,7 +67,7 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[1]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
-        visionSubsystem = new Vision(new VisionIOReal());
+        visionSubsystem = new Vision(new PhysicalVision());
       }
 
       case SIM -> {
@@ -106,7 +106,7 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
 
         // TODO: add sim impl
-        visionSubsystem = new Vision(new VisionIO() {});
+        visionSubsystem = new Vision(new VisionInterface() {});
 
         SimulatedField.getInstance().resetFieldForAuto();
         resetFieldAndOdometryForAuto(
@@ -114,7 +114,7 @@ public class RobotContainer {
       }
 
       default -> {
-        visionSubsystem = new Vision(new VisionIO() {});
+        visionSubsystem = new Vision(new VisionInterface() {});
         /* Replayed robot, disable IO implementations */
 
         /* physics simulations are also not needed */

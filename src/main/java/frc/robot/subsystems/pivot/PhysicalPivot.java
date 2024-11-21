@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.HardwareConstants;
 
 /** Add your docs here. */
-public class PivotIOTalonFX implements PivotIO {
+public class PhysicalPivot implements PivotInterface {
 
   private final TalonFX leaderPivotMotor;
   private final TalonFX followerPivotMotor;
@@ -45,7 +45,7 @@ public class PivotIOTalonFX implements PivotIO {
 
   private final VoltageOut voltageControl = new VoltageOut(0);
 
-  public PivotIOTalonFX() {
+  public PhysicalPivot() {
     leaderPivotMotor = new TalonFX(PivotConstants.LEADER_PIVOT_MOTOR_ID);
     followerPivotMotor = new TalonFX(PivotConstants.FOLLOWER_PIVOT_MOTOR_ID);
     pivotEncoder = new CANcoder(PivotConstants.PIVOT_ENCODER_ID);
@@ -120,7 +120,7 @@ public class PivotIOTalonFX implements PivotIO {
    * @param inputs inputs for logging
    */
   @Override
-  public void updateInputs(PivotIOInputs inputs) {
+  public void updateInputs(PivotInterfaceInputs inputs) {
     inputs.leaderPosition = leaderPivotMotor.getPosition().getValueAsDouble();
     inputs.leaderVelocity = leaderPivotMotor.getVelocity().getValueAsDouble();
     inputs.leaderAppliedVolts = leaderPivotMotor.getMotorVoltage().getValueAsDouble();

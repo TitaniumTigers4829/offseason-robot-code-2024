@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.Constants.HardwareConstants;
 
-public class IntakeIOTalonFX implements IntakeIO {
+public class PhysicalIntake implements IntakeInterface {
   private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
   private final TalonFX leaderPivotMotor = new TalonFX(IntakeConstants.LEFT_INTAKE_PIVOT_MOTOR_ID);
   private final TalonFX followerPivotMotor =
@@ -24,7 +24,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final StatusSignal<Angle> pivotPosition;
   private final StatusSignal<AngularVelocity> pivotVelocity;
 
-  public IntakeIOTalonFX() {
+  public PhysicalIntake() {
     TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
 
     intakeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -82,7 +82,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(IntakeInterfaceInputs inputs) {
     inputs.intakeVelocity = intakeVelocity.getValueAsDouble();
     inputs.pivotPosition = pivotPosition.getValueAsDouble();
     inputs.pivotVelocity = pivotVelocity.getValueAsDouble();

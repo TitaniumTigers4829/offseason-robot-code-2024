@@ -2,9 +2,9 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface IntakeInterface {
   @AutoLog
-  public static class IntakeIOInputs {
+  public static class IntakeInterfaceInputs {
     public boolean isConnected = true;
 
     // intake motor
@@ -21,7 +21,7 @@ public interface IntakeIO {
     public double pivotCurrentAmps = 0.0;
   }
 
-  default void updateInputs(IntakeIOInputs inputs) {}
+  default void updateInputs(IntakeInterfaceInputs inputs) {}
 
   default void setPivotPosition(double position) {}
 
