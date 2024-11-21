@@ -289,7 +289,12 @@ public class RobotContainer {
                         swerveDrive.getPose().getX(),
                         swerveDrive.getPose().getY(),
                         Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
-    driverController.x().onTrue(new InstantCommand(()-> swerveDrive.resetPosition(swerveDriveSimulation.getSimulatedDriveTrainPose())));
+    driverController
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    swerveDrive.resetPosition(swerveDriveSimulation.getSimulatedDriveTrainPose())));
     // // // Reset robot odometry based on vision pose measurement from april tags
     // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
     // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));

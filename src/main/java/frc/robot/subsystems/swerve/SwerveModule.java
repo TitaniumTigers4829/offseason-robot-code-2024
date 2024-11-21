@@ -67,7 +67,7 @@ public class SwerveModule extends SubsystemBase {
     return inputs.driveVelocity;
   }
 
-  /** Runs the module with the specified setpoint state. Returns optimized setpoint*/
+  /** Runs the module with the specified setpoint state. Returns optimized setpoint */
   public void runSetPoint(SwerveModuleState state) {
     state.optimize(getTurnRotation());
 
