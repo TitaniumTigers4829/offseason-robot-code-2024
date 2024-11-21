@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.*;
 import frc.robot.subsystems.pivot.*;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.FlywheelConstants;
 import java.util.function.BooleanSupplier;
 
 public class ShootAmp extends Command {
@@ -36,9 +36,9 @@ public class ShootAmp extends Command {
   public void execute() {
     elevator.setElevatorPosition(ElevatorConstants.SHOOT_AMP_POSITION);
     pivot.setPivotAngle(PivotConstants.SHOOT_AMP_ANGLE);
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_AMP_RPM);
+    flywheel.setFlywheelVelFlywheel.SHOOT_AMP_RPM);
     if (shoot.getAsBoolean()) {
-      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      flywheel.setRollerFlywheel.ROLLER_SHOOT_SPEED);
     }
   }
 
@@ -47,8 +47,8 @@ public class ShootAmp extends Command {
   public void end(boolean interrupted) {
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setFlywheelVelFlywheel.SHOOTER_NEUTRAL_SPEED);
+    flywheel.setRollerFlywheel.ROLLER_NEUTRAL_SPEED);
   }
 
   // Returns true when the command should end.
