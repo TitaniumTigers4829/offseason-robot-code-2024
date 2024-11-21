@@ -6,16 +6,37 @@ import edu.wpi.first.math.util.Units;
 
 public final class VisionConstants {
   public enum Limelight {
-    SHOOTER(SHOOTER_LIMELIGHT_NUMBER),
-    FRONT_LEFT(FRONT_LEFT_LIMELIGHT_NUMBER),
-    FRONT_RIGHT(FRONT_RIGHT_LIMELIGHT_NUMBER);
+    SHOOTER(0, VisionConstants.SHOOTER_LIMELIGHT_NAME),
+    FRONT_LEFT(1, VisionConstants.FRONT_LEFT_LIMELIGHT_NAME),
+    FRONT_RIGHT(2, VisionConstants.FRONT_RIGHT_LIMELIGHT_NAME);
 
-    public final int id;
+    private final int id;
+    private final String name;
 
-    Limelight(int id) {
+    Limelight(int id, String name) {
       this.id = id;
+      this.name = name;
+    }
+
+    public int getId() {
+      return id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public static Limelight fromId(int id) {
+      return switch (id) {
+        case 0 -> SHOOTER;
+        case 1 -> FRONT_LEFT;
+        case 2 -> FRONT_RIGHT;
+        default -> throw new IllegalArgumentException("Invalid Limelight ID: " + id);
+      };
     }
   }
+
+  public static final int THREAD_SLEEP_MS = 20;
 
   public static final AprilTagFieldLayout FIELD_LAYOUT =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -31,6 +52,9 @@ public final class VisionConstants {
       180; // degrees/s // TODO: This can be tested more
 
   public static final double MEGA_TAG_2_DISTANCE_THRESHOLD = 5; // TODO: Tune
+
+  public static final double MEGA_TAG_TRANSLATION_DISCREPANCY_THRESHOLD = 0.5; // TODO: tune
+  public static final double MEGA_TAG_ROTATION_DISCREPANCY_THREASHOLD = 45;
 
   public static final String SHOOTER_LIMELIGHT_NAME = "limelight-shooter";
   public static final int SHOOTER_LIMELIGHT_NUMBER = 0;
