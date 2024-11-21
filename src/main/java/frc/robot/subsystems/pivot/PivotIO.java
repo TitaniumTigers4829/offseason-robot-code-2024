@@ -21,7 +21,12 @@ public interface PivotIO {
     public double followerTorqueCurrentAmps = 0.0;
     public double followerTempCelsius = 0.0;
   }
-
+  
+  /**
+   * Updates Inputs
+   *
+   * @param inputs inputs for logging
+   */
   public default void updateInputs(PivotIOInputs inputs) {}
 
   /**
@@ -52,16 +57,16 @@ public interface PivotIO {
   public default void setVoltage(double volts) {}
 
   /**
-   * sets the pivot angle(rotations) shooter
+   * Sets the shooter pivot angle
    *
    * @param angle the desired angle in rotations
    */
   public default void setPivotAngle(double angle) {}
 
   /**
-   * Gets the target angle of the pivot in degrees
+   * Gets the target angle of the pivot
    *
-   * @return the target angle
+   * @return the target angle in rotations
    */
   public default double getPivotTarget() {
     return 0.0;
