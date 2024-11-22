@@ -3,6 +3,7 @@ package frc.robot.subsystems.swerve;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -11,19 +12,27 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
-import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.gyroIO.GyroInputsAutoLogged;
+import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
+import frc.robot.subsystems.swerve.setpointGen.SwerveSetpoint;
+import frc.robot.subsystems.swerve.setpointGen.SwerveSetpointGenerator;
 import frc.robot.subsystems.vision.VisionConstants;
 import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -39,10 +48,41 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModulePosition[] lastModulePositions;
   private final SwerveDrivePoseEstimator poseEstimator;
 
+  private SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), getModuleStates());
+  private final SwerveSetpointGenerator setpointGenerator =
+      new SwerveSetpointGenerator(
+          DriveConstants.MODULE_TRANSLATIONS,
+          DCMotor.getKrakenX60(1).withReduction(ModuleConstants.DRIVE_GEAR_RATIO),
+          DCMotor.getFalcon500(1).withReduction(ModuleConstants.TURN_GEAR_RATIO),
+          ModuleConstants.DRIVE_STATOR_LIMIT,
+          60.0, // TODO: Confirm
+          11.0, // TODO: confirm/get this value
+          ModuleConstants.WHEEL_DIAMETER_METERS,
+          1.5,
+          0.0);
+
   private final OdometryThread odometryThread;
 
   private final Alert gyroDisconnectedAlert =
       new Alert("Gyro Hardware Fault", Alert.AlertType.kError);
+
+      
+  // This will stay the same throughout the match. These values are harder to test for and tune, so
+  // assume this guess is right.
+  private static final Vector<N3> stateStandardDeviations =
+      VecBuilder.fill(
+          DriveConstants.X_POS_TRUST,
+          DriveConstants.Y_POS_TRUST,
+          Units.degreesToRadians(DriveConstants.ANGLE_TRUST));
+
+  // This will be changed throughout the match depending on how confident we are that the limelight
+  // is right.
+  private static final Vector<N3> visionMeasurementStandardDeviations =
+      VecBuilder.fill(
+          VisionConstants.VISION_X_POS_TRUST,
+          VisionConstants.VISION_Y_POS_TRUST,
+          Units.degreesToRadians(VisionConstants.VISION_ANGLE_TRUST));
+
 
   public SwerveDrive(
       GyroInterface gyroIO,
@@ -75,12 +115,8 @@ public class SwerveDrive extends SubsystemBase {
             getRawGyroYaw(),
             lastModulePositions,
             new Pose2d(),
-            VecBuilder.fill(
-                DriveConstants.X_POS_TRUST, DriveConstants.Y_POS_TRUST, DriveConstants.ANGLE_TRUST),
-            VecBuilder.fill(
-                VisionConstants.VISION_X_POS_TRUST,
-                VisionConstants.VISION_Y_POS_TRUST,
-                VisionConstants.VISION_ANGLE_TRUST));
+            stateStandardDeviations,
+            visionMeasurementStandardDeviations);
 
     this.odometryThread = OdometryThread.createInstance(DeviceCANBus.RIO);
     this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
@@ -189,8 +225,7 @@ public class SwerveDrive extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
-    ChassisSpeeds discreteSpeeds =
-        // ChassisSpeeds.discretize(
+    ChassisSpeeds desiredSpeeds =
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
@@ -198,14 +233,12 @@ public class SwerveDrive extends SubsystemBase {
                 rotationSpeed,
                 getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
-    // , 0.02);
-    SwerveModuleState[] swerveModuleStates =
-        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
 
-    setModuleStates(swerveModuleStates);
-    Logger.recordOutput("SwerveStates/DesiredStates", swerveModuleStates);
+    setpoint =
+        setpointGenerator.generateSetpoint(
+            setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
+
+    setModuleStates(setpoint.moduleStates());
   }
 
   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
