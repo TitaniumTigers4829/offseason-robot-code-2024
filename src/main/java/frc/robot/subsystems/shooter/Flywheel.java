@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
-  private final FlywheelInterface io;
+  private final FlywheelInterface FlywheelInterface;
   private final FlywheelInputsAutoLogged inputs = new FlywheelInputsAutoLogged();
 
   // private final SimpleMotorFeedforward ffModel;
 
   public Flywheel(FlywheelInterface io) {
-    this.io = io;
+    this.flywheelInterface = flywheelInterface;
   }
 
   /**
@@ -19,7 +19,7 @@ public class Flywheel extends SubsystemBase {
    * @param desiredVoltage
    */
   public void setFlywheelVoltage(double desiredVoltage) {
-    io.setVoltage(desiredVoltage); // /io calls the functions
+    flywheelInterface.setVoltage(desiredVoltage); // /flywheelInterface calls the functions
     Logger.recordOutput("Flywheel/voltage", desiredVoltage);
   }
 
@@ -29,7 +29,7 @@ public class Flywheel extends SubsystemBase {
    * @param desiredRPM desired velocity in RPM
    */
   public void setFlywheelVelocity(double desiredRPM) {
-    io.setVelocity(desiredRPM);
+    flywheelInterface.setVelocity(desiredRPM);
     Logger.recordOutput("Flywheel/RPM", desiredRPM);
   }
 
@@ -43,20 +43,20 @@ public class Flywheel extends SubsystemBase {
    * @param speed desired speed in rotations/sec
    */
   public void setRollerSpeed(double speed) {
-    io.setRollerSpeed(speed);
+    flywheelInterface.setRollerSpeed(speed);
     Logger.recordOutput("Roller/DutyCycleOut", speed);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    io.updateInputs(inputs);
+    flywheelInterface.updateInputs(inputs);
     Logger.processInputs("FlywheelSubsystem", inputs);
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    io.updateInputs(inputs);
+    flywheelInterface.updateInputs(inputs);
   }
 }

@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
-  private final ElevatorInterface io;
+  private final ElevatorInterface elevatorInterface;
   private final ElevatorInterfaceInputsAutoLogged inputs = new ElevatorInterfaceInputsAutoLogged();
 
   public Elevator(ElevatorInterface io) {
     super("Elevator");
-    this.io = io;
+    this.elevatorInterface = elevatorInterface;
   }
 
   /**
@@ -19,7 +19,7 @@ public class Elevator extends SubsystemBase {
    */
   public void setElevatorPosition(double position) {
     Logger.recordOutput("Elevator", position);
-    io.setElevatorPosition(position);
+    elevatorInterface.setElevatorPosition(position);
   }
 
   /**
@@ -28,12 +28,12 @@ public class Elevator extends SubsystemBase {
    * @param speed output value from -1.0 to 1.0
    */
   public void setElevatorSpeed(double speed) {
-    io.setElevatorSpeed(speed);
+    elevatorInterface.setElevatorSpeed(speed);
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    elevatorInterface.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
   }
 }

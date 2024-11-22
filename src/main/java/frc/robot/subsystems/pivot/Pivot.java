@@ -5,7 +5,7 @@ import frc.robot.extras.interpolators.SingleLinearInterpolator;
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
-  private final PivotInterface io;
+  private final PivotInterface pivotInterface;
   private final PivotInterfaceInputsAutoLogged inputs = new PivotInterfaceInputsAutoLogged();
 
   private final SingleLinearInterpolator speakerAngleLookupValues;
@@ -13,8 +13,8 @@ public class Pivot extends SubsystemBase {
   private final SingleLinearInterpolator passAngleLookupValues;
 
   /** Creates a new Pivot. */
-  public Pivot(PivotInterface io) {
-    this.io = io;
+  public Pivot(PivotInterface pivotInterface) {
+    this.pivotInterface = pivotInterface;
     speakerAngleLookupValues = new SingleLinearInterpolator(PivotConstants.SPEAKER_PIVOT_POSITION);
     speakerOverDefenseAngleLookupValues =
         new SingleLinearInterpolator(PivotConstants.SPEAKER_OVER_DEFENSE_PIVOT_POSITION);
@@ -27,7 +27,7 @@ public class Pivot extends SubsystemBase {
    * @param angle the desired angle in rotations
    */
   public void setPivotAngle(double angle) {
-    io.setPivotAngle(angle);
+    pivotInterface.setPivotAngle(angle);
   }
 
   /**
@@ -68,7 +68,7 @@ public class Pivot extends SubsystemBase {
    * @param output output value from -1.0 to 1.9
    */
   public void setPivotSpeed(double output) {
-    io.setPivotSpeed(output);
+    pivotInterface.setPivotSpeed(output);
   }
 
   /**
@@ -77,7 +77,7 @@ public class Pivot extends SubsystemBase {
    * @return pivot error between desired and actual state in rotations
    */
   public boolean isPivotWithinAcceptableError() {
-    return io.isPivotWithinAcceptableError();
+    return pivotInterface.isPivotWithinAcceptableError();
   }
 
   /**
@@ -86,7 +86,7 @@ public class Pivot extends SubsystemBase {
    * @return angle of pivot in rotations
    */
   public double getAngle() {
-    return io.getAngle();
+    return pivotInterface.getAngle();
   }
 
   /**
@@ -95,7 +95,7 @@ public class Pivot extends SubsystemBase {
    * @return the target angle
    */
   public double getPivotTarget() {
-    return io.getPivotTarget();
+    return pivotInterface.getPivotTarget();
   }
 
   /**
@@ -104,12 +104,12 @@ public class Pivot extends SubsystemBase {
    * @param volts the voltage
    */
   public void runVolts(double volts) {
-    io.setVoltage(volts);
+    pivotInterface.setVoltage(volts);
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    pivotInterface.updateInputs(inputs);
     Logger.processInputs("Pivot", inputs);
     // This method will be called once per scheduler run
   }
@@ -117,6 +117,6 @@ public class Pivot extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    io.updateInputs(inputs);
+    pivotInterface.updateInputs(inputs);
   }
 }
