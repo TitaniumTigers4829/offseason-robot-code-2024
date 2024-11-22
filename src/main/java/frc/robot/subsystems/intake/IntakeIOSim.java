@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import edu.wpi.first.units.measure.Angle;
+import static edu.wpi.first.units.Units.*;
 
 public class IntakeIOSim implements IntakeIO {
   DCMotorSim intakeSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(1), 0.01, 1), DCMotor.getFalcon500(1));
   SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
-          DCMotor.getFalcon500(2), IntakeConstants.INTAKE_PIVOT_GEAR_RATIO, 0.01, 1, 0, 1, false, 0.0);
+          DCMotor.getFalcon500(2), IntakeConstants.INTAKE_PIVOT_GEAR_RATIO, 0.01, 1, Rotations.of(0).in(Radians), Rotations.of(1).in(Radians), false, 0.0);
   private final Constraints pivotConstraints = new Constraints(5, 5);
   private final ProfiledPIDController pivotController =
       new ProfiledPIDController(500, 0, 0, pivotConstraints);
@@ -27,18 +29,18 @@ public class IntakeIOSim implements IntakeIO {
 
   public IntakeIOSim() {
     
-    intakeSim.update(0.02);
-    pivotSim.update(0.02);
   }
 
+  @Override
   public void updateInputs(IntakeIOInputs inputs) {
-
-    inputs.intakeVelocity = intakeSim.getAngularVelocityRadPerSec() / (Math.PI * 2);
+    intakeSim.update(0.02);
+    pivotSim.update(0.02);
+    inputs.intakeVelocity = RadiansPerSecond.of(intakeSim.getAngularVelocityRadPerSec()).in(RotationsPerSecond);
     inputs.intakeCurrentAmps = intakeSim.getCurrentDrawAmps();
     inputs.intakeAppliedVolts = intakeAppliedVolts;
 
-    inputs.pivotPosition = pivotSim.getAngleRads() / (Math.PI * 2);
-    inputs.pivotVelocity = pivotSim.getVelocityRadPerSec() / (Math.PI * 2);
+    inputs.pivotPosition = Radians.of(pivotSim.getAngleRads()).in(Rotations);
+    inputs.pivotVelocity = RadiansPerSecond.of(pivotSim.getVelocityRadPerSec()).in(RotationsPerSecond);
     inputs.pivotAppliedVolts = pivotAppliedVolts;
     inputs.pivotCurrentAmps = pivotSim.getCurrentDrawAmps();
   }
@@ -46,7 +48,7 @@ public class IntakeIOSim implements IntakeIO {
   @Override
   public void setPivotPosition(double position) {
     pivotSim.setInputVoltage(
-        pivotController.calculate(position, pivotSim.getAngleRads() / (Math.PI * 2)));
+        pivotController.calculate(position, Radians.of(pivotSim.getAngleRads()).in(Rotations)));
             // + pivotFF.calculate(
             //     pivotController.getSetpoint().position, pivotController.getSetpoint().velocity));
   }
@@ -63,7 +65,6 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public double getPivotPosition() {
-    return pivotSim.getAngleRads() / (Math.PI * 2);
+    return Radians.of(pivotSim.getAngleRads()).in(Rotations);
   }
-  
 }

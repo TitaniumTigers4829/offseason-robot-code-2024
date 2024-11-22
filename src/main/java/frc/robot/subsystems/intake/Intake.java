@@ -37,8 +37,8 @@ public class Intake extends SubsystemBase {
     io.setPivotSpeed(speed);
   }
 
-  public void getPivotPosition() {
-    io.getPivotPosition();
+  public double getPivotPosition() {
+    return io.getPivotPosition();
   }
 
   @Override
@@ -46,6 +46,6 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("OTBIntake", inputs);
 
-    Logger.recordOutput("pivot pos", io.getPivotPosition());
+    Logger.recordOutput("pivot pos", getPivotPosition());
   }
 }
