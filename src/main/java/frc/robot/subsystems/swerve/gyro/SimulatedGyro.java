@@ -2,7 +2,9 @@ package frc.robot.subsystems.swerve.gyro;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotation;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 
@@ -23,5 +25,10 @@ public class SimulatedGyro implements GyroInterface {
     inputs.yawVelocity =
         RadiansPerSecond.of(gyroSimulation.getMeasuredAngularVelocityRadPerSec())
             .in(DegreesPerSecond);
+  }
+
+  @Override
+  public void reset() {
+    gyroSimulation.setRotation(Rotation2d.kZero);
   }
 }

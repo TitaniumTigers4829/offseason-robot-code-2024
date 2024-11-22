@@ -15,15 +15,15 @@ public class PhysicalGyro implements GyroInterface {
   private final Queue<Angle> yawPositionInput;
 
   public PhysicalGyro() {
-    yawPositionInput = OdometryThread.registerInput(() -> Degrees.of(-gyro.getAngle()));
+    yawPositionInput = OdometryThread.registerInput(() -> Degrees.of(gyro.getAngle()));
   }
 
   @Override
   public void updateInputs(GyroInputs inputs) {
     inputs.isConnected = gyro.isConnected();
     inputs.yawDegreesRotation2d = gyro.getRotation2d();
-    inputs.yawVelocity = -gyro.getRate();
-    inputs.yawDegrees = -gyro.getAngle();
+    inputs.yawVelocity = gyro.getRate();
+    inputs.yawDegrees = gyro.getAngle();
 
     // Handle odometry yaw positions
     if (!yawPositionInput.isEmpty()) {
@@ -35,5 +35,10 @@ public class PhysicalGyro implements GyroInterface {
       inputs.odometryYawPositions = odometryYawPositions;
       yawPositionInput.clear();
     }
+  }
+
+  @Override
+  public void reset() {
+    gyro.reset();
   }
 }

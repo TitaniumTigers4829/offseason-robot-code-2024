@@ -22,4 +22,9 @@ public interface GyroInterface {
    * @param inputs inputs to update
    */
   default void updateInputs(GyroInputs inputs) {}
+
+  /**
+   * Resets the gyro yaw
+   */
+  default void reset() {}
 }

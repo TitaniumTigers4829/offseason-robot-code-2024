@@ -37,9 +37,11 @@ public class SwerveDrive extends SubsystemBase {
 
   private Rotation2d rawGyroRotation;
   private final SwerveModulePosition[] lastModulePositions;
-  private final SwerveDrivePoseEstimator poseEstimator;
+  private final SwerveDrivePoseEstimator odometry;
 
   private final OdometryThread odometryThread;
+
+  private Optional<DriverStation.Alliance> alliance;
 
   private final Alert gyroDisconnectedAlert =
       new Alert("Gyro Hardware Fault", Alert.AlertType.kError);
@@ -69,10 +71,10 @@ public class SwerveDrive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
         };
-    this.poseEstimator =
+    this.odometry =
         new SwerveDrivePoseEstimator(
             DriveConstants.DRIVE_KINEMATICS,
-            getRawGyroYaw(),
+            getGyroRotation2d(),
             lastModulePositions,
             new Pose2d(),
             VecBuilder.fill(
@@ -87,15 +89,6 @@ public class SwerveDrive extends SubsystemBase {
     this.odometryThread.start();
 
     gyroDisconnectedAlert.set(false);
-  }
-
-  /**
-   * Gets the current velocity of the gyro's yaw
-   *
-   * @return the yaw velocity
-   */
-  public double getGyroRate() {
-    return gyroInputs.yawVelocity;
   }
 
   // /** Updates the pose estimator with the pose calculated from the swerve modules. */
@@ -115,7 +108,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void addPoseEstimatorVisionMeasurement(
       Pose2d visionMeasurement, double currentTimeStampSeconds) {
-    poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
+    odometry.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
   }
 
   /**
@@ -128,7 +121,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void setPoseEstimatorVisionConfidence(
       double xStandardDeviation, double yStandardDeviation, double thetaStandardDeviation) {
-    poseEstimator.setVisionMeasurementStdDevs(
+    odometry.setVisionMeasurementStdDevs(
         VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
   }
 
@@ -196,7 +189,7 @@ public class SwerveDrive extends SubsystemBase {
                 xSpeed,
                 ySpeed,
                 rotationSpeed,
-                getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
+                getOdometryAllianceRelativeRotation2d())
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
     // , 0.02);
     SwerveModuleState[] swerveModuleStates =
@@ -208,13 +201,70 @@ public class SwerveDrive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/DesiredStates", swerveModuleStates);
   }
 
+  /**
+   * Returns the heading of the robot in degrees from 0 to 360.
+   *
+   * @return Value is Counter-clockwise positive.
+   */
+  public double getHeading() {
+    return -gyroInputs.yawDegrees;
+  }
+
+  /**
+   * Gets the rate of rotation of the NavX.
+   *
+   * @return The current rate in degrees per second.
+   */
+  public double getGyroRate() {
+    return -gyroInputs.yawVelocity;
+  }
+
+  /** Returns a Rotation2d for the heading of the robot. */
+  public Rotation2d getGyroRotation2d() {
+    return Rotation2d.fromDegrees(getHeading());
+  }
+
+  /** Returns a Rotation2d for the heading of the robot. */
+  public Rotation2d getGyroFieldRelativeRotation2d() {
+    return Rotation2d.fromDegrees(getHeading() + getAllianceAngleOffset());
+  }
+
   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
   public double getAllianceAngleOffset() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
+    alliance = DriverStation.getAlliance();
     double offset =
         alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red ? 180.0 : 0.0;
     return offset;
   }
+
+  /** Zeroes the heading of the robot. */
+  public void zeroHeading() {
+    gyroIO.reset();
+  }
+
+  /**
+   * Returns the estimated field-relative pose of the robot. Positive x being forward, positive y
+   * being left.
+   */
+  @AutoLogOutput(key = "Odometry/RobotPosition")
+  public Pose2d getPose() {
+    return odometry.getEstimatedPosition();
+  }
+
+  /** Returns a Rotation2d for the heading of the robot */
+  public Rotation2d getOdometryRotation2d() {
+    return getPose().getRotation();
+  }
+
+  /**
+   * Returns a Rotation2d for the heading of the robot relative to the field from the driver's
+   * perspective. This method is needed so that the drive command and poseEstimator don't fight each
+   * other. It uses odometry rotation.
+   */
+  public Rotation2d getOdometryAllianceRelativeRotation2d() {
+    return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset()));
+  }
+
 
   /**
    * Sets the modules to the specified states.
@@ -239,13 +289,13 @@ public class SwerveDrive extends SubsystemBase {
 
     if (gyroInputs.isConnected) {
       // rawGyroRotation = gyroInputs.odometryYawPositions[timestampIndex];
-      rawGyroRotation = getRawGyroYaw();
+      rawGyroRotation = getGyroRotation2d();
     } else {
       Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(moduleDeltas);
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
 
-    poseEstimator.updateWithTime(
+    odometry.updateWithTime(
         // odometryThreadInputs.measurementTimeStamps[timestampIndex],
         Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
   }
@@ -293,17 +343,6 @@ public class SwerveDrive extends SubsystemBase {
     return positions;
   }
 
-  /** Gets the fused pose from the pose estimator. */
-  @AutoLogOutput(key = "Odometry/RobotPosition")
-  public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
-  }
-
-  /** Gets the current gyro yaw */
-  public Rotation2d getRawGyroYaw() {
-    return Rotation2d.fromDegrees(gyroInputs.yawDegrees);
-  }
-
   /**
    * Sets the pose
    *
@@ -313,6 +352,6 @@ public class SwerveDrive extends SubsystemBase {
     // for (int timestampIndex = 0;
     // timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
     // timestampIndex++)
-    poseEstimator.resetPosition(getRawGyroYaw(), getModulePositions(), pose);
+    odometry.resetPosition(getGyroRotation2d(), getModulePositions(), pose);
   }
 }
