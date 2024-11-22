@@ -29,6 +29,7 @@ import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
+import frc.robot.subsystems.swerve.setpointGen.AdvancedSwerveModuleState;
 import frc.robot.subsystems.swerve.setpointGen.SwerveSetpoint;
 import frc.robot.subsystems.swerve.setpointGen.SwerveSetpointGenerator;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -250,9 +251,9 @@ public class SwerveDrive extends SubsystemBase {
    * @param desiredStates The desired states for the swerve modules. The order is: frontLeft,
    *     frontRight, backLeft, backRight (should be the same as the kinematics).
    */
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
+  public void setModuleStates(AdvancedSwerveModuleState[] desiredStates) {
     for (int i = 0; i < 4; i++) {
-      swerveModules[i].runSetPoint(desiredStates[i]);
+      swerveModules[1].runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[i]));
     }
   }
 
@@ -308,8 +309,8 @@ public class SwerveDrive extends SubsystemBase {
 
   /** Returns the module states (turn angles and drive velocities) for all the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
-  private SwerveModuleState[] getModuleStates() {
-    SwerveModuleState[] states = new SwerveModuleState[swerveModules.length];
+  private AdvancedSwerveModuleState[] getModuleStates() {
+    AdvancedSwerveModuleState[] states = new AdvancedSwerveModuleState[swerveModules.length];
     for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getMeasuredState();
     return states;
   }

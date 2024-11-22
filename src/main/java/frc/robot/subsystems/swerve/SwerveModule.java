@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInputsAutoLogged;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
+import frc.robot.subsystems.swerve.setpointGen.AdvancedSwerveModuleState;
+
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule extends SubsystemBase {
@@ -96,8 +98,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   /** Returns the module state (turn angle and drive velocity). */
-  public SwerveModuleState getMeasuredState() {
-    return new SwerveModuleState(getDriveVelocityMetersPerSec(), getTurnRotation());
+  public AdvancedSwerveModuleState getMeasuredState() {
+    return new AdvancedSwerveModuleState(getDriveVelocityMetersPerSec(), getTurnRotation(),0,0);
   }
 
   /** Returns the module positions received this cycle. */
