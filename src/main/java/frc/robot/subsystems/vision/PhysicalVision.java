@@ -26,6 +26,8 @@ public class PhysicalVision implements VisionInterface {
       new ConcurrentHashMap<>();
   private final ExecutorService executorService = Executors.newFixedThreadPool(3);
   private final AtomicReference<VisionInputs> latestInputs = new AtomicReference<>();
+  private final ThreadManager threadManager = new ThreadManager(3);
+
 
   /**
    * The pose estimates from the limelights in the following order {shooterLimelight,
@@ -35,11 +37,16 @@ public class PhysicalVision implements VisionInterface {
       new PoseEstimate[] {new PoseEstimate(), new PoseEstimate(), new PoseEstimate()};
 
   public PhysicalVision() {
-    for (int limelightNumber = 0; limelightNumber < limelightEstimates.length; limelightNumber++) {
-      Limelight limelight = Limelight.values()[limelightNumber];
-      limelightThreads.put(limelight, new AtomicReference<>(new VisionInputs()));
-      visionThread(limelight);
-    }
+    for (Limelight limelight : Limelight.values()) {
+      VisionInputs inputs = new VisionInputs(); // Create vision inputs for each Limelight
+      limelightThreads.put(limelight, new AtomicReference<>(inputs));
+
+      // Start a vision input task for each Limelight
+      threadManager.startVisionInputTask(
+          limelight.getName(),
+          inputs,
+          () -> visionThreadTask(limelight, inputs));
+  }
   }
 
   @Override
@@ -48,7 +55,6 @@ public class PhysicalVision implements VisionInterface {
         (limelight, inputRef) -> {
           VisionInputs limelightInputs = inputRef.get();
           // Combine inputs into the main inputs object
-
           switch (limelight) {
             case SHOOTER -> {
               inputs.isShooterLimelightConnected = limelightInputs.isShooterLimelightConnected;
@@ -335,7 +341,7 @@ public class PhysicalVision implements VisionInterface {
           // // Only stop the thread if it's currently running
           // if (isThreadRunning.get()) {
           // stop the thread for the specified limelight
-          stopThread(limelight);
+          stopLimelightThread(limelight);
           // }
         }
         last_TX = current_TX;
@@ -347,61 +353,33 @@ public class PhysicalVision implements VisionInterface {
     }
   }
 
-  // /**
-  //  * Starts a separate thread dedicated to updating the pose estimate for a specified limelight.
-  //  * This approach is adopted to prevent loop overruns that would occur if we attempted to parse
-  // the
-  //  * JSON dump for each limelight sequentially within a single scheduler loop.
-  //  *
-  //  * <p>To achieve efficient and safe parallel execution, an ExecutorService is utilized to
-  // manage
-  //  * the lifecycle of these threads.
-  //  *
-  //  * <p>Each thread continuously runs the {@link #checkAndUpdatePose(int)} method as long as the
-  //  * corresponding limelight's thread is marked as "running". This ensures that pose estimates
-  // are
-  //  * updated in real-time, leveraging the parallel processing capabilities of the executor
-  // service.
-  //  *
-  //  * @param limelight the limelight number
-  //  */
-  // public void visionThread(Limelight limelight) {
+  /**
+   * Starts a separate thread dedicated to updating the pose estimate for a specified limelight.
+   * This approach is adopted to prevent loop overruns that would occur if we attempted to parse the
+   * JSON dump for each limelight sequentially within a single scheduler loop.
+   *
+   * <p>To achieve efficient and safe parallel execution, an ExecutorService is utilized to manage
+   * the lifecycle of these threads.
+   *
+   * <p>Each thread continuously runs the {@link #checkAndUpdatePose(int)} method as long as the
+   * corresponding limelight's thread is marked as "running". This ensures that pose estimates are
+   * updated in real-time, leveraging the parallel processing capabilities of the executor service.
+   *
+   * @param limelight the limelight number
+   */
+private void visionThreadTask(Limelight limelight, VisionInputs inputs) {
+    try {
+      synchronized (inputs) {
+        inputs.isShooterLimelightConnected = isLimelightConnected(limelight);
+        inputs.shooterMegaTag1Pose = MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(limelight));
+        inputs.shooterLatency = getLatencySeconds(limelight);
 
-  //   executorService.submit(
-  //       () -> {
-  //         try {
-  //           // while (limelightThreads.get(limelightNumber).get()) {
-  //           checkAndUpdatePose(limelight);
-  //           // }
-  //         } catch (Exception e) {
-  //           System.err.println(
-  //               "Error executing task for the: "
-  //                   + limelight.getName()
-  //                   + ": "
-  //                   + e.getMessage());
-  //         }
-  //       });
-  // }
-  public void visionThread(Limelight limelight) {
-    executorService.submit(
-        () -> {
-          try {
-            while (!Thread.currentThread().isInterrupted()) {
-              synchronized (latestInputs) {
-                VisionInputs currentInputs = latestInputs.get();
-                currentInputs.isShooterLimelightConnected = isLimelightConnected(limelight);
-                currentInputs.shooterMegaTag1Pose =
-                    MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(limelight));
-                currentInputs.shooterLatency = getLatencySeconds(limelight);
-                latestInputs.set(currentInputs);
-              }
-              Thread.sleep(VisionConstants.THREAD_SLEEP_MS);
-            }
-          } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restore interrupted status
-          }
-        });
-  }
+        limelightThreads.get(limelight).set(inputs);
+      }
+    } catch (Exception e) {
+        System.err.println("Error updating inputs for " + limelight.getName() + ": " + e.getMessage());
+    }
+}
 
   /**
    * Sets the AtomicBoolean 'runningThreads' to false for the specified limelight. Stops the thread
@@ -409,35 +387,14 @@ public class PhysicalVision implements VisionInterface {
    *
    * @param limelight the limelight number
    */
-  public void stopThread(Limelight limelight) {
-    try {
-      // Since we can't see an April Tag, set the estimate for the specified limelight to an empty
-      // PoseEstimate()
-      limelightEstimates[limelight.getId()] = new PoseEstimate();
-      // limelightThreads.get(limelight.id).set();(false);
-    } catch (Exception e) {
-      System.err.println(
-          "Error stopping thread for the: " + limelight.getName() + ": " + e.getMessage());
-    }
+    public void stopLimelightThread(Limelight limelight) {
+      threadManager.stopThread(limelight.getName());
+
   }
 
   /** Shuts down all the threads. */
+  // @Override
   public void endAllThreads() {
-    // Properly shut down the executor service when the subsystem ends
-    executorService.shutdown(); // Prevents new tasks from being submitted
-    try {
-      // Wait for existing tasks to finish
-      if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-        executorService.shutdownNow();
-        // Wait a bit longer for tasks to respond to being cancelled
-        if (!executorService.awaitTermination(5, TimeUnit.SECONDS))
-          System.err.println("ExecutorService did not terminate");
-      }
-    } catch (InterruptedException e) {
-      // (Re-)Cancel if current thread also interrupted
-      executorService.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    }
+      threadManager.shutdownAllThreads();
   }
 }

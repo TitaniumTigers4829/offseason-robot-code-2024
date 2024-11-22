@@ -1,8 +1,14 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
 import frc.robot.extras.vision.MegatagPoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionInterface {
