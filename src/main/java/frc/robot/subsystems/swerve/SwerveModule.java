@@ -98,8 +98,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   /** Returns the module state (turn angle and drive velocity). */
-  public AdvancedSwerveModuleState getMeasuredState() {
-    return new AdvancedSwerveModuleState(getDriveVelocityMetersPerSec(), getTurnRotation(),0,0);
+  public SwerveModuleState getMeasuredState() {
+    return new SwerveModuleState(getDriveVelocityMetersPerSec(), getTurnRotation());
   }
 
   /** Returns the module positions received this cycle. */

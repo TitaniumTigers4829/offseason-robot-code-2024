@@ -47,7 +47,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModulePosition[] lastModulePositions;
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), getModuleStates());
+  private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
   private final SwerveSetpointGenerator setpointGenerator =
       new SwerveSetpointGenerator(
           DriveConstants.MODULE_TRANSLATIONS,
@@ -235,6 +235,7 @@ public class SwerveDrive extends SubsystemBase {
         setpointGenerator.generateSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
 
     setModuleStates(setpoint.moduleStates());
+    Logger.recordOutput("SwerveStates/desired state", setpoint.moduleStates());
   }
 
   /** Returns 0 degrees if the robot is on the blue alliance, 180 if on the red alliance. */
@@ -309,8 +310,8 @@ public class SwerveDrive extends SubsystemBase {
 
   /** Returns the module states (turn angles and drive velocities) for all the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
-  private AdvancedSwerveModuleState[] getModuleStates() {
-    AdvancedSwerveModuleState[] states = new AdvancedSwerveModuleState[swerveModules.length];
+  private SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] states = new SwerveModuleState[swerveModules.length];
     for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getMeasuredState();
     return states;
   }
