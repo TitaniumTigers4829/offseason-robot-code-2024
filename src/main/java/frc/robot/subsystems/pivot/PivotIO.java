@@ -38,6 +38,9 @@ public interface PivotIO {
     return 0.0;
   }
 
+  /**
+   * @return is the pivot within acceptable error of the target pivot position
+   */
   public default boolean isPivotWithinAcceptableError() {
     return false;
   }
