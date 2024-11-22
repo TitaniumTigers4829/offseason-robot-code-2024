@@ -35,5 +35,5 @@ public record SwerveSetpoint(
         });
     }
 
-    public static final Struct<SwerveSetpoint> struct = SwerveSetpoint.struct;
+    // public static final Struct<SwerveSetpoint> struct = SwerveSetpoint.struct;
 }
