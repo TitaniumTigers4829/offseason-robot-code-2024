@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.extras.util.GeomUtil;
 import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
 import frc.robot.extras.vision.MegatagPoseEstimate;
@@ -73,7 +74,7 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Checks if the specified limelight can fully see one or more April Tag.
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return true if the limelight can fully see one or more April Tag
    */
   @Override
@@ -97,7 +98,7 @@ public class PhysicalVision implements VisionInterface {
    * Gets the JSON dump from the specified limelight and puts it into a PoseEstimate object, which
    * is then placed into its corresponding spot in the limelightEstimates array.
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    */
   public PoseEstimate enabledPoseUpdate(Limelight limelight) {
     if (canSeeAprilTags(limelight) && isValidPoseEstimate(limelight)) {
@@ -119,7 +120,7 @@ public class PhysicalVision implements VisionInterface {
    * If the robot is not enabled, update the pose using MegaTag1 and after it is enabled, run {@link
    * #enabledPoseUpdate(int)}
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    */
   public void updatePoseEstimate(Limelight limelight) {
     limelightEstimates[limelight.getId()] =
@@ -131,37 +132,28 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Checks if there is a large discrepancy between the MegaTag1 and MegaTag2 estimates.
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return true if the discrepancy is larger than the defined threshold, false otherwise
    */
   public boolean isLargeDiscrepancyBetweenMegaTag1And2(Limelight limelight) {
     PoseEstimate megatag1Estimate = getMegaTag1PoseEstimate(limelight);
     PoseEstimate megatag2Estimate = getMegaTag2PoseEstimate(limelight);
 
-    return !isPoseWithinThreshold(
+    return !GeomUtil.isTranslationWithinThreshold(
             megatag1Estimate.pose.getTranslation(),
             megatag2Estimate.pose.getTranslation(),
             VisionConstants.MEGA_TAG_TRANSLATION_DISCREPANCY_THRESHOLD)
-        || !isRotationWithinThreshold(
+        || !GeomUtil.isRotationWithinThreshold(
             megatag1Estimate.pose.getRotation().getDegrees(),
             megatag2Estimate.pose.getRotation().getDegrees(),
             VisionConstants.MEGA_TAG_ROTATION_DISCREPANCY_THREASHOLD);
-  }
-
-  private boolean isPoseWithinThreshold(
-      Translation2d t1, Translation2d t2, double thresholdMeters) {
-    return t1.getDistance(t2) <= thresholdMeters;
-  }
-
-  private boolean isRotationWithinThreshold(double r1, double r2, double thresholdDegrees) {
-    return Math.abs(r1 - r2) <= thresholdDegrees;
   }
 
   /**
    * Gets the MegaTag1 pose of the robot calculated by specified limelight via any April Tags it
    * sees
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return the MegaTag1 pose of the robot, if the limelight can't see any April Tags, it will
    *     return 0 for x, y, and theta
    */
@@ -173,7 +165,7 @@ public class PhysicalVision implements VisionInterface {
    * Gets the MegaTag2 pose of the robot calculated by specified limelight via any April Tags it
    * sees
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return the MegaTag2 pose of the robot, if the limelight can't see any April Tags, it will
    *     return 0 for x, y, and theta
    */
@@ -184,7 +176,7 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Checks if the MT1 and MT2 pose estimate exists and whether it is within the field
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return true if the pose estimate exists within the field and the pose estimate is not null
    */
   public boolean isValidPoseEstimate(Limelight limelight) {
@@ -217,7 +209,7 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Gets the pose of the robot calculated by specified limelight via any April Tags it sees
    *
-   * @param limelight the number of the limelight
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return the pose of the robot, if the limelight can't see any April Tags, it will return 0 for
    *     x, y, and theta
    */
@@ -268,7 +260,7 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Gets the average distance between the specified limelight and the April Tags it sees
    *
-   * @param limelightNumber the number of the limelight
+   * @param limelightNumber a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return the average distance between the robot and the April Tag(s) in meters
    */
   public double getLimelightAprilTagDistance(Limelight limelight) {
