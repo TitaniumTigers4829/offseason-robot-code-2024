@@ -36,9 +36,9 @@ public class ShootAmp extends Command {
   public void execute() {
     elevator.setElevatorPosition(ElevatorConstants.SHOOT_AMP_POSITION);
     pivot.setPivotAngle(PivotConstants.SHOOT_AMP_ANGLE);
-    flywheel.setFlywheelVelFlywheel.SHOOT_AMP_RPM);
+    flywheel.setFlywheelVelocity(FlywheelConstants.SHOOT_AMP_RPM);
     if (shoot.getAsBoolean()) {
-      flywheel.setRollerFlywheel.ROLLER_SHOOT_SPEED);
+      flywheel.setRollerSpeed(FlywheelConstants.ROLLER_SHOOT_SPEED);
     }
   }
 
@@ -47,8 +47,8 @@ public class ShootAmp extends Command {
   public void end(boolean interrupted) {
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
-    flywheel.setFlywheelVelFlywheel.SHOOTER_NEUTRAL_SPEED);
-    flywheel.setRollerFlywheel.ROLLER_NEUTRAL_SPEED);
+    flywheel.setFlywheelVelocity(FlywheelConstants.SHOOTER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(FlywheelConstants.ROLLER_NEUTRAL_SPEED);
   }
 
   // Returns true when the command should end.
