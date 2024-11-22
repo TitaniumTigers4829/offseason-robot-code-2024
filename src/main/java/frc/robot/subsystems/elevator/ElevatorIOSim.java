@@ -1,5 +1,10 @@
 package frc.robot.subsystems.elevator;
 
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.numbers.N1;
@@ -7,12 +12,15 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ElevatorIOSim implements ElevatorIO {
   ElevatorSim elevatorSim;
   LinearSystem<N2, N1, N2> elevatorSystem;
-  private double elevatorAppliedVolts = 0.0;
+  private Voltage elevatorAppliedVolts = Volts.zero();
   private final PIDController elevatorPID = new PIDController(0.0, 0.0, 0.0);
 
   public ElevatorIOSim() {
@@ -33,20 +41,23 @@ public class ElevatorIOSim implements ElevatorIO {
 
     inputs.isConnected = true;
 
-    inputs.leaderMotorAppliedVolts = elevatorAppliedVolts;
+    inputs.leaderMotorAppliedVolts = elevatorAppliedVolts.in(Volts);
     inputs.leaderMotorCurrentAmps = elevatorSim.getCurrentDrawAmps();
-    inputs.leaderMotorPosition = metersToRotations(elevatorSim.getPositionMeters());
-    inputs.leaderMotorVelocity = metersToRotations(elevatorSim.getVelocityMetersPerSecond());
+    inputs.leaderMotorPosition = metersToRotations(Meters.of(elevatorSim.getPositionMeters())).in(Meters);
+    inputs.leaderMotorVelocity = metersPerSecondToRotations(MetersPerSecond.of(elevatorSim.getVelocityMetersPerSecond())).in(MetersPerSecond);
 
-    inputs.followerMotorAppliedVolts = elevatorAppliedVolts;
+    inputs.followerMotorAppliedVolts = elevatorAppliedVolts.in(Volts);
     inputs.followerMotorCurrentAmps = elevatorSim.getCurrentDrawAmps();
-    inputs.followerMotorPosition = metersToRotations(elevatorSim.getPositionMeters());
-    inputs.followerMotorVelocity = metersToRotations(elevatorSim.getVelocityMetersPerSecond());
+    inputs.followerMotorPosition = metersToRotations(Meters.of(elevatorSim.getPositionMeters())).in(Meters);
+    inputs.followerMotorVelocity = metersPerSecondToRotations(MetersPerSecond.of(elevatorSim.getVelocityMetersPerSecond())).in(MetersPerSecond);
   }
 
-  private double metersToRotations(double value) {
-    return (value / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
-        * ElevatorConstants.ELEVATOR_GEAR_RATIO;
+  private Distance metersToRotations(Distance value) {
+    return (value.divide(Meters.of(2 * Math.PI * ElevatorConstants.DRUM_RADIUS).in(Meters))).times(ElevatorConstants.ELEVATOR_GEAR_RATIO);
+  }
+
+  private LinearVelocity metersPerSecondToRotations(LinearVelocity value) {
+    return (value.divide(Meters.of(2 * Math.PI * ElevatorConstants.DRUM_RADIUS).in(Meters))).times(ElevatorConstants.ELEVATOR_GEAR_RATIO);
   }
 
   @Override
@@ -57,15 +68,15 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public double getVolts() {
-    return elevatorAppliedVolts;
+    return elevatorAppliedVolts.in(Volts);
   }
 
-  @Override
+  // @Override
   public void setElevatorPosition(double position) {
-    elevatorAppliedVolts = elevatorPID.calculate(elevatorSim.getPositionMeters(), position);
+    elevatorAppliedVolts = Volts.of(elevatorPID.calculate(Meters.of(elevatorSim.getPositionMeters()).in(Meters), Meters.of(position).in(Meters)));
 
     if (elevatorSim.wouldHitUpperLimit(position)) {
-      elevatorAppliedVolts = MathUtil.clamp(elevatorAppliedVolts, -12, 0);
+      elevatorAppliedVolts = Volts.of(MathUtil.clamp((elevatorAppliedVolts.in(Volts), -12, 0)));
     } else if (elevatorSim.wouldHitLowerLimit(position)) {
       elevatorAppliedVolts = MathUtil.clamp(elevatorAppliedVolts, 0, 12);
     } else {
