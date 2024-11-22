@@ -28,7 +28,7 @@ public class Indexer extends SubsystemBase {
 
   @Override
   public void periodic() {
-    intexerInterfaceupdateInputs(inputs);
+    indexerInterface.updateInputs(inputs);
     Logger.processInputs("Indexer", inputs);
   }
 }

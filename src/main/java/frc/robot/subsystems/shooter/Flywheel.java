@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
-  private final FlywheelInterface FlywheelInterface;
+  private final FlywheelInterface flywheelInterface;
   private final FlywheelInputsAutoLogged inputs = new FlywheelInputsAutoLogged();
 
   // private final SimpleMotorFeedforward ffModel;
