@@ -69,8 +69,6 @@ public class SwerveModule extends SubsystemBase {
 
   /** Runs the module with the specified setpoint state. Returns optimized setpoint */
   public void runSetPoint(SwerveModuleState state) {
-    state.optimize(getTurnRotation());
-
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       io.stopModule();
     }
