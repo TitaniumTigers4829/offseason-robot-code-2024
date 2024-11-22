@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
@@ -24,7 +23,6 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.gyroIO.GyroInputsAutoLogged;
 import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
@@ -66,7 +64,6 @@ public class SwerveDrive extends SubsystemBase {
   private final Alert gyroDisconnectedAlert =
       new Alert("Gyro Hardware Fault", Alert.AlertType.kError);
 
-      
   // This will stay the same throughout the match. These values are harder to test for and tune, so
   // assume this guess is right.
   private static final Vector<N3> stateStandardDeviations =
@@ -82,7 +79,6 @@ public class SwerveDrive extends SubsystemBase {
           VisionConstants.VISION_X_POS_TRUST,
           VisionConstants.VISION_Y_POS_TRUST,
           Units.degreesToRadians(VisionConstants.VISION_ANGLE_TRUST));
-
 
   public SwerveDrive(
       GyroInterface gyroIO,
@@ -235,8 +231,7 @@ public class SwerveDrive extends SubsystemBase {
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
 
     setpoint =
-        setpointGenerator.generateSetpoint(
-            setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
+        setpointGenerator.generateSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
 
     setModuleStates(setpoint.moduleStates());
   }
