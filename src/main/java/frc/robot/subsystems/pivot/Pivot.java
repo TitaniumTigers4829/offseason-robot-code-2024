@@ -67,7 +67,7 @@ public class Pivot extends SubsystemBase {
   /**
    * Sets the output of the pivot
    *
-   * @param output output value from -1.0 to 1.9
+   * @param output output value from -1.0 to 1.0
    */
   public void setPivotSpeed(double output) {
     io.setPivotSpeed(output);
