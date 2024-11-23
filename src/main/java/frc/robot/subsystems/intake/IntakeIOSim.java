@@ -48,7 +48,7 @@ public class IntakeIOSim implements IntakeIO {
   @Override
   public void setPivotPosition(double position) {
     pivotSim.setInputVoltage(
-        pivotController.calculate(position, Radians.of(pivotSim.getAngleRads()).in(Rotations)));
+        pivotController.calculate(Radians.of(pivotSim.getAngleRads()).in(Rotations), position));
             // + pivotFF.calculate(
             //     pivotController.getSetpoint().position, pivotController.getSetpoint().velocity));
   }
