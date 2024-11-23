@@ -207,7 +207,7 @@ public class SwerveDrive extends SubsystemBase {
    * @return Value is Counter-clockwise positive.
    */
   public double getHeading() {
-    return -gyroInputs.yawDegrees;
+    return gyroInputs.yawDegrees;
   }
 
   /**
@@ -216,7 +216,7 @@ public class SwerveDrive extends SubsystemBase {
    * @return The current rate in degrees per second.
    */
   public double getGyroRate() {
-    return -gyroInputs.yawVelocity;
+    return gyroInputs.yawVelocity;
   }
 
   /** Returns a Rotation2d for the heading of the robot. */
