@@ -23,8 +23,6 @@ public interface GyroInterface {
    */
   default void updateInputs(GyroInputs inputs) {}
 
-  /**
-   * Resets the gyro yaw
-   */
+  /** Resets the gyro yaw */
   default void reset() {}
 }

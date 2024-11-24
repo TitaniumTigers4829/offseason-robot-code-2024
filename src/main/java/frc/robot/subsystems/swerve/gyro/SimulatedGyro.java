@@ -2,7 +2,6 @@ package frc.robot.subsystems.swerve.gyro;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotation;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.extras.simulation.OdometryTimestampsSim;

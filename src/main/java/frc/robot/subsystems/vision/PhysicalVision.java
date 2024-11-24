@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.FieldConstants;
@@ -14,7 +13,6 @@ import frc.robot.subsystems.vision.VisionInterface.VisionInputs;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PhysicalVision implements VisionInterface {
@@ -27,7 +25,6 @@ public class PhysicalVision implements VisionInterface {
   private final ExecutorService executorService = Executors.newFixedThreadPool(3);
   private final AtomicReference<VisionInputs> latestInputs = new AtomicReference<>();
   private final ThreadManager threadManager = new ThreadManager(3);
-
 
   /**
    * The pose estimates from the limelights in the following order {shooterLimelight,
@@ -43,10 +40,8 @@ public class PhysicalVision implements VisionInterface {
 
       // Start a vision input task for each Limelight
       threadManager.startVisionInputTask(
-          limelight.getName(),
-          inputs,
-          () -> visionThreadTask(limelight, inputs));
-  }
+          limelight.getName(), inputs, () -> visionThreadTask(limelight, inputs));
+    }
   }
 
   @Override
@@ -370,38 +365,42 @@ public class PhysicalVision implements VisionInterface {
    *
    * @param limelight the limelight number
    */
-private void visionThreadTask(Limelight limelight, VisionInputs inputs) {
+  private void visionThreadTask(Limelight limelight, VisionInputs inputs) {
     try {
       synchronized (inputs) {
         switch (limelight) {
           case SHOOTER -> {
-        
-        inputs.isShooterLimelightConnected = isLimelightConnected(Limelight.SHOOTER);
-        inputs.shooterMegaTag1Pose = MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.SHOOTER));
-        inputs.shooterLatency = getLatencySeconds(Limelight.SHOOTER);
-        inputs.shooterMegaTag2Pose = MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.SHOOTER));
+            inputs.isShooterLimelightConnected = isLimelightConnected(Limelight.SHOOTER);
+            inputs.shooterMegaTag1Pose =
+                MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.SHOOTER));
+            inputs.shooterLatency = getLatencySeconds(Limelight.SHOOTER);
+            inputs.shooterMegaTag2Pose =
+                MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.SHOOTER));
           }
-        case FRONT_LEFT -> {
-
-        inputs.isFrontLeftLimelightConnected = isLimelightConnected(Limelight.FRONT_LEFT);
-        inputs.frontLeftMegaTag1Pose = MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_LEFT));
-        inputs.frontLeftLatency = getLatencySeconds(Limelight.FRONT_LEFT);
-        inputs.frontLeftMegaTag2Pose = MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_LEFT));
-        }
-        case FRONT_RIGHT -> {
-          inputs.isFrontRightLimelightConnected = isLimelightConnected(Limelight.FRONT_RIGHT);
-        inputs.frontRightMegaTag1Pose = MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_RIGHT));
-        inputs.frontRightLatency = getLatencySeconds(Limelight.FRONT_RIGHT);
-        inputs.frontRightMegaTag2Pose = MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_RIGHT));
-
-        }
+          case FRONT_LEFT -> {
+            inputs.isFrontLeftLimelightConnected = isLimelightConnected(Limelight.FRONT_LEFT);
+            inputs.frontLeftMegaTag1Pose =
+                MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_LEFT));
+            inputs.frontLeftLatency = getLatencySeconds(Limelight.FRONT_LEFT);
+            inputs.frontLeftMegaTag2Pose =
+                MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_LEFT));
+          }
+          case FRONT_RIGHT -> {
+            inputs.isFrontRightLimelightConnected = isLimelightConnected(Limelight.FRONT_RIGHT);
+            inputs.frontRightMegaTag1Pose =
+                MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_RIGHT));
+            inputs.frontRightLatency = getLatencySeconds(Limelight.FRONT_RIGHT);
+            inputs.frontRightMegaTag2Pose =
+                MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_RIGHT));
+          }
         }
         limelightThreads.get(limelight).set(inputs);
       }
     } catch (Exception e) {
-        System.err.println("Error updating inputs for " + limelight.getName() + ": " + e.getMessage());
+      System.err.println(
+          "Error updating inputs for " + limelight.getName() + ": " + e.getMessage());
     }
-}
+  }
 
   /**
    * Sets the AtomicBoolean 'runningThreads' to false for the specified limelight. Stops the thread
@@ -409,14 +408,13 @@ private void visionThreadTask(Limelight limelight, VisionInputs inputs) {
    *
    * @param limelight the limelight number
    */
-    public void stopLimelightThread(Limelight limelight) {
-      threadManager.stopThread(limelight.getName());
-
+  public void stopLimelightThread(Limelight limelight) {
+    threadManager.stopThread(limelight.getName());
   }
 
   /** Shuts down all the threads. */
   // @Override
   public void endAllThreads() {
-      threadManager.shutdownAllThreads();
+    threadManager.shutdownAllThreads();
   }
 }

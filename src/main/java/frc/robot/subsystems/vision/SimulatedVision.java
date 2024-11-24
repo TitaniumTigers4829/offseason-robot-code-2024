@@ -178,7 +178,7 @@ public class SimulatedVision extends PhysicalVision {
   }
 
   public Pose2d getPoseFromAprilTags(Limelight limelight) {
-    return getPoseFromAprilTags(limelight);
+    return super.getPoseFromAprilTags(limelight);
   }
 
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {

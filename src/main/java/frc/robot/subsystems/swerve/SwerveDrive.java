@@ -13,8 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
@@ -186,10 +184,7 @@ public class SwerveDrive extends SubsystemBase {
         // ChassisSpeeds.discretize(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed,
-                ySpeed,
-                rotationSpeed,
-                getOdometryAllianceRelativeRotation2d())
+                xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
     // , 0.02);
     SwerveModuleState[] swerveModuleStates =
@@ -265,7 +260,6 @@ public class SwerveDrive extends SubsystemBase {
     return getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset()));
   }
 
-
   /**
    * Sets the modules to the specified states.
    *
@@ -297,7 +291,7 @@ public class SwerveDrive extends SubsystemBase {
 
     odometry.updateWithTime(
         // odometryThreadInputs.measurementTimeStamps[timestampIndex],
-        Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
+        Logger.getTimestamp(), rawGyroRotation, modulePositions);
   }
 
   /**
@@ -349,9 +343,6 @@ public class SwerveDrive extends SubsystemBase {
    * @param pose pose to set
    */
   public void resetPosition(Pose2d pose) {
-    // for (int timestampIndex = 0;
-    // timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
-    // timestampIndex++)
     odometry.resetPosition(getGyroRotation2d(), getModulePositions(), pose);
   }
 }

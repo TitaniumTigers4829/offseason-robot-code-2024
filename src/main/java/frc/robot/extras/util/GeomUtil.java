@@ -52,6 +52,7 @@ public class GeomUtil {
 
   /**
    * Gets the x and y velocities of a ChassisSpeeds
+   *
    * @param chassisSpeeds the ChassisSpeeds to retrieve velocities from
    * @return a Translation2d containing the velocities in the x and y direction in meters per second
    */
@@ -61,6 +62,7 @@ public class GeomUtil {
 
   /**
    * Checks if two translations are within a certain threshold in meters
+   *
    * @param t1 Translation 1 as a Translation2d
    * @param t2 Translation 2 as a Translation2d
    * @param thresholdMeters the threshold between the two translations in meters
@@ -73,6 +75,7 @@ public class GeomUtil {
 
   /**
    * Checks if two rotations are within a certain threshold in degrees
+   *
    * @param r1 Rotations 1 as a Rotation2d
    * @param r2 Rotation 2 as a Rotation2d
    * @param thresholdMeters the threshold between the two rotations in degrees
