@@ -54,11 +54,11 @@ public class SwerveDrive extends SubsystemBase {
           DCMotor.getKrakenX60(1).withReduction(ModuleConstants.DRIVE_GEAR_RATIO),
           DCMotor.getFalcon500(1).withReduction(ModuleConstants.TURN_GEAR_RATIO),
           ModuleConstants.DRIVE_STATOR_LIMIT,
-          60.0, // TODO: Confirm
-          11.0, // TODO: confirm/get this value
+          56.0, // TODO: Confirm
+          5, // TODO: confirm/get this value
           ModuleConstants.WHEEL_DIAMETER_METERS,
           1.5,
-          0.0);
+          0.01);
 
   private final OdometryThread odometryThread;
 
@@ -254,7 +254,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void setModuleStates(AdvancedSwerveModuleState[] desiredStates) {
     for (int i = 0; i < 4; i++) {
-      swerveModules[1].runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[i]));
+      swerveModules[i].runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[i]));
     }
   }
 

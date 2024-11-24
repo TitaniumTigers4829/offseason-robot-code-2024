@@ -79,14 +79,14 @@ public class RobotContainer {
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                60,
+                58,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 DriveConstants.TRACK_WIDTH + .2,
                 DriveConstants.WHEEL_BASE + .2,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getFalcon500(1),
-                    DCMotor.getFalcon500(1),
+                    DCMotor.getFalcon500(1).withReduction(ModuleConstants.DRIVE_GEAR_RATIO),
+                    DCMotor.getFalcon500(1).withReduction(ModuleConstants.TURN_GEAR_RATIO),
                     60,
                     WHEEL_GRIP.TIRE_WHEEL,
                     ModuleConstants.DRIVE_GEAR_RATIO),
