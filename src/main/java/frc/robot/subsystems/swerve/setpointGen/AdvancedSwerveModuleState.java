@@ -24,4 +24,12 @@ public final class AdvancedSwerveModuleState extends SwerveModuleState {
   public static AdvancedSwerveModuleState fromBase(SwerveModuleState base) {
     return new AdvancedSwerveModuleState(base.speedMetersPerSecond, base.angle, 0.0, 0.0);
   }
+
+  public static AdvancedSwerveModuleState[] fromBase(SwerveModuleState[] base) {
+    AdvancedSwerveModuleState[] state = new AdvancedSwerveModuleState[base.length];
+    for(int i = 0; i < base.length; i++) {
+      state[i] = new AdvancedSwerveModuleState(base[i].speedMetersPerSecond, base[i].angle, 0.0, 0.0);
+    }
+    return state;
+  }
 }

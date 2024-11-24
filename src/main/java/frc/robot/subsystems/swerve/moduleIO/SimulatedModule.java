@@ -16,20 +16,20 @@ import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 public class SimulatedModule implements ModuleInterface {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(.3, 0, 0);
-  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.1, 0.13);
+  private final PIDController drivePID = new PIDController(.27, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(1, 1.5);
 
   private final Constraints turnConstraints =
       new Constraints(
           ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND,
           ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
   private final ProfiledPIDController turnPID =
-      new ProfiledPIDController(Radians.of(116).in(Rotations), 0, 0, turnConstraints);
-  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0.77, 0.75, 0);
+      new ProfiledPIDController(35, 0, 0, turnConstraints);
+  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(4, 10, 0);
 
   public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
     this.moduleSimulation = moduleSimulation;
-    // turnPID.enableContinuousInput(-Math.PI, Math.PI);
+    turnPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override

@@ -19,16 +19,18 @@ import org.littletonrobotics.junction.Logger;
 public class SwerveModule extends SubsystemBase {
   private final ModuleInterface io;
   private final String name;
+  private final int number;
   private final ModuleInputsAutoLogged inputs = new ModuleInputsAutoLogged();
 
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   private final Alert hardwareFaultAlert;
 
-  public SwerveModule(ModuleInterface io, String name) {
+  public SwerveModule(ModuleInterface io, String name, int number) {
     super("Module-" + name);
     this.io = io;
     this.name = name;
+    this.number = number;
     this.hardwareFaultAlert =
         new Alert("Module-" + name + " Hardware Fault", Alert.AlertType.kError);
     this.hardwareFaultAlert.set(false);
@@ -43,18 +45,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    // updateOdometryPositions();
-  }
-
-  // private void updateOdometryPositions() {
-  //   odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
-  //   for (int i = 0; i < odometryPositions.length; i++) {
-  //     double positionMeters = getDrivePositionMeters();
-  //     Rotation2d angle = getTurnRotation();
-  //     odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
-  //   }
-  // }
+  public void periodic() {}
 
   public void setVoltage(Voltage volts) {
     io.setDriveVoltage(volts);
@@ -70,7 +61,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   /** Runs the module with the specified setpoint state. Returns optimized setpoint */
-  public void runSetPoint(SwerveModuleState state) {
+  public void runSetPoint(AdvancedSwerveModuleState state) {
+    state.optimize(getTurnRotation());
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       io.stopModule();
     }
@@ -102,11 +94,6 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState(getDriveVelocityMetersPerSec(), getTurnRotation());
   }
 
-  /** Returns the module positions received this cycle. */
-  public SwerveModulePosition[] getOdometryPositions() {
-    return odometryPositions;
-  }
-
   /**
    * Gets the module position consisting of the distance it has traveled and the angle it is
    * rotated.
@@ -115,5 +102,9 @@ public class SwerveModule extends SubsystemBase {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(getDrivePositionMeters(), getTurnRotation());
+  }
+
+  public int getNumber() {
+    return number;
   }
 }

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HardwareConstants;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WHEEL_GRIP;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
@@ -55,9 +56,9 @@ public class SwerveDrive extends SubsystemBase {
           DCMotor.getFalcon500(1).withReduction(ModuleConstants.TURN_GEAR_RATIO),
           ModuleConstants.DRIVE_STATOR_LIMIT,
           56.0, // TODO: Confirm
-          5, // TODO: confirm/get this value
+          11, // TODO: confirm/get this value
           ModuleConstants.WHEEL_DIAMETER_METERS,
-          1.5,
+          WHEEL_GRIP.TIRE_WHEEL.cof,
           0.01);
 
   private final OdometryThread odometryThread;
@@ -93,10 +94,10 @@ public class SwerveDrive extends SubsystemBase {
 
     swerveModules =
         new SwerveModule[] {
-          new SwerveModule(frontLeftModuleIO, "FrontLeft"),
-          new SwerveModule(frontRightModuleIO, "FrontRight"),
-          new SwerveModule(backLeftModuleIO, "BackLeft"),
-          new SwerveModule(backRightModuleIO, "BackRight")
+          new SwerveModule(frontLeftModuleIO, "FrontLeft", 0),
+          new SwerveModule(frontRightModuleIO, "FrontRight", 1),
+          new SwerveModule(backLeftModuleIO, "BackLeft",2),
+          new SwerveModule(backRightModuleIO, "BackRight", 3)
         };
 
     lastModulePositions =
@@ -230,6 +231,7 @@ public class SwerveDrive extends SubsystemBase {
                 rotationSpeed,
                 getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
+    // setpoint = new SwerveSetpoint(getChassisSpeeds(), AdvancedSwerveModuleState.fromBase(getModuleStates()));
 
     setpoint =
         setpointGenerator.generateSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
@@ -253,8 +255,8 @@ public class SwerveDrive extends SubsystemBase {
    *     frontRight, backLeft, backRight (should be the same as the kinematics).
    */
   public void setModuleStates(AdvancedSwerveModuleState[] desiredStates) {
-    for (int i = 0; i < 4; i++) {
-      swerveModules[i].runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[i]));
+    for (SwerveModule module : swerveModules) {
+      module.runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[module.getNumber()]));
     }
   }
 
@@ -280,21 +282,6 @@ public class SwerveDrive extends SubsystemBase {
         Timer.getFPGATimestamp(), rawGyroRotation, modulePositions);
   }
 
-  /**
-   * Gets the modules positions, sampled at the indexed timestamp.
-   *
-   * @param timestampIndex the timestamp index to sample.
-   * @return a list of SwerveModulePosition, containing relative drive position and absolute turn
-   *     rotation at the sampled timestamp.
-   */
-  private SwerveModulePosition[] getModulesPosition(int timestampIndex) {
-    SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[swerveModules.length];
-    for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++)
-      swerveModulePositions[moduleIndex] =
-          swerveModules[moduleIndex].getOdometryPositions()[timestampIndex];
-    return swerveModulePositions;
-  }
-
   private SwerveModulePosition[] getModulesDelta(SwerveModulePosition[] freshModulesPosition) {
     SwerveModulePosition[] deltas = new SwerveModulePosition[swerveModules.length];
     for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
@@ -312,9 +299,14 @@ public class SwerveDrive extends SubsystemBase {
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[swerveModules.length];
-    for (int i = 0; i < states.length; i++) states[i] = swerveModules[i].getMeasuredState();
+    for (int i = 0; i < 3; i++) states[i] = swerveModules[i].getMeasuredState();
     return states;
   }
+
+  // @AutoLogOutput(key = "SwerveStates/Speeds")
+  // private ChassisSpeeds getChassisSpeeds() {
+  //   return DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+  // }
 
   /** Returns the module positions (turn angles and drive positions) for all the modules. */
   private SwerveModulePosition[] getModulePositions() {
