@@ -48,7 +48,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModulePosition[] lastModulePositions;
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
+  private SwerveSetpoint setpoint;
   private final SwerveSetpointGenerator setpointGenerator =
       new SwerveSetpointGenerator(
           DriveConstants.MODULE_TRANSLATIONS,
@@ -121,6 +121,8 @@ public class SwerveDrive extends SubsystemBase {
     this.odometryThread.start();
 
     gyroDisconnectedAlert.set(false);
+
+    setpoint = SwerveSetpoint.zeroed();
   }
 
   /**
@@ -131,13 +133,6 @@ public class SwerveDrive extends SubsystemBase {
   public double getGyroRate() {
     return gyroInputs.yawVelocity;
   }
-
-  // /** Updates the pose estimator with the pose calculated from the swerve modules. */
-  // public void addPoseEstimatorSwerveMeasurement() {
-  //   for (int timestampIndex = 0;
-  //       timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
-  //       timestampIndex++) addPoseEstimatorSwerveMeasurement(timestampIndex);
-  // }
 
   /*
    * Updates the pose estimator with the pose calculated from the april tags. How much it

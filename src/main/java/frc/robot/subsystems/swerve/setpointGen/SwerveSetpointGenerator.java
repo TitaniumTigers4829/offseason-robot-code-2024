@@ -199,7 +199,7 @@ public class SwerveSetpointGenerator {
             return generateSetpoint(prevSetpoint, ZERO_SPEEDS, dt);
         }
 
-        solveSteering(vars);
+        // solveSteering(vars);
         // solveDriving(vars);
 
         ChassisSpeeds retSpeeds = new ChassisSpeeds(
@@ -396,10 +396,10 @@ public class SwerveSetpointGenerator {
         var accelStates = kinematics.toSwerveModuleStates(chassisAccel);
 
         for (int m = 0; m < NUM_MODULES; m++) {
-            // if (vars.minS == 0.0) {
-            //     // No need to carry on.
-            //     break;
-            // }
+            if (vars.minS == 0.0) {
+                // No need to carry on.
+                break;
+            }
 
             double maxVelStep = Math.abs(accelStates[m].speedMetersPerSecond * vars.dt);
 
