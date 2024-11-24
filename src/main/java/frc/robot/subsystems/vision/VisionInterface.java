@@ -50,10 +50,6 @@ public interface VisionInterface {
 
   default void updateInputs(VisionInputs inputs) {}
 
-  default String getLimelightName(Limelight limelight) {
-    return "";
-  }
-
   default double getLatencySeconds(Limelight limelight) {
     return 0.0;
   }

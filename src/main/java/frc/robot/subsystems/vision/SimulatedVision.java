@@ -95,11 +95,11 @@ public class SimulatedVision extends PhysicalVision {
     }
 
     NetworkTable shooterTable =
-        NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.SHOOTER));
+        NetworkTableInstance.getDefault().getTable(Limelight.SHOOTER.getName());
     NetworkTable frontLeftTable =
-        NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.FRONT_LEFT));
+        NetworkTableInstance.getDefault().getTable(Limelight.FRONT_LEFT.getName());
     NetworkTable frontRightTable =
-        NetworkTableInstance.getDefault().getTable(super.getLimelightName(Limelight.FRONT_RIGHT));
+        NetworkTableInstance.getDefault().getTable(Limelight.FRONT_RIGHT.getName());
     // Write to limelight table
     writeToTable(shooterCamera.getAllUnreadResults(), shooterTable, Limelight.SHOOTER);
     writeToTable(frontLeftCamera.getAllUnreadResults(), frontLeftTable, Limelight.FRONT_LEFT);
@@ -155,10 +155,6 @@ public class SimulatedVision extends PhysicalVision {
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
       table.getEntry("cl").setDouble(result.metadata.getLatencyMillis());
     }
-  }
-
-  public String getLimelightName(Limelight limelight) {
-    return super.getLimelightName(limelight);
   }
 
   public double getLatencySeconds(Limelight limelight) {
