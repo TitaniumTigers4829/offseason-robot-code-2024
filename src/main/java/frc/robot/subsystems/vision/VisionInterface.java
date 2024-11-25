@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import frc.robot.extras.vision.MegatagPoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import org.littletonrobotics.junction.AutoLog;
@@ -30,7 +31,7 @@ public interface VisionInterface {
   default double getLatencySeconds(Limelight limelight) {
     return 0.0;
   }
-
+  
   default double getTimeStampSeconds(Limelight limelight) {
     return 0.0;
   }

@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,12 +98,9 @@ public class SimulatedVision extends PhysicalVision {
       Logger.recordOutput("Vision/SimIO/updateSimPose", robotSimulationPose.get());
     }
 
-    NetworkTable shooterTable =
-        NetworkTableInstance.getDefault().getTable(Limelight.SHOOTER.getName());
-    NetworkTable frontLeftTable =
-        NetworkTableInstance.getDefault().getTable(Limelight.FRONT_LEFT.getName());
-    NetworkTable frontRightTable =
-        NetworkTableInstance.getDefault().getTable(Limelight.FRONT_RIGHT.getName());
+    NetworkTable shooterTable = LimelightHelpers.getLimelightNTTable(Limelight.SHOOTER.getName());
+    NetworkTable frontLeftTable = LimelightHelpers.getLimelightNTTable(Limelight.FRONT_LEFT.getName());
+    NetworkTable frontRightTable = LimelightHelpers.getLimelightNTTable(Limelight.FRONT_RIGHT.getName());
     // Write to limelight table
     writeToTable(shooterCamera.getAllUnreadResults(), shooterTable, Limelight.SHOOTER);
     writeToTable(frontLeftCamera.getAllUnreadResults(), frontLeftTable, Limelight.FRONT_LEFT);
@@ -117,8 +115,6 @@ public class SimulatedVision extends PhysicalVision {
     for (PhotonPipelineResult result : results) {
       if (result.getMultiTagResult().isPresent()) {
         Transform3d best = result.getMultiTagResult().get().estimatedPose.best;
-        Pose2d fieldToCamera =
-            new Pose2d(best.getTranslation().toTranslation2d(), best.getRotation().toRotation2d());
         List<Double> pose_data =
             new ArrayList<>(
                 Arrays.asList(
@@ -127,7 +123,7 @@ public class SimulatedVision extends PhysicalVision {
                     best.getZ(), // 2: Z,
                     best.getRotation().getX(), // 3: roll
                     best.getRotation().getY(), // 4: pitch
-                    fieldToCamera.getRotation().getDegrees(), // 5: yaw
+                    best.getRotation().getZ(), // 5: yaw
                     result.metadata.getLatencyMillis(), // 6: latency ms,
                     (double)
                         result.getMultiTagResult().get().fiducialIDsUsed.size(), // 7: tag count
@@ -160,35 +156,9 @@ public class SimulatedVision extends PhysicalVision {
     }
   }
 
-  public double getLatencySeconds(Limelight limelight) {
-    return super.getLatencySeconds(limelight);
-  }
-
-  public double getTimeStampSeconds(Limelight limelight) {
-    return super.getTimeStampSeconds(limelight);
-  }
-
-  public boolean canSeeAprilTags(Limelight limelight) {
-    return super.canSeeAprilTags(limelight);
-  }
-
-  public double getLimelightAprilTagDistance(Limelight limelight) {
-    return super.getLimelightAprilTagDistance(limelight);
-  }
-
-  public int getNumberOfAprilTags(Limelight limelight) {
-    return super.getNumberOfAprilTags(limelight);
-  }
-
-  public Pose2d getPoseFromAprilTags(Limelight limelight) {
-    return super.getPoseFromAprilTags(limelight);
-  }
-
+  @Override
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
     super.setHeadingInfo(headingDegrees, headingRateDegrees);
   }
 
-  public Pose2d getLastSeenPose() {
-    return super.getLastSeenPose();
-  }
 }
