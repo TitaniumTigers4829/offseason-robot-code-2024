@@ -10,8 +10,8 @@ public interface VisionInterface {
   class VisionInputs {
     public boolean[] isLimelightConnected = new boolean[Limelight.values().length];
 
-    public MegatagPoseEstimate[] limelightMegatag1Pose = new MegatagPoseEstimate[Limelight.values().length];
-    public MegatagPoseEstimate[] limelightMegatag2Pose = new MegatagPoseEstimate[Limelight.values().length];
+    public Pose2d[] limelightMegatag1Pose = new Pose2d[Limelight.values().length];
+    public Pose2d[] limelightMegatag2Pose = new Pose2d[Limelight.values().length];
     public double[] limelightLatency = new double[Limelight.values().length];
     public int[] limelightTargets = new int[Limelight.values().length];
     public Pose2d[] limelightCameraToTargetPose = new Pose2d[Limelight.values().length];
