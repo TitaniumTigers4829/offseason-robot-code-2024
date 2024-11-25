@@ -8,38 +8,21 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionInterface {
   @AutoLog
   class VisionInputs {
-    public boolean isShooterLimelightConnected;
-    public boolean isFrontLeftLimelightConnected;
-    public boolean isFrontRightLimelightConnected;
+    public boolean[] isLimelightConnected = new boolean[Limelight.values().length];
 
-    public MegatagPoseEstimate shooterMegaTag1Pose;
-    public double shooterTagCount;
-    public MegatagPoseEstimate shooterMegaTag2Pose;
-    public double shooterLatency;
-    public double shooterTargets;
-    public Pose2d shooterCameraToTargets;
-    public Pose2d shooterRobotToTargets;
-    public Limelight shooter;
+    // public MegatagPoseEstimate[] limelightMegatag1Pose = new MegatagPoseEstimate[Limelight.values().length];
+    // public MegatagPoseEstimate[] limelightMegatag2Pose = new MegatagPoseEstimate[Limelight.values().length];
+    public double[] limelightLatency = new double[Limelight.values().length];
+    public int[] limelightTargets = new int[Limelight.values().length];
+    public Pose2d[] limelightCameraToTargetPose = new Pose2d[Limelight.values().length];
+    public Pose2d[] limelightRobotToTargetPose = new Pose2d[Limelight.values().length];
+    public boolean[] limelightSeesAprilTags = new boolean[Limelight.values().length];
 
-    public MegatagPoseEstimate frontLeftMegaTag1Pose;
-    public double frontLeftTagCount;
-    public MegatagPoseEstimate frontLeftMegaTag2Pose;
-    public double frontLeftLatency;
-    public double frontLeftTargets;
-    public Pose2d frontLeftCameraToTargets;
-    public Pose2d frontLeftRobotToTargets;
-    public Limelight frontLeft;
+    public Pose2d[] limelightCalculatedPose = new Pose2d[Limelight.values().length];
+    public Pose2d limelightLastSeenPose = new Pose2d();
+    public double[] limelightAprilTagDistance = new double[Limelight.values().length];
 
-    public MegatagPoseEstimate frontRightMegaTag1Pose;
-    public double frontRightTagCount;
-    public MegatagPoseEstimate frontRightMegaTag2Pose;
-    public double frontRightLatency;
-    public double frontRightTargets;
-    public Pose2d frontRightCameraToTargets;
-    public Pose2d frontRightRobotToTargets;
-    public Limelight frontRight;
-
-    public double camerasAmount;
+    public double[] limelightTimestamp = new double[Limelight.values().length];
   }
 
   default void updateInputs(VisionInputs inputs) {}

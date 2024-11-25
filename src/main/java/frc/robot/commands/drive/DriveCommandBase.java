@@ -2,6 +2,8 @@
 
 package frc.robot.commands.drive;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.extras.interpolators.MultiLinearInterpolator;
@@ -70,8 +72,12 @@ public abstract class DriveCommandBase extends Command {
 
       swerveDrive.addPoseEstimatorVisionMeasurement(
           vision.getPoseFromAprilTags(limelight),
-          Timer.getFPGATimestamp() - vision.getLatencySeconds(limelight));
+          Logger.getTimestamp() - vision.getLatencySeconds(limelight));
     }
+
+    
+    Logger.recordOutput("Odometry/CurrentVisionPose" + limelight.getName(), vision.getPoseFromAprilTags(limelight));
+    Logger.recordOutput("Odometry/CurrentCalculatePose", swerveDrive.getPose());
 
     lastTimeStampSeconds = currentTimeStampSeconds;
   }

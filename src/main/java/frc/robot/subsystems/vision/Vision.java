@@ -26,19 +26,19 @@ public class Vision extends SubsystemBase {
 
   // Add methods to support DriveCommand
   public int getNumberOfAprilTags(Limelight limelight) {
-    return visionInterface.getNumberOfAprilTags(limelight);
+    return inputs.limelightTargets[limelight.getId()];
   }
 
   public double getLimelightAprilTagDistance(Limelight limelight) {
-    return visionInterface.getLimelightAprilTagDistance(limelight);
+    return inputs.limelightAprilTagDistance[limelight.getId()];
   }
 
   public double getTimeStampSeconds(Limelight limelight) {
-    return visionInterface.getTimeStampSeconds(limelight);
+    return inputs.limelightTimestamp[limelight.getId()];
   }
 
   public double getLatencySeconds(Limelight limelight) {
-    return visionInterface.getLatencySeconds(limelight);
+    return inputs.limelightLatency[limelight.getId()];
   }
 
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
@@ -47,14 +47,14 @@ public class Vision extends SubsystemBase {
 
   @AutoLogOutput(key = "Vision/Has Targets")
   public boolean canSeeAprilTags(Limelight limelight) {
-    return visionInterface.canSeeAprilTags(limelight);
+    return inputs.limelightSeesAprilTags[limelight.getId()];
   }
 
   public Pose2d getPoseFromAprilTags(Limelight limelight) {
-    return visionInterface.getPoseFromAprilTags(limelight);
+    return inputs.limelightCalculatedPose[limelight.getId()];
   }
 
   public Pose2d getLastSeenPose() {
-    return visionInterface.getLastSeenPose();
+    return inputs.limelightLastSeenPose;
   }
 }

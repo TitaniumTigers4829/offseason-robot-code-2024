@@ -47,7 +47,7 @@ public class ThreadManager {
     }
   }
 
-  // New method: Submit a vision input task
+  // Submit a vision input task
   public void startVisionInputTask(String threadName, VisionInputs inputs, Runnable visionTask) {
     startThread(
         threadName,
@@ -55,7 +55,7 @@ public class ThreadManager {
           try {
             while (!Thread.currentThread().isInterrupted()) {
               visionTask.run();
-              Thread.sleep(20); // Sleep to avoid excessive updates
+              Thread.sleep(VisionConstants.THREAD_SLEEP_MS); // Sleep to avoid excessive updates
             }
           } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

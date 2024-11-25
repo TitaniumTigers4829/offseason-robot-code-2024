@@ -33,6 +33,7 @@ public class SimulatedVision extends PhysicalVision {
   private final int kResHeight = 800;
 
   public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier) {
+    super();
     this.robotSimulationPose = robotActualPoseInSimulationSupplier;
     // Create the vision system simulation which handles cameras and targets on the
     // field.

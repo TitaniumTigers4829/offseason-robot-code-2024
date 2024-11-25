@@ -241,7 +241,7 @@ public class SwerveDrive extends SubsystemBase {
    * Returns the estimated field-relative pose of the robot. Positive x being forward, positive y
    * being left.
    */
-  @AutoLogOutput(key = "Odometry/RobotPosition")
+  @AutoLogOutput(key = "Odometry/Odometry")
   public Pose2d getPose() {
     return odometry.getEstimatedPosition();
   }

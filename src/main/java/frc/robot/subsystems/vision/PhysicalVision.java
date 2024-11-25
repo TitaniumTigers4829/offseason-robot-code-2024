@@ -9,10 +9,10 @@ import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.extras.vision.LimelightHelpers.PoseEstimate;
 import frc.robot.extras.vision.MegatagPoseEstimate;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
-import frc.robot.subsystems.vision.VisionInterface.VisionInputs;
+// import frc.robot.subsystems.vision.VisionInterface.VisionInputs;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+// import java.util.concurrent.ExecutorService;
+// import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PhysicalVision implements VisionInterface {
@@ -22,21 +22,27 @@ public class PhysicalVision implements VisionInterface {
   private double headingRateDegreesPerSecond = 0;
   private final ConcurrentHashMap<Limelight, AtomicReference<VisionInputs>> limelightThreads =
       new ConcurrentHashMap<>();
-  private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+  // private final ExecutorService executorService = Executors.newFixedThreadPool(3);
   private final AtomicReference<VisionInputs> latestInputs = new AtomicReference<>();
-  private final ThreadManager threadManager = new ThreadManager(3);
+  private final ThreadManager threadManager = new ThreadManager(Limelight.values().length);
 
   /**
    * The pose estimates from the limelights in the following order {shooterLimelight,
    * frontLeftLimelight, frontRightLimelight}
    */
   private PoseEstimate[] limelightEstimates =
-      new PoseEstimate[] {new PoseEstimate(), new PoseEstimate(), new PoseEstimate()};
+      new PoseEstimate[Limelight.values().length]; 
 
   public PhysicalVision() {
     for (Limelight limelight : Limelight.values()) {
       VisionInputs inputs = new VisionInputs(); // Create vision inputs for each Limelight
       limelightThreads.put(limelight, new AtomicReference<>(inputs));
+
+
+        // Initialize limelightEstimates with default PoseEstimate objects
+        limelightEstimates[limelight.getId()] = new PoseEstimate();
+
+
 
       // Start a vision input task for each Limelight
       threadManager.startVisionInputTask(
@@ -50,27 +56,25 @@ public class PhysicalVision implements VisionInterface {
         (limelight, inputRef) -> {
           VisionInputs limelightInputs = inputRef.get();
           // Combine inputs into the main inputs object
-          switch (limelight) {
-            case SHOOTER -> {
-              inputs.isShooterLimelightConnected = limelightInputs.isShooterLimelightConnected;
-              inputs.shooterMegaTag1Pose = limelightInputs.shooterMegaTag1Pose;
-              inputs.shooterLatency = limelightInputs.shooterLatency;
-              inputs.shooterMegaTag2Pose = limelightInputs.shooterMegaTag2Pose;
+          synchronized (limelightInputs) {
+            // checkAndUpdatePose(limelight, limelightInputs);
+          //   if (inputs != null) {
+              // for (Limelight limelight : Limelight.values()) {
+                inputs.isLimelightConnected[limelight.getId()] = limelightInputs.isLimelightConnected[limelight.getId()];
+                // inputs.limelightMegatag1Pose[limelight.getId()] = limelightInputs.limelightMegatag1Pose[limelight.getId()];
+                // inputs.limelightMegatag2Pose[limelight.getId()] = limelightInputs.limelightMegatag2Pose[limelight.getId()];
+                inputs.limelightLatency[limelight.getId()] = limelightInputs.limelightLatency[limelight.getId()];
+                inputs.limelightTargets[limelight.getId()] = limelightInputs.limelightTargets[limelight.getId()];
+                inputs.limelightCameraToTargetPose[limelight.getId()] = limelightInputs.limelightCameraToTargetPose[limelight.getId()];
+                inputs.limelightRobotToTargetPose[limelight.getId()] = limelightInputs.limelightRobotToTargetPose[limelight.getId()];
+                inputs.limelightSeesAprilTags[limelight.getId()] = limelightInputs.limelightSeesAprilTags[limelight.getId()];
+                inputs.limelightAprilTagDistance[limelight.getId()] = limelightInputs.limelightAprilTagDistance[limelight.getId()];
+                inputs.limelightCalculatedPose[limelight.getId()] = limelightInputs.limelightCalculatedPose[limelight.getId()];
+                inputs.limelightTimestamp[limelight.getId()] = limelightInputs.limelightTimestamp[limelight.getId()];
+              // }
+              inputs.limelightLastSeenPose = limelightInputs.limelightLastSeenPose;
+
             }
-            case FRONT_LEFT -> {
-              inputs.isFrontLeftLimelightConnected = limelightInputs.isFrontLeftLimelightConnected;
-              inputs.frontLeftMegaTag1Pose = limelightInputs.frontLeftMegaTag1Pose;
-              inputs.frontLeftLatency = limelightInputs.frontLeftLatency;
-              inputs.frontLeftMegaTag2Pose = limelightInputs.frontLeftMegaTag2Pose;
-            }
-            case FRONT_RIGHT -> {
-              inputs.isFrontRightLimelightConnected =
-                  limelightInputs.isFrontRightLimelightConnected;
-              inputs.frontRightMegaTag1Pose = limelightInputs.frontRightMegaTag1Pose;
-              inputs.frontRightLatency = limelightInputs.frontRightLatency;
-              inputs.frontRightMegaTag2Pose = limelightInputs.frontRightMegaTag2Pose;
-            }
-          }
         });
     latestInputs.set(inputs);
   }
@@ -264,9 +268,10 @@ public class PhysicalVision implements VisionInterface {
   /**
    * Gets the average distance between the specified limelight and the April Tags it sees
    *
-   * @param limelightNumber a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
+   * @param limelight a limelight (SHOOTER, FRONT_LEFT, FRONT_RIGHT).
    * @return the average distance between the robot and the April Tag(s) in meters
    */
+  @Override
   public double getLimelightAprilTagDistance(Limelight limelight) {
     if (canSeeAprilTags(limelight)) {
       return limelightEstimates[limelight.getId()].avgTagDist;
@@ -283,6 +288,7 @@ public class PhysicalVision implements VisionInterface {
    *     alliance)
    * @param headingRateDegrees the rate the robot is rotating, CCW positive
    */
+  @Override
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
     this.headingDegrees = headingDegrees;
     this.headingRateDegreesPerSecond = headingRateDegrees;
@@ -293,7 +299,7 @@ public class PhysicalVision implements VisionInterface {
     if (limelightTable.containsKey(limelight.getName())) {
       return true;
     }
-    return false;
+      return false;
   }
 
   /**
@@ -323,28 +329,34 @@ public class PhysicalVision implements VisionInterface {
         // very demanding whereas this only has to get the Network Table entries for TX and TY.
         if (current_TX != last_TX || current_TY != last_TY) {
           updatePoseEstimate(limelight);
-          limelightThreads.computeIfPresent(
-              limelight, (key, value) -> latestInputs.get());
+          // limelightThreads.computeIfPresent(
+          //     limelight, (key, value) ->{return latestInputs;});
+          // // Handle threading for Limelight (start or stop threads if needed)
+          //   // Check if this Limelight thread exists in limelightThreads
+          //   if (limelightThreads.get(limelight) != null) {
+          //       // Update thread inputs or restart the thread if needed
+          //       limelightThreads.get(limelight).set(latestInputs.get());
+          //   } 
+
           // This is to keep track of the last valid pose calculated by the limelights
           // it is used when the driver resets the robot odometry to the limelight calculated
           // position
           if (canSeeAprilTags(limelight)) {
             lastSeenPose = getMegaTag1PoseEstimate(limelight).pose;
-          }
+          // }
         } else {
-          // Retrieve the AtomicBoolean for the given limelight number
-          AtomicReference isThreadRunning =
-              limelightThreads.getOrDefault(limelight, new AtomicReference<>(new
-          VisionInputs()));
-          // // Only stop the thread if it's currently running
-          // if (isThreadRunning.get()) {
+          // Retrieve the AtomicReference for the given limelight number
+          AtomicReference<VisionInputs> isThreadRunning =
+              limelightThreads.getOrDefault(limelight, latestInputs);
+          // Only stop the thread if it's currently running
+          if (isThreadRunning.get() != null) {
           // stop the thread for the specified limelight
           stopLimelightThread(limelight);
           }
-        }
+          }
         last_TX = current_TX;
         last_TY = current_TY;
-      } catch (Exception e) {
+      } }catch (Exception e) {
         System.err.println(
             "Error communicating with the: " + limelight.getName() + ": " + e.getMessage());
       }
@@ -365,37 +377,30 @@ public class PhysicalVision implements VisionInterface {
    *
    * @param limelight the limelight number
    */
-  private void visionThreadTask(Limelight limelight, VisionInputs inputs) {
+  public void visionThreadTask(Limelight limelight, VisionInputs inputs) {
     try {
       synchronized (inputs) {
-        switch (limelight) {
-          case SHOOTER -> {
-            inputs.isShooterLimelightConnected = isLimelightConnected(Limelight.SHOOTER);
-            inputs.shooterMegaTag1Pose =
-                MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.SHOOTER));
-            inputs.shooterLatency = getLatencySeconds(Limelight.SHOOTER);
-            inputs.shooterMegaTag2Pose =
-                MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.SHOOTER));
-          }
-          case FRONT_LEFT -> {
-            inputs.isFrontLeftLimelightConnected = isLimelightConnected(Limelight.FRONT_LEFT);
-            inputs.frontLeftMegaTag1Pose =
-                MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_LEFT));
-            inputs.frontLeftLatency = getLatencySeconds(Limelight.FRONT_LEFT);
-            inputs.frontLeftMegaTag2Pose =
-                MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_LEFT));
-          }
-          case FRONT_RIGHT -> {
-            inputs.isFrontRightLimelightConnected = isLimelightConnected(Limelight.FRONT_RIGHT);
-            inputs.frontRightMegaTag1Pose =
-                MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(Limelight.FRONT_RIGHT));
-            inputs.frontRightLatency = getLatencySeconds(Limelight.FRONT_RIGHT);
-            inputs.frontRightMegaTag2Pose =
-                MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(Limelight.FRONT_RIGHT));
-          }
-        }
-        limelightThreads.get(limelight).set(inputs);
+        inputs.isLimelightConnected[limelight.getId()] = isLimelightConnected(limelight);
+        inputs.limelightCameraToTargetPose[limelight.getId()] = getAprilTagPositionToLimelight(limelight);
+        inputs.limelightRobotToTargetPose[limelight.getId()] = getAprilTagPositionToRobot(limelight);
+        inputs.limelightLatency[limelight.getId()] = getLatencySeconds(limelight);
+        inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
+        // inputs.limelightMegatag1Pose[limelight.getId()] = MegatagPoseEstimate.fromLimelight(getMegaTag1PoseEstimate(limelight));
+        // inputs.limelightMegatag2Pose[limelight.getId()] = MegatagPoseEstimate.fromLimelight(getMegaTag2PoseEstimate(limelight));
+        inputs.limelightSeesAprilTags[limelight.getId()] = canSeeAprilTags(limelight);
+        inputs.limelightAprilTagDistance[limelight.getId()] = getLimelightAprilTagDistance(limelight);
+        inputs.limelightCalculatedPose[limelight.getId()] = getPoseFromAprilTags(limelight);
+        inputs.limelightTimestamp[limelight.getId()] = getTimeStampSeconds(limelight);
+       inputs.limelightLastSeenPose = getLastSeenPose();
+
+      latestInputs.set(inputs);
+        limelightThreads.get(limelight).set(latestInputs.get());
+
+
       }
+      checkAndUpdatePose(limelight);
+
+
     } catch (Exception e) {
       System.err.println(
           "Error updating inputs for " + limelight.getName() + ": " + e.getMessage());
