@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.FieldConstants;
@@ -23,7 +24,7 @@ public class PhysicalVision implements VisionInterface {
   private final ConcurrentHashMap<Limelight, AtomicReference<VisionInputs>> limelightThreads =
       new ConcurrentHashMap<>();
   // private final ExecutorService executorService = Executors.newFixedThreadPool(3);
-  private final AtomicReference<VisionInputs> latestInputs = new AtomicReference<>();
+  private final AtomicReference<VisionInputs> latestInputs = new AtomicReference<>(new VisionInputs());
   private final ThreadManager threadManager = new ThreadManager(Limelight.values().length);
 
   /**
@@ -61,12 +62,12 @@ public class PhysicalVision implements VisionInterface {
             // if (limelightInputs != null) {
               // for (Limelight limelight : Limelight.values()) {
                 inputs.isLimelightConnected[limelight.getId()] = limelightInputs.isLimelightConnected[limelight.getId()];
-                inputs.limelightMegatag1Pose[limelight.getId()] = limelightInputs.limelightMegatag1Pose[limelight.getId()];
-                inputs.limelightMegatag2Pose[limelight.getId()] = limelightInputs.limelightMegatag2Pose[limelight.getId()];
+                // inputs.limelightMegatag1Pose[limelight.getId()] = limelightInputs.limelightMegatag1Pose[limelight.getId()];
+                // inputs.limelightMegatag2Pose[limelight.getId()] = limelightInputs.limelightMegatag2Pose[limelight.getId()];
                 inputs.limelightLatency[limelight.getId()] = limelightInputs.limelightLatency[limelight.getId()];
                 inputs.limelightTargets[limelight.getId()] = limelightInputs.limelightTargets[limelight.getId()];
-                inputs.limelightCameraToTargetPose[limelight.getId()] = limelightInputs.limelightCameraToTargetPose[limelight.getId()];
-                inputs.limelightRobotToTargetPose[limelight.getId()] = limelightInputs.limelightRobotToTargetPose[limelight.getId()];
+                // inputs.limelightCameraToTargetPose[limelight.getId()] = limelightInputs.limelightCameraToTargetPose[limelight.getId()];
+                // inputs.limelightRobotToTargetPose[limelight.getId()] = limelightInputs.limelightRobotToTargetPose[limelight.getId()];
                 inputs.limelightSeesAprilTags[limelight.getId()] = limelightInputs.limelightSeesAprilTags[limelight.getId()];
                 inputs.limelightAprilTagDistance[limelight.getId()] = limelightInputs.limelightAprilTagDistance[limelight.getId()];
                 inputs.limelightCalculatedPose[limelight.getId()] = limelightInputs.limelightCalculatedPose[limelight.getId()];
@@ -94,14 +95,14 @@ public class PhysicalVision implements VisionInterface {
     if (getNumberOfAprilTags(limelight) > 0
         && getNumberOfAprilTags(limelight) <= VisionConstants.APRIL_TAG_POSITIONS.length) {
       if (limelight.getName().equals(VisionConstants.SHOOTER_LIMELIGHT_NAME)) {
-        return latestInputs.get().limelightSeesAprilTags[limelight.getId()] = Math.abs(LimelightHelpers.getTX(limelight.getName()))
+        return Math.abs(LimelightHelpers.getTX(limelight.getName()))
             <= VisionConstants.LL3G_FOV_MARGIN_OF_ERROR;
       } else {
-        return latestInputs.get().limelightSeesAprilTags[limelight.getId()] = Math.abs(LimelightHelpers.getTX(limelight.getName()))
+        return Math.abs(LimelightHelpers.getTX(limelight.getName()))
             <= VisionConstants.LL3_FOV_MARGIN_OF_ERROR;
       }
     }
-    return latestInputs.get().limelightSeesAprilTags[limelight.getId()] = false;
+    return false;
   }
 
   /**
@@ -118,15 +119,15 @@ public class PhysicalVision implements VisionInterface {
       if (isLargeDiscrepancyBetweenMegaTag1And2(limelight, megatag1Estimate, megatag2Estimate)
           && getLimelightAprilTagDistance(limelight)
               < VisionConstants.MEGA_TAG_2_DISTANCE_THRESHOLD) {
-        return latestInputs.get().limelightCalculatedPose[limelight.getId()] = getMegaTag1PoseEstimate(limelight);
+        return limelightEstimates[limelight.getId()].pose = getMegaTag1PoseEstimate(limelight);
       } else if (headingRateDegreesPerSecond < VisionConstants.MEGA_TAG_2_MAX_HEADING_RATE) {
         LimelightHelpers.SetRobotOrientation(limelight.getName(), headingDegrees, 0, 0, 0, 0, 0);
-        return latestInputs.get().limelightCalculatedPose[limelight.getId()] = getMegaTag2PoseEstimate(limelight);
+        return limelightEstimates[limelight.getId()].pose = getMegaTag2PoseEstimate(limelight);
       } else {
-        return latestInputs.get().limelightCalculatedPose[limelight.getId()] = getMegaTag1PoseEstimate(limelight);
+        return limelightEstimates[limelight.getId()].pose = getMegaTag1PoseEstimate(limelight);
       }
     }
-    return latestInputs.get().limelightCalculatedPose[limelight.getId()] = new Pose2d();
+    return limelightEstimates[limelight.getId()].pose = new Pose2d();
   }
 
   /**
@@ -171,7 +172,7 @@ public class PhysicalVision implements VisionInterface {
    *     return 0 for x, y, and theta
    */
   public Pose2d getMegaTag1PoseEstimate(Limelight limelight) {
-    return latestInputs.get().limelightCalculatedPose[limelight.getId()] = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName()).pose;
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.getName()).pose;
   }
 
   /**
@@ -183,7 +184,7 @@ public class PhysicalVision implements VisionInterface {
    *     return 0 for x, y, and theta
    */
   public Pose2d getMegaTag2PoseEstimate(Limelight limelight) {
-    return latestInputs.get().limelightCalculatedPose[limelight.getId()] = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName()).pose;
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.getName()).pose;
   }
 
   /**
@@ -226,21 +227,21 @@ public class PhysicalVision implements VisionInterface {
    */
   @Override
   public Pose2d getPoseFromAprilTags(Limelight limelight) {
-    return latestInputs.get().limelightCalculatedPose[limelight.getId()];
+    return limelightEstimates[limelight.getId()].pose;
   }
 
-  public Pose2d getAprilTagPositionToLimelight(Limelight limelight) {
-    return LimelightHelpers.getTargetPose_CameraSpace(limelight.getName());
-  }
+  // public Pose2d getAprilTagPositionToLimelight(Limelight limelight) {
+  //   return LimelightHelpers.getTargetPose_CameraSpace(limelight.getName());
+  // }
 
-  public Pose2d getAprilTagPositionToRobot(Limelight limelight) {
-    return latestInputs.get().limelightRobotToTargetPose[limelight.getId()] =LimelightHelpers.getTargetPose_RobotSpace(limelight.getName());
-  }
+  // public Pose2d getAprilTagPositionToRobot(Limelight limelight) {
+  //   return latestInputs.get().limelightRobotToTargetPose[limelight.getId()] =LimelightHelpers.getTargetPose_RobotSpace(limelight.getName());
+  // }
 
   /** Returns how many april tags the limelight that is being used for pose estimation can see. */
   @Override
   public int getNumberOfAprilTags(Limelight limelight) {
-    return latestInputs.get().limelightTargets[limelight.getId()] = limelightEstimates[limelight.getId()].tagCount;
+    return limelightEstimates[limelight.getId()].tagCount;
   }
 
   /**
@@ -249,7 +250,7 @@ public class PhysicalVision implements VisionInterface {
    */
   @Override
   public double getTimeStampSeconds(Limelight limelight) {
-    return latestInputs.get().limelightTimestamp[limelight.getId()] = limelightEstimates[limelight.getId()].timestampSeconds / 1000.0;
+    return limelightEstimates[limelight.getId()].timestampSeconds / 1000.0;
   }
 
   /**
@@ -259,13 +260,13 @@ public class PhysicalVision implements VisionInterface {
    */
   @Override
   public double getLatencySeconds(Limelight limelight) {
-    return latestInputs.get().limelightLatency[limelight.getId()] = (limelightEstimates[limelight.getId()].latency) / 1000.0;
+    return (limelightEstimates[limelight.getId()].latency) / 1000.0;
   }
 
   /** Gets the pose calculated the last time a limelight saw an April Tag */
   @Override
   public Pose2d getLastSeenPose() {
-    return latestInputs.get().limelightLastSeenPose = lastSeenPose;
+    return lastSeenPose;
   }
 
   /**
@@ -387,12 +388,10 @@ public class PhysicalVision implements VisionInterface {
       synchronized (inputs) {
         for (Limelight limelight : Limelight.values()) {
         inputs.isLimelightConnected[limelight.getId()] = isLimelightConnected(limelight);
-        inputs.limelightCameraToTargetPose[limelight.getId()] = getAprilTagPositionToLimelight(limelight);
-        inputs.limelightRobotToTargetPose[limelight.getId()] = getAprilTagPositionToRobot(limelight);
+        // inputs.limelightCameraToTargetPose[limelight.getId()] = getAprilTagPositionToLimelight(limelight);
+        // inputs.limelightRobotToTargetPose[limelight.getId()] = getAprilTagPositionToRobot(limelight);
         inputs.limelightLatency[limelight.getId()] = getLatencySeconds(limelight);
         inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
-        inputs.limelightMegatag1Pose[limelight.getId()] = getMegaTag1PoseEstimate(limelight);
-        inputs.limelightMegatag2Pose[limelight.getId()] = getMegaTag2PoseEstimate(limelight);
         inputs.limelightSeesAprilTags[limelight.getId()] = canSeeAprilTags(limelight);
         inputs.limelightAprilTagDistance[limelight.getId()] = getLimelightAprilTagDistance(limelight);
         inputs.limelightCalculatedPose[limelight.getId()] = getPoseFromAprilTags(limelight);
