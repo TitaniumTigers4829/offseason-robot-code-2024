@@ -90,11 +90,11 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   // /** Updates the pose estimator with the pose calculated from the swerve modules. */
-  // public void addPoseEstimatorSwerveMeasurement() {
-  //   for (int timestampIndex = 0;
-  //       timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
-  //       timestampIndex++) addPoseEstimatorSwerveMeasurement(timestampIndex);
-  // }
+  public void addPoseEstimatorSwerveMeasurement() {
+    for (int timestampIndex = 0;
+        timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
+        timestampIndex++) addPoseEstimatorSwerveMeasurement(timestampIndex);
+  }
 
   /*
    * Updates the pose estimator with the pose calculated from the april tags. How much it
@@ -277,21 +277,22 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @param timestampIndex index of the timestamp to sample the pose at
    */
-  public void addPoseEstimatorSwerveMeasurement() {
+  public void addPoseEstimatorSwerveMeasurement(int timestampIndex) {
     final SwerveModulePosition[] modulePositions = getModulePositions(),
         moduleDeltas = getModulesDelta(modulePositions);
 
     if (gyroInputs.isConnected) {
-      // rawGyroRotation = gyroInputs.odometryYawPositions[timestampIndex];
-      rawGyroRotation = getGyroRotation2d();
+      rawGyroRotation = gyroInputs.odometryYawPositions[timestampIndex];
+      // rawGyroRotation = getGyroRotation2d();
     } else {
       Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(moduleDeltas);
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
 
     odometry.updateWithTime(
-        // odometryThreadInputs.measurementTimeStamps[timestampIndex],
-        Logger.getTimestamp(), rawGyroRotation, modulePositions);
+        odometryThreadInputs.measurementTimeStamps[timestampIndex],
+        // Logger.getTimestamp(),
+         rawGyroRotation, modulePositions);
   }
 
   /**

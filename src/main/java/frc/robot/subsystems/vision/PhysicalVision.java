@@ -324,7 +324,7 @@ public class PhysicalVision implements VisionInterface {
         if (current_TX != last_TX || current_TY != last_TY) {
           updatePoseEstimate(limelight);
           limelightThreads.computeIfPresent(
-              limelight, (key, value) -> new AtomicReference<>(new VisionInputs()));
+              limelight, (key, value) -> latestInputs.get());
           // This is to keep track of the last valid pose calculated by the limelights
           // it is used when the driver resets the robot odometry to the limelight calculated
           // position
@@ -333,14 +333,14 @@ public class PhysicalVision implements VisionInterface {
           }
         } else {
           // Retrieve the AtomicBoolean for the given limelight number
-          // AtomicReference isThreadRunning =
-          //     limelightThreads.getOrDefault(limelight, new AtomicReference<>(new
-          // VisionInputs()));
+          AtomicReference isThreadRunning =
+              limelightThreads.getOrDefault(limelight, new AtomicReference<>(new
+          VisionInputs()));
           // // Only stop the thread if it's currently running
           // if (isThreadRunning.get()) {
           // stop the thread for the specified limelight
           stopLimelightThread(limelight);
-          // }
+          }
         }
         last_TX = current_TX;
         last_TY = current_TY;

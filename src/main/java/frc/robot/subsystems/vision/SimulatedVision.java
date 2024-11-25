@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
+import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -40,6 +41,7 @@ public class SimulatedVision extends PhysicalVision {
     // Add all the AprilTags inside the tag layout as visible targets to this
     // simulated field.
     visionSim.addAprilTags(VisionConstants.FIELD_LAYOUT);
+    // visionSim.addVisionTargets(TargetModel.kAprilTag36h11);
 
     // Create simulated camera properties. These can be set to mimic your actual
     // camera.
@@ -122,8 +124,8 @@ public class SimulatedVision extends PhysicalVision {
                     best.getX(), // 0: X
                     best.getY(), // 1: Y
                     best.getZ(), // 2: Z,
-                    0.0, // 3: roll
-                    0.0, // 4: pitch
+                    best.getRotation().getX(), // 3: roll
+                    best.getRotation().getY(), // 4: pitch
                     fieldToCamera.getRotation().getDegrees(), // 5: yaw
                     result.metadata.getLatencyMillis(), // 6: latency ms,
                     (double)
