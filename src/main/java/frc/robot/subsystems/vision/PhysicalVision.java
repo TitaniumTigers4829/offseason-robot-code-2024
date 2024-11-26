@@ -45,10 +45,11 @@ public class PhysicalVision implements VisionInterface {
 
 
       // Start a vision input task for each Limelight
-    }
+    
     
     threadManager.startVisionInputTask(
-      Limelight.SHOOTER.getName(), latestInputs.get(), () -> visionThreadTask(latestInputs.get()));
+      limelight.getName(), latestInputs.get(), () -> visionThreadTask(latestInputs.get()));
+    }
   }
 
   @Override
@@ -103,8 +104,9 @@ public class PhysicalVision implements VisionInterface {
     //   }
     // }
     // return latestInputs.get().limelightSeesAprilTags[limelight.getId()] = false;
-    return latestInputs.get().limelightSeesAprilTags[limelight.getId()] = true;
+    return  LimelightHelpers.getTV(limelight.getName());
     // return true;
+    //latestInputs.get().limelightSeesAprilTags[limelight.getId()] = 
   }
 
   /**
