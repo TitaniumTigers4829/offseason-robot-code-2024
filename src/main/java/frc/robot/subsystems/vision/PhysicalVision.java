@@ -54,33 +54,34 @@ public class PhysicalVision implements VisionInterface {
 
   @Override
   public void updateInputs(VisionInputs inputs) {
-    limelightThreads.forEach(
-        (limelight, inputRef) -> {
-          VisionInputs limelightInputs = inputRef.get();
+    // limelightThreads.forEach(
+    //     (limelight, inputRef) -> {
+    //       VisionInputs limelightInputs = inputRef.get();
           // Combine inputs into the main inputs object
-          synchronized (limelightInputs) {
+          synchronized (inputs) {
             // checkAndUpdatePose(limelight);
             // if (limelightInputs != null) {
-              // for (Limelight limelight : Limelight.values()) {
-                inputs.isLimelightConnected[limelight.getId()] = limelightInputs.isLimelightConnected[limelight.getId()];
+              for (Limelight limelight : Limelight.values()) {
+                inputs.isLimelightConnected[limelight.getId()] = isLimelightConnected(limelight);
                 // inputs.limelightMegatag1Pose[limelight.getId()] = limelightInputs.limelightMegatag1Pose[limelight.getId()];
                 // inputs.limelightMegatag2Pose[limelight.getId()] = limelightInputs.limelightMegatag2Pose[limelight.getId()];
-                inputs.limelightLatency[limelight.getId()] = limelightInputs.limelightLatency[limelight.getId()];
-                inputs.limelightTargets[limelight.getId()] = limelightInputs.limelightTargets[limelight.getId()];
+                inputs.limelightLatency[limelight.getId()] = getLatencySeconds(limelight);
+                inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
                 // inputs.limelightCameraToTargetPose[limelight.getId()] = limelightInputs.limelightCameraToTargetPose[limelight.getId()];
                 // inputs.limelightRobotToTargetPose[limelight.getId()] = limelightInputs.limelightRobotToTargetPose[limelight.getId()];
-                inputs.limelightSeesAprilTags[limelight.getId()] = limelightInputs.limelightSeesAprilTags[limelight.getId()];
-                inputs.limelightAprilTagDistance[limelight.getId()] = limelightInputs.limelightAprilTagDistance[limelight.getId()];
-                inputs.limelightCalculatedPose[limelight.getId()] = limelightInputs.limelightCalculatedPose[limelight.getId()];
-                inputs.limelightTimestamp[limelight.getId()] = limelightInputs.limelightTimestamp[limelight.getId()];
-              // }
-              inputs.limelightLastSeenPose = limelightInputs.limelightLastSeenPose;
+                inputs.limelightSeesAprilTags[limelight.getId()] = canSeeAprilTags(limelight);
+                inputs.limelightAprilTagDistance[limelight.getId()] = getLimelightAprilTagDistance(limelight);
+                inputs.limelightCalculatedPose[limelight.getId()] = enabledPoseUpdate(limelight);
+                inputs.limelightTimestamp[limelight.getId()] = getTimeStampSeconds(limelight);
+                inputs.limelightLastSeenPose = getLastSeenPose();
+
+    latestInputs.set(inputs);
+    limelightThreads.get(limelight).set(latestInputs.get());
+              }
             // }
             }
             
-    latestInputs.set(inputs);
-    limelightThreads.get(limelight).set(latestInputs.get());
-        });
+        // });
   }
 
   /**
