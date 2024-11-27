@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
-import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -48,8 +46,8 @@ public class SimulatedVision extends PhysicalVision {
     // Create simulated camera properties. These can be set to mimic your actual
     // camera.
     var cameraProperties = new SimCameraProperties();
-    cameraProperties.setCalibration(kResWidth, kResHeight, Rotation2d.fromDegrees(97.7));
-    cameraProperties.setCalibError(0.35, 0.10);
+    // cameraProperties.setCalibration(kResWidth, kResHeight, Rotation2d.fromDegrees(97.7));
+    // cameraProperties.setCalibError(0.35, 0.10);
     cameraProperties.setFPS(15);
     cameraProperties.setAvgLatencyMs(20);
     cameraProperties.setLatencyStdDevMs(5);
@@ -63,14 +61,18 @@ public class SimulatedVision extends PhysicalVision {
     frontRightCameraSim = new PhotonCameraSim(frontRightCamera, cameraProperties);
 
     Transform3d robotToShooterCamera =
-        new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
+        new Transform3d(new Translation3d(-0.3119324724, 0.0, 0.1865472012), new Rotation3d(0.0,
+    35, 180.0));
     visionSim.addCamera(shooterCameraSim, robotToShooterCamera);
 
-    Transform3d robotToFrontLeftCamera =
-        new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
-    visionSim.addCamera(frontLeftCameraSim, robotToFrontLeftCamera);
     Transform3d robotToFrontRightCamera =
-        new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
+        new Transform3d(new Translation3d(0.2749477356, -0.269958439, 0.2318054546), new
+    Rotation3d(0.0, 25, -35));
+        Transform3d robotToFrontLeftCamera =
+        new Transform3d(new Translation3d(0.2816630892, 0.2724405524, 0.232156), new
+    Rotation3d(0.0, 25, 35));
+    visionSim.addCamera(frontLeftCameraSim, robotToFrontLeftCamera);
+
     visionSim.addCamera(frontRightCameraSim, robotToFrontRightCamera);
 
     // Enable the raw and processed streams. (http://localhost:1181 / 1182)
@@ -99,8 +101,10 @@ public class SimulatedVision extends PhysicalVision {
     }
 
     NetworkTable shooterTable = LimelightHelpers.getLimelightNTTable(Limelight.SHOOTER.getName());
-    NetworkTable frontLeftTable = LimelightHelpers.getLimelightNTTable(Limelight.FRONT_LEFT.getName());
-    NetworkTable frontRightTable = LimelightHelpers.getLimelightNTTable(Limelight.FRONT_RIGHT.getName());
+    NetworkTable frontLeftTable =
+        LimelightHelpers.getLimelightNTTable(Limelight.FRONT_LEFT.getName());
+    NetworkTable frontRightTable =
+        LimelightHelpers.getLimelightNTTable(Limelight.FRONT_RIGHT.getName());
     // Write to limelight table
     writeToTable(shooterCamera.getAllUnreadResults(), shooterTable, Limelight.SHOOTER);
     writeToTable(frontLeftCamera.getAllUnreadResults(), frontLeftTable, Limelight.FRONT_LEFT);

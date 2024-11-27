@@ -57,5 +57,4 @@ public class Vision extends SubsystemBase {
   public Pose2d getLastSeenPose() {
     return inputs.limelightLastSeenPose;
   }
-
 }
