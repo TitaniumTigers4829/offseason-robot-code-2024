@@ -11,6 +11,8 @@ public class MegatagPoseEstimate implements StructSerializable {
     public double timestampSeconds;
     public double latency;
     public double avgTagArea;
+    public double avgTagDist;
+    public int tagCount;
 
     @Override
     public Class<MegatagPoseEstimate> getTypeClass() {
@@ -29,7 +31,7 @@ public class MegatagPoseEstimate implements StructSerializable {
 
     @Override
     public String getSchema() {
-      return "Pose2d fieldToCamera;double timestampSeconds;double latency;double avgTagArea";
+      return "Pose2d fieldToCamera;double timestampSeconds;double latency;double avgTagArea; int tagCount; double avgTagDist";
     }
 
     @Override
@@ -45,6 +47,8 @@ public class MegatagPoseEstimate implements StructSerializable {
       rv.latency = bb.getDouble();
       rv.avgTagArea = bb.getDouble();
       rv.fiducialIds = new int[0];
+      rv.avgTagDist = bb.getDouble();
+      rv.timestampSeconds = bb.getInt();
       return rv;
     }
 
@@ -54,6 +58,7 @@ public class MegatagPoseEstimate implements StructSerializable {
       bb.putDouble(value.timestampSeconds);
       bb.putDouble(value.latency);
       bb.putDouble(value.avgTagArea);
+      bb.putDouble(value.avgTagDist);
     }
 
     @Override
@@ -68,6 +73,8 @@ public class MegatagPoseEstimate implements StructSerializable {
   public double latency;
   public double avgTagArea;
   public int[] fiducialIds;
+  public int tagCount;
+  public double avgTagDist;
 
   public MegatagPoseEstimate() {}
 
@@ -78,6 +85,8 @@ public class MegatagPoseEstimate implements StructSerializable {
     rv.timestampSeconds = poseEstimate.timestampSeconds;
     rv.latency = poseEstimate.latency;
     rv.avgTagArea = poseEstimate.avgTagArea;
+    rv.avgTagDist = poseEstimate.avgTagDist;
+    rv.tagCount = poseEstimate.tagCount;
     rv.fiducialIds = new int[poseEstimate.rawFiducials.length];
     for (int i = 0; i < rv.fiducialIds.length; ++i) {
       rv.fiducialIds[i] = poseEstimate.rawFiducials[i].id;
