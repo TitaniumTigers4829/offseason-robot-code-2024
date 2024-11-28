@@ -75,7 +75,7 @@ public abstract class DriveCommandBase extends Command {
 
     Logger.recordOutput(
         "Odometry/CurrentVisionPose" + limelight.getName(), vision.getPoseFromAprilTags(limelight));
-    Logger.recordOutput("Odometry/CurrentCalculatePose", swerveDrive.getPose());
+    Logger.recordOutput("Odometry/CurrentCalculatedPose", swerveDrive.getPose());
 
     lastTimeStampSeconds = currentTimeStampSeconds;
   }
