@@ -1,13 +1,11 @@
 package frc.robot.subsystems.vision;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.proto.Photon;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import frc.robot.extras.vision.LimelightHelpers;
+import org.photonvision.PhotonCamera;
 
 public final class VisionConstants {
   public enum Limelight {
@@ -46,7 +44,7 @@ public final class VisionConstants {
         case FRONT_LEFT -> FRONT_LEFT_CAMERA;
         case FRONT_RIGHT -> FRONT_RIGHT_CAMERA;
         default -> throw new IllegalArgumentException("Invalid limelight camera " + limelight);
-           };
+      };
     }
 
     public NetworkTable getLimelightTable(Limelight limelight) {
@@ -56,12 +54,14 @@ public final class VisionConstants {
         case FRONT_RIGHT -> LimelightHelpers.getLimelightNTTable(FRONT_RIGHT.getName());
         default -> throw new IllegalArgumentException("Invalid limelight " + limelight);
       };
-  }
+    }
   }
 
   public static final PhotonCamera SHOOTER_CAMERA = new PhotonCamera(Limelight.SHOOTER.getName());
-  public static final PhotonCamera FRONT_LEFT_CAMERA = new PhotonCamera(Limelight.FRONT_LEFT.getName());
-  public static final PhotonCamera FRONT_RIGHT_CAMERA = new PhotonCamera(Limelight.FRONT_RIGHT.getName());
+  public static final PhotonCamera FRONT_LEFT_CAMERA =
+      new PhotonCamera(Limelight.FRONT_LEFT.getName());
+  public static final PhotonCamera FRONT_RIGHT_CAMERA =
+      new PhotonCamera(Limelight.FRONT_RIGHT.getName());
   public static final int THREAD_SLEEP_MS = 20;
 
   public static final AprilTagFieldLayout FIELD_LAYOUT =

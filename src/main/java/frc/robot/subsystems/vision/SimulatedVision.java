@@ -2,14 +2,12 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
-import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -58,9 +56,15 @@ public class SimulatedVision extends PhysicalVision {
     // with visible
     // targets.
     // Instance variables
-    shooterCameraSim = new PhotonCameraSim(Limelight.SHOOTER.getSimulationCamera(Limelight.SHOOTER), cameraProperties);
-    frontLeftCameraSim = new PhotonCameraSim(Limelight.FRONT_LEFT.getSimulationCamera(Limelight.FRONT_LEFT), cameraProperties);
-    frontRightCameraSim = new PhotonCameraSim(Limelight.FRONT_RIGHT.getSimulationCamera(Limelight.FRONT_RIGHT), cameraProperties);
+    shooterCameraSim =
+        new PhotonCameraSim(
+            Limelight.SHOOTER.getSimulationCamera(Limelight.SHOOTER), cameraProperties);
+    frontLeftCameraSim =
+        new PhotonCameraSim(
+            Limelight.FRONT_LEFT.getSimulationCamera(Limelight.FRONT_LEFT), cameraProperties);
+    frontRightCameraSim =
+        new PhotonCameraSim(
+            Limelight.FRONT_RIGHT.getSimulationCamera(Limelight.FRONT_RIGHT), cameraProperties);
 
     Transform3d robotToShooterCamera =
         new Transform3d(
@@ -104,8 +108,11 @@ public class SimulatedVision extends PhysicalVision {
     }
 
     for (Limelight limelight : Limelight.values()) {
-    writeToTable(limelight.getSimulationCamera(limelight).getAllUnreadResults(), limelight.getLimelightTable(limelight), limelight);
-    inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
+      writeToTable(
+          limelight.getSimulationCamera(limelight).getAllUnreadResults(),
+          limelight.getLimelightTable(limelight),
+          limelight);
+      inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
     }
     super.updateInputs(inputs);
   }
@@ -150,7 +157,7 @@ public class SimulatedVision extends PhysicalVision {
         table
             .getEntry("botpose_orb_wpiblue")
             .setDoubleArray(pose_data.stream().mapToDouble(Double::doubleValue).toArray());
-          tagCount[limelight.getId()] = result.getMultiTagResult().get().fiducialIDsUsed.size();
+        tagCount[limelight.getId()] = result.getMultiTagResult().get().fiducialIDsUsed.size();
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
