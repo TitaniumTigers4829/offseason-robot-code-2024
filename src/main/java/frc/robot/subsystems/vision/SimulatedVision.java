@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -64,21 +65,9 @@ public class SimulatedVision extends PhysicalVision {
     frontRightCameraSim =
         new PhotonCameraSim(getSimulationCamera(Limelight.FRONT_RIGHT), cameraProperties);
 
-    Transform3d robotToShooterCamera =
-        new Transform3d(
-            new Translation3d(-0.3119324724, 0.0, 0.1865472012), new Rotation3d(0.0, 35, 180.0));
-    visionSim.addCamera(shooterCameraSim, robotToShooterCamera);
-
-    Transform3d robotToFrontRightCamera =
-        new Transform3d(
-            new Translation3d(0.2749477356, -0.269958439, 0.2318054546),
-            new Rotation3d(0.0, 25, -35));
-    Transform3d robotToFrontLeftCamera =
-        new Transform3d(
-            new Translation3d(0.2816630892, 0.2724405524, 0.232156), new Rotation3d(0.0, 25, 35));
-    visionSim.addCamera(frontLeftCameraSim, robotToFrontLeftCamera);
-
-    visionSim.addCamera(frontRightCameraSim, robotToFrontRightCamera);
+    visionSim.addCamera(shooterCameraSim, VisionConstants.SHOOTER_TRANSFORM);
+    visionSim.addCamera(frontLeftCameraSim, VisionConstants.FRONT_LEFT_TRANSFORM);
+    visionSim.addCamera(frontRightCameraSim, VisionConstants.FRONT_RIGHT_TRANSFORM);
 
     // Enable the raw and processed streams. (http://localhost:1181 / 1182)
     shooterCameraSim.enableRawStream(true);
@@ -106,7 +95,8 @@ public class SimulatedVision extends PhysicalVision {
     }
 
     for (Limelight limelight : Limelight.values()) {
-      writeToTable(getSimulationCamera(limelight).getAllUnreadResults(),
+      writeToTable(
+          getSimulationCamera(limelight).getAllUnreadResults(),
           getLimelightTable(limelight),
           limelight);
       inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
@@ -162,24 +152,23 @@ public class SimulatedVision extends PhysicalVision {
     }
   }
 
-  
-    public PhotonCamera getSimulationCamera(Limelight limelight) {
-      return switch (limelight) {
-        case SHOOTER -> VisionConstants.SHOOTER_CAMERA;
-        case FRONT_LEFT -> VisionConstants.FRONT_LEFT_CAMERA;
-        case FRONT_RIGHT -> VisionConstants.FRONT_RIGHT_CAMERA;
-        default -> throw new IllegalArgumentException("Invalid limelight camera " + limelight);
-      };
-    }
+  public PhotonCamera getSimulationCamera(Limelight limelight) {
+    return switch (limelight) {
+      case SHOOTER -> VisionConstants.SHOOTER_CAMERA;
+      case FRONT_LEFT -> VisionConstants.FRONT_LEFT_CAMERA;
+      case FRONT_RIGHT -> VisionConstants.FRONT_RIGHT_CAMERA;
+      default -> throw new IllegalArgumentException("Invalid limelight camera " + limelight);
+    };
+  }
 
-    public NetworkTable getLimelightTable(Limelight limelight) {
-      return switch (limelight) {
-        case SHOOTER -> LimelightHelpers.getLimelightNTTable(Limelight.SHOOTER.getName());
-        case FRONT_LEFT -> LimelightHelpers.getLimelightNTTable(Limelight.FRONT_LEFT.getName());
-        case FRONT_RIGHT -> LimelightHelpers.getLimelightNTTable(Limelight.FRONT_RIGHT.getName());
-        default -> throw new IllegalArgumentException("Invalid limelight " + limelight);
-      };
-    }
+  public NetworkTable getLimelightTable(Limelight limelight) {
+    return switch (limelight) {
+      case SHOOTER -> LimelightHelpers.getLimelightNTTable(Limelight.SHOOTER.getName());
+      case FRONT_LEFT -> LimelightHelpers.getLimelightNTTable(Limelight.FRONT_LEFT.getName());
+      case FRONT_RIGHT -> LimelightHelpers.getLimelightNTTable(Limelight.FRONT_RIGHT.getName());
+      default -> throw new IllegalArgumentException("Invalid limelight " + limelight);
+    };
+  }
 
   @Override
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
