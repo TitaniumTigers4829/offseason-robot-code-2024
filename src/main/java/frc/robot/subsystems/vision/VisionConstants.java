@@ -38,23 +38,6 @@ public final class VisionConstants {
       };
     }
 
-    public PhotonCamera getSimulationCamera(Limelight limelight) {
-      return switch (limelight) {
-        case SHOOTER -> SHOOTER_CAMERA;
-        case FRONT_LEFT -> FRONT_LEFT_CAMERA;
-        case FRONT_RIGHT -> FRONT_RIGHT_CAMERA;
-        default -> throw new IllegalArgumentException("Invalid limelight camera " + limelight);
-      };
-    }
-
-    public NetworkTable getLimelightTable(Limelight limelight) {
-      return switch (limelight) {
-        case SHOOTER -> LimelightHelpers.getLimelightNTTable(SHOOTER.getName());
-        case FRONT_LEFT -> LimelightHelpers.getLimelightNTTable(FRONT_LEFT.getName());
-        case FRONT_RIGHT -> LimelightHelpers.getLimelightNTTable(FRONT_RIGHT.getName());
-        default -> throw new IllegalArgumentException("Invalid limelight " + limelight);
-      };
-    }
   }
 
   public static final PhotonCamera SHOOTER_CAMERA = new PhotonCamera(Limelight.SHOOTER.getName());

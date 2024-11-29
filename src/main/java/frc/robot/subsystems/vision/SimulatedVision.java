@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.networktables.NetworkTable;
+import frc.robot.extras.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,14 +58,11 @@ public class SimulatedVision extends PhysicalVision {
     // targets.
     // Instance variables
     shooterCameraSim =
-        new PhotonCameraSim(
-            Limelight.SHOOTER.getSimulationCamera(Limelight.SHOOTER), cameraProperties);
+        new PhotonCameraSim(getSimulationCamera(Limelight.SHOOTER), cameraProperties);
     frontLeftCameraSim =
-        new PhotonCameraSim(
-            Limelight.FRONT_LEFT.getSimulationCamera(Limelight.FRONT_LEFT), cameraProperties);
+        new PhotonCameraSim(getSimulationCamera(Limelight.FRONT_LEFT), cameraProperties);
     frontRightCameraSim =
-        new PhotonCameraSim(
-            Limelight.FRONT_RIGHT.getSimulationCamera(Limelight.FRONT_RIGHT), cameraProperties);
+        new PhotonCameraSim(getSimulationCamera(Limelight.FRONT_RIGHT), cameraProperties);
 
     Transform3d robotToShooterCamera =
         new Transform3d(
@@ -108,9 +106,8 @@ public class SimulatedVision extends PhysicalVision {
     }
 
     for (Limelight limelight : Limelight.values()) {
-      writeToTable(
-          limelight.getSimulationCamera(limelight).getAllUnreadResults(),
-          limelight.getLimelightTable(limelight),
+      writeToTable(getSimulationCamera(limelight).getAllUnreadResults(),
+          getLimelightTable(limelight),
           limelight);
       inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
     }
@@ -164,6 +161,25 @@ public class SimulatedVision extends PhysicalVision {
       table.getEntry("cl").setDouble(result.metadata.getLatencyMillis());
     }
   }
+
+  
+    public PhotonCamera getSimulationCamera(Limelight limelight) {
+      return switch (limelight) {
+        case SHOOTER -> VisionConstants.SHOOTER_CAMERA;
+        case FRONT_LEFT -> VisionConstants.FRONT_LEFT_CAMERA;
+        case FRONT_RIGHT -> VisionConstants.FRONT_RIGHT_CAMERA;
+        default -> throw new IllegalArgumentException("Invalid limelight camera " + limelight);
+      };
+    }
+
+    public NetworkTable getLimelightTable(Limelight limelight) {
+      return switch (limelight) {
+        case SHOOTER -> LimelightHelpers.getLimelightNTTable(Limelight.SHOOTER.getName());
+        case FRONT_LEFT -> LimelightHelpers.getLimelightNTTable(Limelight.FRONT_LEFT.getName());
+        case FRONT_RIGHT -> LimelightHelpers.getLimelightNTTable(Limelight.FRONT_RIGHT.getName());
+        default -> throw new IllegalArgumentException("Invalid limelight " + limelight);
+      };
+    }
 
   @Override
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
