@@ -48,7 +48,6 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModulePosition[] lastModulePositions;
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
   private final SwerveSetpointGenerator setpointGenerator =
       new SwerveSetpointGenerator(
           DriveConstants.MODULE_TRANSLATIONS,
@@ -60,6 +59,8 @@ public class SwerveDrive extends SubsystemBase {
           ModuleConstants.WHEEL_DIAMETER_METERS,
           WHEEL_GRIP.TIRE_WHEEL.cof,
           0.01);
+          private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
+
 
   private final OdometryThread odometryThread;
 
@@ -226,10 +227,9 @@ public class SwerveDrive extends SubsystemBase {
                 rotationSpeed,
                 getPose().getRotation().plus(Rotation2d.fromDegrees(getAllianceAngleOffset())))
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
-    // setpoint = new SwerveSetpoint(getChassisSpeeds(), AdvancedSwerveModuleState.fromBase(getModuleStates()));
 
     setpoint =
-        setpointGenerator.generateSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
+        setpointGenerator.generateSimpleSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
 
     setModuleStates(setpoint.moduleStates());
     Logger.recordOutput("SwerveStates/desired state", setpoint.moduleStates());
