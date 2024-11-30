@@ -199,7 +199,7 @@ public class SwerveSetpointGenerator {
             return generateSetpoint(prevSetpoint, ZERO_SPEEDS, dt);
         }
 
-        // solveSteering(vars);
+        solveSteering(vars);
         // solveDriving(vars);
 
         ChassisSpeeds retSpeeds = new ChassisSpeeds(

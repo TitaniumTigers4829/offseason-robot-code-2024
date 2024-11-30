@@ -48,7 +48,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModulePosition[] lastModulePositions;
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private SwerveSetpoint setpoint;
+  private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
   private final SwerveSetpointGenerator setpointGenerator =
       new SwerveSetpointGenerator(
           DriveConstants.MODULE_TRANSLATIONS,
@@ -94,10 +94,10 @@ public class SwerveDrive extends SubsystemBase {
 
     swerveModules =
         new SwerveModule[] {
-          new SwerveModule(frontLeftModuleIO, "FrontLeft", 0),
-          new SwerveModule(frontRightModuleIO, "FrontRight", 1),
-          new SwerveModule(backLeftModuleIO, "BackLeft",2),
-          new SwerveModule(backRightModuleIO, "BackRight", 3)
+          new SwerveModule(frontLeftModuleIO, "FrontLeft"),
+          new SwerveModule(frontRightModuleIO, "FrontRight"),
+          new SwerveModule(backLeftModuleIO, "BackLeft"),
+          new SwerveModule(backRightModuleIO, "BackRight")
         };
 
     lastModulePositions =
@@ -122,7 +122,7 @@ public class SwerveDrive extends SubsystemBase {
 
     gyroDisconnectedAlert.set(false);
 
-    setpoint = SwerveSetpoint.zeroed();
+    // setpoint = SwerveSetpoint.zeroed();
   }
 
   /**
@@ -250,8 +250,8 @@ public class SwerveDrive extends SubsystemBase {
    *     frontRight, backLeft, backRight (should be the same as the kinematics).
    */
   public void setModuleStates(AdvancedSwerveModuleState[] desiredStates) {
-    for (SwerveModule module : swerveModules) {
-      module.runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[module.getNumber()]));
+    for (int i = 0; i < 4; i ++) {
+      swerveModules[i].runSetPoint(AdvancedSwerveModuleState.fromBase(desiredStates[i]));
     }
   }
 
