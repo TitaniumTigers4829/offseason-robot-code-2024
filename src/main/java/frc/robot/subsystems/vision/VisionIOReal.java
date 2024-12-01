@@ -71,7 +71,8 @@ public class VisionIOReal implements VisionIO {
   public boolean canSeeAprilTags(int limelightNumber) {
     // First checks if it can see an april tag, then checks if it is fully in frame
     // Different Limelights have different FOVs
-    if (getNumberOfAprilTags(limelightNumber) >= VisionConstants.MIN_APRIL_TAG_ID && getNumberOfAprilTags(limelightNumber) <= VisionConstants.MAX_APRIL_TAG_ID) {
+    if (getNumberOfAprilTags(limelightNumber) >= VisionConstants.MIN_APRIL_TAG_ID
+        && getNumberOfAprilTags(limelightNumber) <= VisionConstants.MAX_APRIL_TAG_ID) {
       if (getLimelightName(limelightNumber).equals(VisionConstants.SHOOTER_LIMELIGHT_NAME)) {
         return Math.abs(LimelightHelpers.getTX(getLimelightName(limelightNumber)))
             <= VisionConstants.LL3G_FOV_MARGIN_OF_ERROR;
