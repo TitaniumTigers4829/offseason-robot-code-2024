@@ -24,6 +24,9 @@ public final class VisionConstants {
   public static final String FRONT_RIGHT_LIMELIGHT_NAME = "limelight-right";
   public static final int FRONT_RIGHT_LIMELIGHT_NUMBER = 2;
 
+  public static final int MIN_APRIL_TAG_ID = 1;
+  public static final int MAX_APRIL_TAG_ID = 16;
+
   public static final double[][] ONE_APRIL_TAG_LOOKUP_TABLE = {
     // {distance in meters, x std deviation, y std deviation, r (in degrees) std deviation}
     {0, 0.01, 0.01, Units.degreesToRadians(180000)}, // 2
