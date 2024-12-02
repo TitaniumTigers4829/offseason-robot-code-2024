@@ -52,7 +52,7 @@ public class RobotContainer {
   // private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    switch (Constants.CURRENT_MODE) {
       case REAL -> {
         /* Real robot, instantiate hardware IO implementations */
 

@@ -11,7 +11,7 @@ public final class Constants {
     public static final String PHYSICS_SIMULATION_PATH = "MaplePhysicsSimulation/";
   }
 
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
