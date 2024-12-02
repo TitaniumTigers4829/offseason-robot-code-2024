@@ -83,12 +83,12 @@ public class SimulatedModule implements ModuleInterface {
   public void setDesiredState(SwerveModuleState desiredState) {
     double turnRotations = getTurnRotations();
     // setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
-    desiredState.optimize(Rotation2d.fromRotations(turnRotations));
+    // desiredState.optimize(Rotation2d.fromRotations(turnRotations));
 
-    if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-      stopModule();
-      return;
-    }
+    // if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
+    //   stopModule();
+    //   return;
+    // }
 
     // Converts meters per second to rotations per second
     double desiredDriveRPS =
