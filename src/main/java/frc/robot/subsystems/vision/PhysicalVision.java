@@ -275,8 +275,8 @@ public class PhysicalVision implements VisionInterface {
   @Override
   public double getLimelightAprilTagDistance(Limelight limelight) {
     if (canSeeAprilTags(limelight)) {
-      // return limelightEstimates[limelight.getId()].;
-      return 2;
+      return limelightEstimates[limelight.getId()].avgTagDist;
+      // return 2;
     }
     // To be safe returns a big distance from the april tags if it can't see any
     return Double.MAX_VALUE;

@@ -19,9 +19,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 // Please see the following link for example code
 // https://github.com/PhotonVision/photonvision/blob/2a6fa1b6ac81f239c59d724da5339f608897c510/photonlib-java-examples/swervedriveposeestsim/src/main/java/frc/robot/Vision.java
 public class SimulatedVision extends PhysicalVision {
-  // private final PhotonCamera shooterCamera = new PhotonCamera("shooterCamera");
-  // private final PhotonCamera frontLeftCamera = new PhotonCamera("frontLeftCamera");
-  // private final PhotonCamera frontRightCamera = new PhotonCamera("frontRightCamera");
   PhotonCameraSim shooterCameraSim;
   PhotonCameraSim frontLeftCameraSim;
   PhotonCameraSim frontRightCameraSim;
@@ -32,6 +29,7 @@ public class SimulatedVision extends PhysicalVision {
   private final int kResHeight = 800;
 
   private int[] tagCount = new int[Limelight.values().length];
+  private double[] apriltagDist = new double[Limelight.values().length];
 
   public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier) {
     super();
@@ -100,6 +98,7 @@ public class SimulatedVision extends PhysicalVision {
           getLimelightTable(limelight),
           limelight);
       inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
+      inputs.limelightAprilTagDistance[limelight.getId()] = getLimelightAprilTagDistance(limelight);
     }
     super.updateInputs(inputs);
   }
@@ -145,6 +144,7 @@ public class SimulatedVision extends PhysicalVision {
             .getEntry("botpose_orb_wpiblue")
             .setDoubleArray(pose_data.stream().mapToDouble(Double::doubleValue).toArray());
         tagCount[limelight.getId()] = result.getMultiTagResult().get().fiducialIDsUsed.size();
+        apriltagDist[limelight.getId()] = result.getMultiTagResult().get().estimatedPose.best.getX();
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
@@ -180,4 +180,10 @@ public class SimulatedVision extends PhysicalVision {
     // TODO Auto-generated method stub
     return tagCount[limelight.getId()];
   }
+
+  @Override
+    public double getLimelightAprilTagDistance(Limelight limelight) {
+        // TODO Auto-generated method stub
+        return apriltagDist[limelight.getId()];
+    }
 }
