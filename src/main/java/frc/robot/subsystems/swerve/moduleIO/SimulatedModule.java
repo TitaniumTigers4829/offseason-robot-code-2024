@@ -68,6 +68,11 @@ public class SimulatedModule implements ModuleInterface {
 
   @Override
   public void setDesiredState(SwerveModuleState desiredState) {
+
+    if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
+      stopModule();
+    }
+
     // Converts meters per second to rotations per second
     double desiredDriveRPS =
         desiredState.speedMetersPerSecond

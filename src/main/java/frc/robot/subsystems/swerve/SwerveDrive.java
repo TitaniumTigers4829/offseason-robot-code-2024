@@ -59,7 +59,7 @@ public class SwerveDrive extends SubsystemBase {
           ModuleConstants.WHEEL_DIAMETER_METERS,
           WHEEL_GRIP.TIRE_WHEEL.cof,
           0.01);
-          private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
+  private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
 
 
   private final OdometryThread odometryThread;
@@ -122,8 +122,6 @@ public class SwerveDrive extends SubsystemBase {
     this.odometryThread.start();
 
     gyroDisconnectedAlert.set(false);
-
-    // setpoint = SwerveSetpoint.zeroed();
   }
 
   /**
@@ -229,7 +227,7 @@ public class SwerveDrive extends SubsystemBase {
             : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
 
     setpoint =
-        setpointGenerator.generateSimpleSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
+        setpointGenerator.generateSetpoint(setpoint, desiredSpeeds, HardwareConstants.TIMEOUT_S);
 
     setModuleStates(setpoint.moduleStates());
     Logger.recordOutput("SwerveStates/desired state", setpoint.moduleStates());
