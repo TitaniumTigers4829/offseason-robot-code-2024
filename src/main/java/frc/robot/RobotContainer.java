@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WHEEL_GRIP;
+import frc.robot.extras.util.JoystickUtil;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
@@ -45,7 +45,7 @@ public class RobotContainer {
   // Simulation, we store them here in the robot container
   // private final SimulatedField simulatedArena;
   private final SwerveDriveSimulation swerveDriveSimulation;
-  private final frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation gyroSimulation;
+  private final GyroSimulation gyroSimulation;
 
   // Subsystems
   // private final XboxController driverController = new XboxController(0);
@@ -145,47 +145,6 @@ public class RobotContainer {
     swerveDrive.setPose(startingPose);
   }
 
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
-
-  private static double modifyAxisCubed(DoubleSupplier supplierValue) {
-    double value = supplierValue.getAsDouble();
-
-    // Deadband
-    value = deadband(value, JoystickConstants.DEADBAND_VALUE);
-
-    // Cube the axis
-    value = Math.copySign(value * value * value, value);
-
-    return value;
-  }
-
-  private static double[] modifyAxisCubedPolar(DoubleSupplier xJoystick, DoubleSupplier yJoystick) {
-    double xInput = deadband(xJoystick.getAsDouble(), JoystickConstants.DEADBAND_VALUE);
-    double yInput = deadband(yJoystick.getAsDouble(), JoystickConstants.DEADBAND_VALUE);
-    if (Math.abs(xInput) > 0 && Math.abs(yInput) > 0) {
-      double theta = Math.atan(xInput / yInput);
-      double hypotenuse = Math.sqrt(xInput * xInput + yInput * yInput);
-      double cubedHypotenuse = Math.pow(hypotenuse, 3);
-      xInput = Math.copySign(Math.sin(theta) * cubedHypotenuse, xInput);
-      yInput = Math.copySign(Math.cos(theta) * cubedHypotenuse, yInput);
-      return new double[] {xInput, yInput};
-    }
-    return new double[] {
-      Math.copySign(xInput * xInput * xInput, xInput),
-      Math.copySign(yInput * yInput * yInput, yInput)
-    };
-  }
-
   public void teleopInit() {
     configureButtonBindings();
   }
@@ -205,8 +164,8 @@ public class RobotContainer {
     DoubleSupplier driverRightStickX = driverController::getRightX;
     DoubleSupplier driverLeftStick[] =
         new DoubleSupplier[] {
-          () -> modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0],
-          () -> modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
+          () -> JoystickUtil.modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0],
+          () -> JoystickUtil.modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
         };
 
     DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
@@ -255,7 +214,7 @@ public class RobotContainer {
             visionSubsystem,
             driverLeftStick[1],
             driverLeftStick[0],
-            () -> modifyAxisCubed(driverRightStickX),
+            () -> JoystickUtil.modifyAxisCubed(driverRightStickX),
             () -> !driverRightBumper.getAsBoolean(),
             () -> driverLeftBumper.getAsBoolean());
     swerveDrive.setDefaultCommand(driveCommand);

@@ -114,11 +114,6 @@ public class PhysicalPivot implements PivotInterface {
         pivotPos);
   }
 
-  /**
-   * Updates Inputs
-   *
-   * @param inputs inputs for logging
-   */
   @Override
   public void updateInputs(PivotInterfaceInputs inputs) {
     inputs.leaderPosition = leaderPivotMotor.getPosition().getValueAsDouble();
@@ -132,22 +127,12 @@ public class PhysicalPivot implements PivotInterface {
     inputs.followerSupplyCurrentAmps = followerPivotMotor.getSupplyCurrent().getValueAsDouble();
   }
 
-  /**
-   * Sets the voltage of the pivot motors
-   *
-   * @param volts the voltage
-   */
   @Override
   public void setVoltage(double volts) {
     leaderPivotMotor.setControl(voltageControl.withOutput(volts));
     followerPivotMotor.setControl(voltageControl.withOutput(volts));
   }
 
-  /**
-   * Gets the angle of the pivot
-   *
-   * @return angle of pivot in rotations
-   */
   @Override
   public double getAngle() {
     pivotPos.refresh();
@@ -159,11 +144,6 @@ public class PhysicalPivot implements PivotInterface {
     return Math.abs(pivotTargetAngle - getAngle()) < PivotConstants.PIVOT_ACCEPTABLE_ERROR;
   }
 
-  /**
-   * Sets the output of the pivot
-   *
-   * @param output output value from -1.0 to 1.0
-   */
   @Override
   public void setPivotSpeed(double output) {
     leaderPivotMotor.set(output);
