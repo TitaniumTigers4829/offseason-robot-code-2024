@@ -52,7 +52,7 @@ public class PhysicalIndexer implements IndexerInterface {
   }
 
   @Override
-  public void updateInputs(IndexerInterfaceInputs inputs) {
+  public void updateInputs(IndexerInputs inputs) {
     inputs.indexerAppliedVolts = indexerAppliedVolts.getValueAsDouble();
     inputs.indexerStatorCurrentAmps = indexerStatorCurrentAmps.getValueAsDouble();
     inputs.indexerSupplyCurrentAmps = indexerSupplyCurrentAmps.getValueAsDouble();

@@ -28,7 +28,7 @@ public class SimulatedElevator implements ElevatorInterface {
   }
 
   @Override
-  public void updateInputs(ElevatorInterfaceInputs inputs) {
+  public void updateInputs(ElevatorInputs inputs) {
     elevatorSim.update(0.02);
 
     inputs.isConnected = true;

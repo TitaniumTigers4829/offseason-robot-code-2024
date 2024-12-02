@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   private final ElevatorInterface elevatorInterface;
-  private final ElevatorInterfaceInputsAutoLogged inputs = new ElevatorInterfaceInputsAutoLogged();
+  private final ElevatorInputsAutoLogged inputs = new ElevatorInputsAutoLogged();
 
   public Elevator(ElevatorInterface elevatorInterface) {
     super("Elevator");

@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorInterface {
   @AutoLog
-  public static class ElevatorInterfaceInputs {
+  public static class ElevatorInputs {
     public boolean isConnected = false;
 
     public double leaderMotorPosition = 0.0;
@@ -18,7 +18,7 @@ public interface ElevatorInterface {
     public double followerMotorCurrentAmps = 0.0;
   }
 
-  public default void updateInputs(ElevatorInterfaceInputs inputs) {}
+  public default void updateInputs(ElevatorInputs inputs) {}
 
   public default double getElevatorPosition() {
     return 0.0;

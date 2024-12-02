@@ -21,7 +21,7 @@ public class SimulatedIntake implements IntakeInterface {
   private double intakeAppliedVolts = 0.0;
   private double pivotAppliedVolts = 0.0;
 
-  public SimulatedIntake(IntakeInterfaceInputs inputs) {
+  public SimulatedIntake(IntakeInputs inputs) {
     intakeSim.update(0.02);
     pivotSim.update(0.02);
 

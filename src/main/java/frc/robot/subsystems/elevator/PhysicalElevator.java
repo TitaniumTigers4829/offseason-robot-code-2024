@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.HardwareConstants;
-import frc.robot.subsystems.elevator.ElevatorInterface.ElevatorInterfaceInputs;
+import frc.robot.subsystems.elevator.ElevatorInterface.ElevatorInputs;
 
 public class PhysicalElevator implements ElevatorInterface {
   private final TalonFX leaderElevatorMotor;
@@ -107,7 +107,7 @@ public class PhysicalElevator implements ElevatorInterface {
   }
 
   @Override
-  public void updateInputs(ElevatorInterfaceInputs inputs) {
+  public void updateInputs(ElevatorInputs inputs) {
     inputs.isConnected =
         BaseStatusSignal.isAllGood(
             leaderPosition,

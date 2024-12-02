@@ -115,7 +115,7 @@ public class PhysicalPivot implements PivotInterface {
   }
 
   @Override
-  public void updateInputs(PivotInterfaceInputs inputs) {
+  public void updateInputs(PivotInputs inputs) {
     inputs.leaderPosition = leaderPivotMotor.getPosition().getValueAsDouble();
     inputs.leaderVelocity = leaderPivotMotor.getVelocity().getValueAsDouble();
     inputs.leaderAppliedVolts = leaderPivotMotor.getMotorVoltage().getValueAsDouble();

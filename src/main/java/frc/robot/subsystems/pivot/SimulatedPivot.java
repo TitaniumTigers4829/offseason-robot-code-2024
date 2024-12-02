@@ -37,7 +37,7 @@ public class SimulatedPivot implements PivotInterface {
    * @param inputs inputs for logging
    */
   @Override
-  public void updateInputs(PivotInterfaceInputs inputs) {
+  public void updateInputs(PivotInputs inputs) {
     pivotSim.update(HardwareConstants.TIMEOUT_S);
 
     inputs.leaderPosition = Units.radiansToRotations(pivotSim.getAngleRads());

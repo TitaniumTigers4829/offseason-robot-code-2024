@@ -8,7 +8,7 @@ public class SimulatedIndexer implements IndexerInterface {
 
   private double indexerAppliedVolts = 0.0;
 
-  public SimulatedIndexer(IndexerInterfaceInputs inputs) {
+  public SimulatedIndexer(IndexerInputs inputs) {
     indexerSim.update(0.02);
 
     inputs.isConnected = true;

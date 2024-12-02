@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface PivotInterface {
   @AutoLog
-  public static class PivotInterfaceInputs {
+  public static class PivotInputs {
     public boolean leaderMotorConnected = true;
     public boolean followerMotorConnected = true;
     public double leaderPosition = 0.0;
@@ -22,7 +22,7 @@ public interface PivotInterface {
     public double followerTempCelsius = 0.0;
   }
 
-  public default void updateInputs(PivotInterfaceInputs inputs) {}
+  public default void updateInputs(PivotInputs inputs) {}
 
   /**
    * Gets the angle of the pivot

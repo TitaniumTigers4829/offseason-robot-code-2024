@@ -82,7 +82,7 @@ public class PhysicalIntake implements IntakeInterface {
   }
 
   @Override
-  public void updateInputs(IntakeInterfaceInputs inputs) {
+  public void updateInputs(IntakeInputs inputs) {
     inputs.intakeVelocity = intakeVelocity.getValueAsDouble();
     inputs.pivotPosition = pivotPosition.getValueAsDouble();
     inputs.pivotVelocity = pivotVelocity.getValueAsDouble();

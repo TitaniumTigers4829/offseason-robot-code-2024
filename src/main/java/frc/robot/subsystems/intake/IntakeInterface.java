@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeInterface {
   @AutoLog
-  public static class IntakeInterfaceInputs {
+  public static class IntakeInputs {
     public boolean isConnected = true;
 
     // intake motor
@@ -21,7 +21,7 @@ public interface IntakeInterface {
     public double pivotCurrentAmps = 0.0;
   }
 
-  default void updateInputs(IntakeInterfaceInputs inputs) {}
+  default void updateInputs(IntakeInputs inputs) {}
 
   default void setPivotPosition(double position) {}
 
