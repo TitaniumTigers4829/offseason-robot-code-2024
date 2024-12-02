@@ -9,7 +9,7 @@ public class Flywheel extends SubsystemBase {
 
   // private final SimpleMotorFeedforward ffModel;
 
-  public Flywheel(FlywheelInterface io) {
+  public Flywheel(FlywheelInterface flywheelInterface) {
     this.flywheelInterface = flywheelInterface;
   }
 

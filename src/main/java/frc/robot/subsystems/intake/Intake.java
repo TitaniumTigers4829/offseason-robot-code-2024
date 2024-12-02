@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
-  private IntakeInterface io;
+  private IntakeInterface intakeInterface;
   private IntakeInterfaceInputsAutoLogged inputs = new IntakeInterfaceInputsAutoLogged();
 
-  public Intake(IntakeInterface io) {
-    this.io = io;
+  public Intake(IntakeInterface intakeInterface) {
+    this.intakeInterface = intakeInterface;
   }
 
   /**
@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
    */
   public void setPivotAngle(double angle) {
     double angleRots = Units.degreesToRotations(angle);
-    io.setPivotPosition(angleRots);
+    intakeInterface.setPivotPosition(angleRots);
     Logger.recordOutput("OTBIntake/Pivot", angleRots);
   }
 
@@ -29,21 +29,21 @@ public class Intake extends SubsystemBase {
    * @param speed intake roller speed (-1.0 to 1.0)
    */
   public void setIntakeSpeed(double speed) {
-    io.setIntakeSpeed(speed);
+    intakeInterface.setIntakeSpeed(speed);
     Logger.recordOutput("OTBIntake/Intake", speed);
   }
 
   public void setPivotSpeed(double speed) {
-    io.setPivotSpeed(speed);
+    intakeInterface.setPivotSpeed(speed);
   }
 
   public void getPivotPosition() {
-    io.getPivotPosition();
+    intakeInterface.getPivotPosition();
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    intakeInterface.updateInputs(inputs);
     Logger.processInputs("OTBIntake", inputs);
   }
 }

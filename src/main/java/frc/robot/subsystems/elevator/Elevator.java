@@ -7,7 +7,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorInterface elevatorInterface;
   private final ElevatorInterfaceInputsAutoLogged inputs = new ElevatorInterfaceInputsAutoLogged();
 
-  public Elevator(ElevatorInterface io) {
+  public Elevator(ElevatorInterface elevatorInterface) {
     super("Elevator");
     this.elevatorInterface = elevatorInterface;
   }
