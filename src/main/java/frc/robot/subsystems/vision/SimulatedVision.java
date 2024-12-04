@@ -31,9 +31,9 @@ public class SimulatedVision extends PhysicalVision {
   private int[] tagCount = new int[Limelight.values().length];
   private double[] apriltagDist = new double[Limelight.values().length];
 
-  public SimulatedVision(Supplier<Pose2d> robotActualPoseInSimulationSupplier) {
+  public SimulatedVision(Supplier<Pose2d> robotSimulationPose) {
     super();
-    this.robotSimulationPose = robotActualPoseInSimulationSupplier;
+    this.robotSimulationPose = robotSimulationPose;
     // Create the vision system simulation which handles cameras and targets on the
     // field.
     visionSim = new VisionSystemSim("main");
@@ -185,5 +185,11 @@ public class SimulatedVision extends PhysicalVision {
     public double getLimelightAprilTagDistance(Limelight limelight) {
         // TODO Auto-generated method stub
         return apriltagDist[limelight.getId()];
+    }
+
+    @Override
+    public Pose2d getLastSeenPose() {
+        // TODO Auto-generated method stub
+        return super.getLastSeenPose();
     }
 }
