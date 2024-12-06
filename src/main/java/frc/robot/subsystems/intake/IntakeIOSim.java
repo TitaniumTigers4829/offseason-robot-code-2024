@@ -7,6 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import edu.wpi.first.units.measure.Distance;
 
 public class IntakeIOSim implements IntakeIO {
   DCMotorSim intakeSim = new DCMotorSim(null, DCMotor.getFalcon500(1), 0);

@@ -1,6 +1,7 @@
 package frc.robot.extras.util;
 
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.BuildConstants;
 import java.util.Random;
 
@@ -48,5 +49,10 @@ public class MathUtil {
             Math.toDegrees(rotation3d.getX()),
             Math.toDegrees(rotation3d.getY()),
             Math.toDegrees(rotation3d.getZ()));
+  }
+
+  public static int clamp(Voltage value, Voltage low, Voltage high) {
+    // return Math.max(low, Math.min(value, high));
+    return 0;
   }
 }

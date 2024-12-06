@@ -14,6 +14,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 
@@ -62,7 +63,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setVolts(double volts) {
-    elevatorAppliedVolts = volts;
+    elevatorAppliedVolts = Volts.of(volts);
     elevatorSim.setInputVoltage(volts);
   }
 
@@ -76,14 +77,14 @@ public class ElevatorIOSim implements ElevatorIO {
     elevatorAppliedVolts = Volts.of(elevatorPID.calculate(Meters.of(elevatorSim.getPositionMeters()).in(Meters), Meters.of(position).in(Meters)));
 
     if (elevatorSim.wouldHitUpperLimit(position)) {
-      elevatorAppliedVolts = Volts.of(MathUtil.clamp((elevatorAppliedVolts.in(Volts), -12, 0)));
+      elevatorAppliedVolts = Volts.of(MathUtil.clamp((elevatorAppliedVolts).in(Volts), -12, 0));
     } else if (elevatorSim.wouldHitLowerLimit(position)) {
-      elevatorAppliedVolts = MathUtil.clamp(elevatorAppliedVolts, 0, 12);
+      elevatorAppliedVolts = Volts.of(MathUtil.clamp(elevatorAppliedVolts.in(Volts), 0, 12));
     } else {
-      elevatorAppliedVolts = MathUtil.clamp(elevatorAppliedVolts, -12, 12);
+      elevatorAppliedVolts = Volts.of(MathUtil.clamp(elevatorAppliedVolts.in(Volts),-12 ,12));
     }
-
-    elevatorSim.setInputVoltage(elevatorAppliedVolts);
+    elevatorSim.setInputVoltage(elevatorAppliedVolts.in(Volts));
+    
   }
 
   @Override
