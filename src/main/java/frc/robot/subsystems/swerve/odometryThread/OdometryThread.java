@@ -49,10 +49,11 @@ public interface OdometryThread {
 
   static OdometryThread createInstance(DeviceCANBus canBus) {
     return switch (Constants.currentMode) {
-      case REAL -> new OdometryThreadReal(
-          canBus,
-          registeredInputs.toArray(new OdometryDoubleInput[0]),
-          registeredStatusSignals.toArray(new BaseStatusSignal[0]));
+      case REAL ->
+          new OdometryThreadReal(
+              canBus,
+              registeredInputs.toArray(new OdometryDoubleInput[0]),
+              registeredStatusSignals.toArray(new BaseStatusSignal[0]));
       case SIM -> new OdometryThreadSim();
       case REPLAY -> inputs -> {};
     };
