@@ -11,13 +11,13 @@ public class FlywheelIOSim
     implements FlywheelIO { // FlywheelIOSim makes Advantage kit log simulated movements using
   // physics
   private FlywheelSim flywheelSim = new FlywheelSim(null, DCMotor.getKrakenX60(2), 0);
-  private DIOSim noteSensorSim = new DIOSim(new DigitalInput(ShooterConstants.NOTE_SENSOR_ID));
+  private DIOSim noteSensorSim = new DIOSim(new DigitalInput(FlywheelConstants.NOTE_SENSOR_ID));
   private PIDController pid =
       new PIDController(
-          ShooterConstants.FLYWHEEL_P, ShooterConstants.FLYWHEEL_I, ShooterConstants.FLYWHEEL_D);
+          FlywheelConstants.FLYWHEEL_P, FlywheelConstants.FLYWHEEL_I, FlywheelConstants.FLYWHEEL_D);
   private SimpleMotorFeedforward feedForward =
       new SimpleMotorFeedforward(
-          ShooterConstants.FLYWHEEL_S, ShooterConstants.FLYWHEEL_V, ShooterConstants.FLYWHEEL_A);
+          FlywheelConstants.FLYWHEEL_S, FlywheelConstants.FLYWHEEL_V, FlywheelConstants.FLYWHEEL_A);
 
   private double appliedVolts = 0.0;
 
@@ -38,10 +38,6 @@ public class FlywheelIOSim
     flywheelSim.setInputVoltage(volts);
   }
 
-  /**
-   * @param velocityRPM User inputs the desired velocity in RPM, gets converted in method for PID to
-   *     set value in RPS
-   */
   @Override
   public void setVelocity(double velocityRPM) { // ffvolts is feedorward
     double velocityRPS = velocityRPM / 60;

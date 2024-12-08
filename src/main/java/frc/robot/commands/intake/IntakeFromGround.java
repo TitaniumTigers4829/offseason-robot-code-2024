@@ -14,7 +14,7 @@ import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.FlywheelConstants;
 
 public class IntakeFromGround extends Command {
   private final Intake intake;
@@ -59,7 +59,7 @@ public class IntakeFromGround extends Command {
   public void end(boolean interrupted) {
     // Ends once the note is in the shooter
     // Sets roller, intake, and indexer speeds to zero
-    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(FlywheelConstants.ROLLER_NEUTRAL_SPEED);
     intake.setIntakeSpeed(IntakeConstants.INTAKE_NEUTRAL_SPEED);
     indexer.setIndexerSpeed(IndexerConstants.INDEXER_NEUTRAL_SPEED);
     // Puts the intake back in the robot
