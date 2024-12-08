@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swerve.SwerveConstants.*;
 
 public final class Constants {
 
