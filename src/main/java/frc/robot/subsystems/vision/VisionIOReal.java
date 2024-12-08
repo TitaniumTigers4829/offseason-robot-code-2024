@@ -290,8 +290,8 @@ public class VisionIOReal implements VisionIO {
       case 0 -> VisionConstants.SHOOTER_LIMELIGHT_NAME;
       case 1 -> VisionConstants.FRONT_LEFT_LIMELIGHT_NAME;
       case 2 -> VisionConstants.FRONT_RIGHT_LIMELIGHT_NAME;
-      default ->
-          throw new IllegalArgumentException("You entered a number for a non-existent limelight");
+      default -> throw new IllegalArgumentException(
+          "You entered a number for a non-existent limelight");
     };
   }
 

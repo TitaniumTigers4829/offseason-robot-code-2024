@@ -3,6 +3,7 @@ package frc.robot.subsystems.swerve.odometryThread;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants;
 import frc.robot.Constants.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.extras.util.DeviceCANBus;
@@ -47,12 +48,11 @@ public interface OdometryThread {
   }
 
   static OdometryThread createInstance(DeviceCANBus canBus) {
-    return switch (Robot.CURRENT_ROBOT_MODE) {
-      case REAL ->
-          new OdometryThreadReal(
-              canBus,
-              registeredInputs.toArray(new OdometryDoubleInput[0]),
-              registeredStatusSignals.toArray(new BaseStatusSignal[0]));
+    return switch (Constants.currentMode) {
+      case REAL -> new OdometryThreadReal(
+          canBus,
+          registeredInputs.toArray(new OdometryDoubleInput[0]),
+          registeredStatusSignals.toArray(new BaseStatusSignal[0]));
       case SIM -> new OdometryThreadSim();
       case REPLAY -> inputs -> {};
     };
