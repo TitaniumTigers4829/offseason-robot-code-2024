@@ -7,19 +7,16 @@ import Jama.QRDecomposition;
 // http://algs4.cs.princeton.edu/14analysis/PolynomialRegression.java.html
 
 /**
- * The {@code PolynomialRegression} class performs a polynomial regression on an set of
-<em>N</em>
+ * The {@code PolynomialRegression} class performs a polynomial regression on an set of <em>N</em>
  * data points (<em>y<sub>i</sub></em>, <em>x<sub>i</sub></em>). That is, it fits a polynomial
  * <em>y</em> = &beta;<sub>0</sub> + &beta;<sub>1</sub> <em>x</em> + &beta;<sub>2</sub>
- * <em>x</em><sup>2</sup> + ... + &beta;<sub><em>d</em></sub> <em>x</em><sup><em>d</em></sup>
-(where
+ * <em>x</em><sup>2</sup> + ... + &beta;<sub><em>d</em></sub> <em>x</em><sup><em>d</em></sup> (where
  * <em>y</em> is the response variable, <em>x</em> is the predictor variable, and the
  * &beta;<sub><em>i</em></sub> are the regression coefficients) that minimizes the sum of squared
  * residuals of the multiple regression model. It also computes associated the coefficient of
  * determination <em>R</em><sup>2</sup>.
  *
- * <p>This implementation performs a QR-decomposition of the underlying Vandermonde matrix, so it
-is
+ * <p>This implementation performs a QR-decomposition of the underlying Vandermonde matrix, so it is
  * neither the fastest nor the most numerically stable way to perform the polynomial regression.
  *
  * @author Robert Sedgewick
@@ -33,8 +30,7 @@ public class PolynomialRegression implements Comparable<PolynomialRegression> {
   private double sst; // total sum of squares
 
   /**
-   * Performs a polynomial reggression on the data points {@code (y[i], x[i])}. Uses n as the
-name
+   * Performs a polynomial reggression on the data points {@code (y[i], x[i])}. Uses n as the name
    * of the predictor variable.
    *
    * @param x the values of the predictor variable
@@ -130,8 +126,7 @@ name
   /**
    * Returns the coefficient of determination <em>R</em><sup>2</sup>.
    *
-   * @return the coefficient of determination <em>R</em><sup>2</sup>, which is a real number
-between
+   * @return the coefficient of determination <em>R</em><sup>2</sup>, which is a real number between
    *     0 and 1
    */
   public double R2() {

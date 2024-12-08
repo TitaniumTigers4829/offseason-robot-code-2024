@@ -11,10 +11,8 @@ import Jama.QRDecomposition;
  * <em>N</em> data points using the model <em>y</em> = &beta;<sub>0</sub> + &beta;<sub>1</sub>
  * <em>x</em><sub>1</sub> + ... + &beta;<sub><em>p</em></sub> <em>x<sub>p</sub></em>, where
  * <em>y</em> is the response (or dependent) variable, and <em>x</em><sub>1</sub>,
- * <em>x</em><sub>2</sub>, ..., <em>x<sub>p</sub></em> are the <em>p</em> predictor (or
-independent)
- * variables. The parameters &beta;<sub><em>i</em></sub> are chosen to minimize the sum of
-squared
+ * <em>x</em><sub>2</sub>, ..., <em>x<sub>p</sub></em> are the <em>p</em> predictor (or independent)
+ * variables. The parameters &beta;<sub><em>i</em></sub> are chosen to minimize the sum of squared
  * residuals of the multiple linear regression model. It also computes the coefficient of
  * determination <em>R</em><sup>2</sup>.
  *
@@ -79,8 +77,7 @@ public class MultipleLinearRegression {
   /**
    * Returns the coefficient of determination <em>R</em><sup>2</sup>.
    *
-   * @return the coefficient of determination <em>R</em><sup>2</sup>, which is a real number
-between
+   * @return the coefficient of determination <em>R</em><sup>2</sup>, which is a real number between
    *     0 and 1
    */
   public double R2() {
