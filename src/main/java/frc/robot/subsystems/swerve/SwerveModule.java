@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.SimulationConstants;
+import frc.robot.Constants.SimulationConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInputsAutoLogged;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import org.littletonrobotics.junction.Logger;

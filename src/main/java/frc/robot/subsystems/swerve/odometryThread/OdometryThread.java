@@ -7,7 +7,7 @@ import frc.robot.Constants.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
-import frc.robot.subsystems.swerve.SwerveConstants.SimulationConstants;
+import frc.robot.Constants.SimulationConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
