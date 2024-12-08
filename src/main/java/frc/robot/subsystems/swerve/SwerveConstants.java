@@ -82,10 +82,10 @@ public class SwerveConstants {
     public static final InvertedValue REAR_RIGHT_DRIVE_ENCODER_REVERSED =
         InvertedValue.CounterClockwise_Positive;
 
-    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 6 * Math.PI;
-    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 3 * Math.PI;
+    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 20;
+    public static final double LOW_ANGULAR_SPEED_RADIANS_PER_SECOND = 5;
 
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.5;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 6.95;
     public static final double MAX_SHOOT_SPEED_METERS_PER_SECOND = 3;
 
     public static final double HEADING_ACCEPTABLE_ERROR_RADIANS = Units.degreesToRadians(2.5);
@@ -93,8 +93,7 @@ public class SwerveConstants {
   }
 
   public class ModuleConstants {
-    public static final double DRIVE_GEAR_RATIO = 7.13;
-    public static final double TURN_GEAR_RATIO = 11.3142;
+    public static final double DRIVE_GEAR_RATIO = 4.59;
     public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.774788522800778);
 
     public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
@@ -105,27 +104,29 @@ public class SwerveConstants {
     public static final double DRIVE_SUPPLY_LIMIT = 45.0;
     public static final double DRIVE_STATOR_LIMIT = 50.0;
 
-    public static final double TURN_P = 15;
+    public static final double TURN_P = 116;
     public static final double TURN_I = 0.0;
-    public static final double TURN_D = 0.0;
+    public static final double TURN_D = 0.64;
 
-    public static final double TURN_S = 0;
+    public static final double TURN_S = 0.0;
     public static final double TURN_V = 0.0;
     public static final double TURN_A = 0.0;
 
     public static final double MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND = 30;
     public static final double MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED = 24;
 
-    public static final double DRIVE_P = 0.345;
+    public static final double DRIVE_P = 0.417;
     public static final double DRIVE_I = 0.0;
     public static final double DRIVE_D = 0.0;
 
-    public static final double DRIVE_S = 0.151315113225759;
+    public static final double DRIVE_S = 0.16;
     // These values were gotten using recalc, then converted to the correct units & were confirmed
     // through testing and characterization
     // https://www.reca.lc/drive?appliedVoltageRamp=%7B%22s%22%3A1200%2C%22u%22%3A%22V%2Fs%22%7D&batteryAmpHours=%7B%22s%22%3A18%2C%22u%22%3A%22A%2Ah%22%7D&batteryResistance=%7B%22s%22%3A0.018%2C%22u%22%3A%22Ohm%22%7D&batteryVoltageAtRest=%7B%22s%22%3A12.6%2C%22u%22%3A%22V%22%7D&efficiency=97&filtering=1&gearRatioMax=%7B%22magnitude%22%3A15%2C%22ratioType%22%3A%22Reduction%22%7D&gearRatioMin=%7B%22magnitude%22%3A3%2C%22ratioType%22%3A%22Reduction%22%7D&maxSimulationTime=%7B%22s%22%3A4%2C%22u%22%3A%22s%22%7D&maxSpeedAccelerationThreshold=%7B%22s%22%3A0.15%2C%22u%22%3A%22ft%2Fs2%22%7D&motor=%7B%22quantity%22%3A4%2C%22name%22%3A%22Kraken%20X60%2A%22%7D&motorCurrentLimit=%7B%22s%22%3A60%2C%22u%22%3A%22A%22%7D&numCyclesPerMatch=24&peakBatteryDischarge=20&ratio=%7B%22magnitude%22%3A4.59%2C%22ratioType%22%3A%22Reduction%22%7D&sprintDistance=%7B%22s%22%3A25%2C%22u%22%3A%22ft%22%7D&swerve=1&targetTimeToGoal=%7B%22s%22%3A2%2C%22u%22%3A%22s%22%7D&throttleResponseMax=0.99&throttleResponseMin=0.5&weightAuxilliary=%7B%22s%22%3A24%2C%22u%22%3A%22lbs%22%7D&weightDistributionFrontBack=0.5&weightDistributionLeftRight=0.5&weightInspected=%7B%22s%22%3A125%2C%22u%22%3A%22lbs%22%7D&wheelBaseLength=%7B%22s%22%3A27%2C%22u%22%3A%22in%22%7D&wheelBaseWidth=%7B%22s%22%3A20%2C%22u%22%3A%22in%22%7D&wheelCOFDynamic=0.9&wheelCOFLateral=1.1&wheelCOFStatic=1.1&wheelDiameter=%7B%22s%22%3A4%2C%22u%22%3A%22in%22%7D
-    public static final double DRIVE_V = 0.027285425272591; // = 0.1203 V*s/m
-    public static final double DRIVE_A = 0.000261387517243; // = 0.02225 V*s^2/m
+    public static final double DRIVE_V =
+        1.73 * WHEEL_CIRCUMFERENCE_METERS / DRIVE_GEAR_RATIO; // = 0.1203 V*s/m
+    public static final double DRIVE_A =
+        0.32 * WHEEL_CIRCUMFERENCE_METERS / DRIVE_GEAR_RATIO; // = 0.02225 V*s^2/m
   }
 
   public static final class TrajectoryConstants {

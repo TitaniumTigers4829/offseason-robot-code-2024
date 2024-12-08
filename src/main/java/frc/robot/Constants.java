@@ -121,6 +121,7 @@ public final class Constants {
     public static final double AVERAGE_VELOCITY_RAD_PER_SEC_DURING_TEST = Math.toRadians(60);
 
     public static final int SIMULATION_TICKS_IN_1_PERIOD = 5;
+    public static final double SIMULATED_PERIOD_SECONDS = 0.02;
   }
 
   /**
