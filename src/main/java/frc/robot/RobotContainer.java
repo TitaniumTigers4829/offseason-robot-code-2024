@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.commands.intake.SetIntakePos;
+import frc.robot.commands.pivot.SetPivotPos;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
@@ -19,6 +20,9 @@ import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WH
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotIOSim;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
@@ -42,6 +46,7 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
   // private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
   private final Intake intake;
+  private final Pivot pivot;
   // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
   // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -63,7 +68,6 @@ public class RobotContainer {
         // this.simulatedArena = null;
         this.gyroSimulation = null;
         this.swerveDriveSimulation = null;
-
         intake = new Intake(new IntakeIOTalonFX());
 
         swerveDrive =
@@ -74,6 +78,7 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
         visionSubsystem = new Vision(new VisionIOReal());
+        pivot = new Pivot(new PivotIOTalonFX());
       }
 
       case SIM -> {
@@ -111,6 +116,7 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[1]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[2]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
+        pivot = new Pivot(new PivotIOSim());
 
         // TODO: add sim impl
         visionSubsystem = new Vision(new VisionIO() {});
@@ -136,6 +142,8 @@ public class RobotContainer {
                 new ModuleInterface() {},
                 new ModuleInterface() {},
                 new ModuleInterface() {});
+          pivot = null;
+
       }
     }
   }
@@ -229,7 +237,7 @@ public class RobotContainer {
     // Trigger driverAButton = new Trigger(driverController::getAButton);
     // lol whatever
     // // intake
-    driverController.a().whileTrue(new SetIntakePos(intake));
+    driverController.a().whileTrue(new SetPivotPos(pivot));
     // Trigger operatorLeftTrigger = new Trigger(()->operatorController.getLeftTriggerAxis() > 0.2);
     // Trigger operatorLeftBumper = new Trigger(operatorController::getLeftBumper);
     // // amp and speaker
