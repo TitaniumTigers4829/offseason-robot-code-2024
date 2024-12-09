@@ -7,10 +7,13 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
+import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} */
 public class SimulatedModule implements ModuleInterface {
@@ -35,10 +38,9 @@ public class SimulatedModule implements ModuleInterface {
   @Override
   public void updateInputs(ModuleInputs inputs) {
     inputs.drivePosition =
-        Radians.of(moduleSimulation.getDriveEncoderFinalPositionRad()).in(Rotations);
+        Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
     inputs.driveVelocity =
-        RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
-            .in(RotationsPerSecond);
+        Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec());
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
     inputs.driveCurrentAmps = moduleSimulation.getDriveMotorSupplyCurrentAmps();
 
@@ -73,6 +75,12 @@ public class SimulatedModule implements ModuleInterface {
         desiredState.speedMetersPerSecond
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
+    SmartDashboard.putNumber("desired drive RPS", desiredDriveRPS);
+    SmartDashboard.putNumber(
+        "current drive RPS",
+        RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
+            .in(RotationsPerSecond));
+    SmartDashboard.putNumber("desired angle", desiredState.angle.getDegrees());
 
     moduleSimulation.requestDriveVoltageOut(
         Volts.of(
@@ -97,7 +105,7 @@ public class SimulatedModule implements ModuleInterface {
 
   @Override
   public void stopModule() {
-    moduleSimulation.requestDriveVoltageOut(Volts.zero());
-    moduleSimulation.requestTurnVoltageOut(Volts.zero());
+    moduleSimulation.requestDriveVoltageOut(Volts.of(0));
+    moduleSimulation.requestTurnVoltageOut(Volts.of(0));
   }
 }

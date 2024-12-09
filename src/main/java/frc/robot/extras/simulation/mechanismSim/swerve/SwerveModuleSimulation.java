@@ -15,6 +15,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.extras.simulation.field.SimulatedField;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
@@ -294,7 +296,8 @@ public class SwerveModuleSimulation {
    * @return the final position of the drive encoder (wheel rotations), in radians
    */
   public double getDriveEncoderFinalPositionRad() {
-    return getDriveEncoderUnGearedPositionRad() / DRIVE_GEAR_RATIO;
+    return getDriveEncoderUnGearedPositionRad();
+    //  / DRIVE_GEAR_RATIO;
   }
 
   /**
@@ -321,7 +324,8 @@ public class SwerveModuleSimulation {
    * @return the final speed of the drive wheel, in radians per second
    */
   public double getDriveWheelFinalSpeedRadPerSec() {
-    return getDriveEncoderUnGearedSpeedRadPerSec() / DRIVE_GEAR_RATIO;
+    return getDriveEncoderUnGearedSpeedRadPerSec();
+    // / DRIVE_GEAR_RATIO;
   }
 
   /**
@@ -402,7 +406,7 @@ public class SwerveModuleSimulation {
    */
   public double[] getCachedDriveWheelFinalPositionsRad() {
     return cachedDriveEncoderUnGearedPositionsRad.stream()
-        .mapToDouble(value -> value / DRIVE_GEAR_RATIO)
+        .mapToDouble(value -> value * ModuleConstants.DRIVE_TO_METERS)
         .toArray();
   }
 

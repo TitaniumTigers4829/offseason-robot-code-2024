@@ -1,4 +1,7 @@
-# 2024-offseason-robot-code
-AdvantageKit code
+# offseason-robot-code-2024
 
-Uses a modified version of Maple-sim code.
+Code for Cerce/Percy/Tim/Trashy/Butch
+
+Uses AdvantageKit
+
+Uses a modified version of the Maple-sim library.
