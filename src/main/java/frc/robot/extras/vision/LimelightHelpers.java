@@ -516,7 +516,7 @@ public class LimelightHelpers {
         pose, timestamp, latency, tagCount, tagSpan, tagDist, tagArea, rawFiducials);
   }
 
-  private static void printPoseEstimate(PoseEstimate pose) {
+  public static void printPoseEstimate(PoseEstimate pose) {
     if (pose == null) {
       System.out.println("No PoseEstimate available.");
       return;
@@ -679,12 +679,14 @@ public class LimelightHelpers {
     return getLimelightNTDoubleArray(limelightName, "camerapose_targetspace");
   }
 
-  public static double[] getTargetPose_CameraSpace(String limelightName) {
-    return getLimelightNTDoubleArray(limelightName, "targetpose_cameraspace");
+  public static Pose2d getTargetPose_CameraSpace(String limelightName) {
+    double[] poseArray = getLimelightNTDoubleArray(limelightName, "targetpose_cameraspace");
+    return toPose2D(poseArray);
   }
 
-  public static double[] getTargetPose_RobotSpace(String limelightName) {
-    return getLimelightNTDoubleArray(limelightName, "targetpose_robotspace");
+  public static Pose2d getTargetPose_RobotSpace(String limelightName) {
+    double[] poseArray = getLimelightNTDoubleArray(limelightName, "targetpose_robotspace");
+    return toPose2D(poseArray);
   }
 
   public static double[] getTargetColor(String limelightName) {
