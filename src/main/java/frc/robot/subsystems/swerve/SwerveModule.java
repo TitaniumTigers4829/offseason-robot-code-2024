@@ -72,6 +72,7 @@ public class SwerveModule extends SubsystemBase {
   /** Runs the module with the specified setpoint state. Returns optimized setpoint */
   public void runSetPoint(SwerveModuleState state) {
     state.optimize(getTurnRotation());
+    state.cosineScale(getTurnRotation());
 
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       io.stopModule();
@@ -91,12 +92,12 @@ public class SwerveModule extends SubsystemBase {
 
   /** Returns the current drive position of the module in meters. */
   public double getDrivePositionMeters() {
-    return ModuleConstants.WHEEL_CIRCUMFERENCE_METERS * inputs.drivePosition;
+    return ModuleConstants.DRIVE_TO_METERS * inputs.drivePosition; //Wheel circumference
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getDriveVelocityMetersPerSec() {
-    return ModuleConstants.WHEEL_CIRCUMFERENCE_METERS * inputs.driveVelocity;
+    return ModuleConstants.DRIVE_TO_METERS_PER_SECOND * inputs.driveVelocity;
   }
 
   /** Returns the module state (turn angle and drive velocity). */

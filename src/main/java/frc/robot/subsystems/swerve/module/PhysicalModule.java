@@ -173,18 +173,6 @@ public class PhysicalModule implements ModuleInterface {
 
   @Override
   public void setDesiredState(SwerveModuleState desiredState) {
-    double turnRotations = getTurnRotations();
-    // Optimize the reference state to avoid spinning further than 90 degrees
-
-    // desiredState.optimize(Rotation2d.fromRotations(turnRotations));
-    // setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
-
-    // if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-    //   driveMotor.set(0);
-    //   turnMotor.set(0);
-    //   return;
-    // }
-
     // Converts meters per second to rotations per second
     double desiredDriveRPS =
         desiredState.speedMetersPerSecond
