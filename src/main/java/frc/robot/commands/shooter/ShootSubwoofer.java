@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.FlywheelConstants;
 
 public class ShootSubwoofer extends Command {
   private final Pivot pivot;
@@ -29,19 +29,19 @@ public class ShootSubwoofer extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+    flywheel.setFlywheelVelocity(FlywheelConstants.SHOOT_SPEAKER_RPM);
     pivot.setPivotAngle(PivotConstants.SUBWOOFER_ANGLE);
     if (pivot.isPivotWithinAcceptableError()) {
-      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      flywheel.setRollerSpeed(FlywheelConstants.ROLLER_SHOOT_SPEED);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
+    flywheel.setFlywheelVelocity(FlywheelConstants.SHOOTER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
-    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(FlywheelConstants.ROLLER_NEUTRAL_SPEED);
   }
 
   // Returns true when the command should end.
