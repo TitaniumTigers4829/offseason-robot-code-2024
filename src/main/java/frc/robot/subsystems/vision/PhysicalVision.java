@@ -78,8 +78,8 @@ public class PhysicalVision implements VisionInterface {
   public boolean canSeeAprilTags(Limelight limelight) {
     // First checks if it can see an april tag, then checks if it is fully in frame
     // Different Limelights have different FOVs
-    if (getNumberOfAprilTags(limelight) > 0
-        && getNumberOfAprilTags(limelight) <= VisionConstants.APRIL_TAG_POSITIONS.length) {
+    if (getNumberOfAprilTags(limelight) > VisionConstants.MIN_APRIL_TAG_ID
+        && getNumberOfAprilTags(limelight) <= VisionConstants.MAX_APRIL_TAG_ID) {
       if (limelight.getName().equals(Limelight.SHOOTER.getName())) {
         return Math.abs(LimelightHelpers.getTX(limelight.getName()))
             <= VisionConstants.LL3G_FOV_MARGIN_OF_ERROR;

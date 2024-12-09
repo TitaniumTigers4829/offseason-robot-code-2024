@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} */
 public class SimulatedModule implements ModuleInterface {

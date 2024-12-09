@@ -144,7 +144,8 @@ public class SimulatedVision extends PhysicalVision {
             .getEntry("botpose_orb_wpiblue")
             .setDoubleArray(pose_data.stream().mapToDouble(Double::doubleValue).toArray());
         tagCount[limelight.getId()] = result.getMultiTagResult().get().fiducialIDsUsed.size();
-        apriltagDist[limelight.getId()] = result.getMultiTagResult().get().estimatedPose.best.getX();
+        apriltagDist[limelight.getId()] =
+            result.getMultiTagResult().get().estimatedPose.best.getX();
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);
@@ -182,14 +183,14 @@ public class SimulatedVision extends PhysicalVision {
   }
 
   @Override
-    public double getLimelightAprilTagDistance(Limelight limelight) {
-        // TODO Auto-generated method stub
-        return apriltagDist[limelight.getId()];
-    }
+  public double getLimelightAprilTagDistance(Limelight limelight) {
+    // TODO Auto-generated method stub
+    return apriltagDist[limelight.getId()];
+  }
 
-    @Override
-    public Pose2d getLastSeenPose() {
-        // TODO Auto-generated method stub
-        return super.getLastSeenPose();
-    }
+  @Override
+  public Pose2d getLastSeenPose() {
+    // TODO Auto-generated method stub
+    return super.getLastSeenPose();
+  }
 }
