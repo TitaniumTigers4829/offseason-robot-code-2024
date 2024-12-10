@@ -1,54 +1,60 @@
+// All praise 254 lib
+
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.vision.VisionConstants.Limelight;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
-  private final VisionIO visionIO;
-  private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
+  private final VisionInterface visionInterface;
+  private final VisionInputsAutoLogged inputs = new VisionInputsAutoLogged();
 
-  public Vision(VisionIO visionIO) {
+  public Vision(VisionInterface visionInterface) {
     // Initializing Fields
-    this.visionIO = visionIO;
+    this.visionInterface = visionInterface;
   }
 
   @Override
   public void periodic() {
     // Updates limelight inputs
-    visionIO.updateInputs(inputs);
-    Logger.processInputs(visionIO.getLimelightName(0), inputs);
+    visionInterface.updateInputs(inputs);
+    Logger.processInputs("Vision/", inputs);
   }
 
   // Add methods to support DriveCommand
-  public int getNumberOfAprilTags(int limelightNumber) {
-    return visionIO.getNumberOfAprilTags(limelightNumber);
+  public int getNumberOfAprilTags(Limelight limelight) {
+    return visionInterface.getNumberOfAprilTags(limelight);
   }
 
-  public double getLimelightAprilTagDistance(int limelightNumber) {
-    return visionIO.getLimelightAprilTagDistance(limelightNumber);
+  public double getLimelightAprilTagDistance(Limelight limelight) {
+    return inputs.limelightAprilTagDistance[limelight.getId()];
   }
 
-  public double getTimeStampSeconds(int limelightNumber) {
-    return visionIO.getTimeStampSeconds(limelightNumber);
+  public double getTimeStampSeconds(Limelight limelight) {
+    return inputs.limelightTimestamp[limelight.getId()];
   }
 
-  public double getLatencySeconds(int limelightNumber) {
-    return visionIO.getLatencySeconds(limelightNumber);
+  public double getLatencySeconds(Limelight limelight) {
+    return inputs.limelightLatency[limelight.getId()];
   }
 
   public void setHeadingInfo(double headingDegrees, double headingRateDegrees) {
-    visionIO.setHeadingInfo(headingDegrees, headingRateDegrees);
+    visionInterface.setHeadingInfo(headingDegrees, headingRateDegrees);
   }
 
   @AutoLogOutput(key = "Vision/Has Targets")
-  public boolean canSeeAprilTags(int limelightNumber) {
-    return visionIO.canSeeAprilTags(
-        limelightNumber); // Assuming we're checking the shooter limelight
+  public boolean canSeeAprilTags(Limelight limelight) {
+    return inputs.limelightSeesAprilTags[limelight.getId()];
   }
 
-  public Pose2d getPoseFromAprilTags(int limelightNumber) {
-    return visionIO.getPoseFromAprilTags(limelightNumber);
+  public Pose2d getPoseFromAprilTags(Limelight limelight) {
+    return inputs.limelightCalculatedPose[limelight.getId()];
+  }
+
+  public Pose2d getLastSeenPose() {
+    return inputs.limelightLastSeenPose;
   }
 }
