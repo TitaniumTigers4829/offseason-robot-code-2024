@@ -92,7 +92,7 @@ public class SwerveModule extends SubsystemBase {
 
   /** Returns the current drive position of the module in meters. */
   public double getDrivePositionMeters() {
-    return ModuleConstants.DRIVE_TO_METERS * inputs.drivePosition; //Wheel circumference
+    return ModuleConstants.DRIVE_TO_METERS * inputs.drivePosition; // Wheel circumference
   }
 
   /** Returns the current drive velocity of the module in meters per second. */

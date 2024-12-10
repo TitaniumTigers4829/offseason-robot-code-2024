@@ -11,7 +11,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -49,15 +48,13 @@ public class PhysicalModule implements ModuleInterface {
   private final BaseStatusSignal[] periodicallyRefreshedSignals;
 
   public PhysicalModule(ModuleConfig moduleConfig) {
-    driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.RIO.name);
-    turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.RIO.name);
-    turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.RIO.name);
+    driveMotor = new TalonFX(moduleConfig.driveMotorChannel(), DeviceCANBus.CANIVORE.name);
+    turnMotor = new TalonFX(moduleConfig.turnMotorChannel(), DeviceCANBus.CANIVORE.name);
+    turnEncoder = new CANcoder(moduleConfig.turnEncoderChannel(), DeviceCANBus.CANIVORE.name);
 
     CANcoderConfiguration turnEncoderConfig = new CANcoderConfiguration();
     turnEncoderConfig.MagnetSensor.MagnetOffset = -moduleConfig.angleZero();
     turnEncoderConfig.MagnetSensor.SensorDirection = moduleConfig.encoderReversed();
-    turnEncoderConfig.MagnetSensor.AbsoluteSensorRange =
-        AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     turnEncoder.getConfigurator().apply(turnEncoderConfig, HardwareConstants.TIMEOUT_S);
 
     TalonFXConfiguration driveConfig = new TalonFXConfiguration();

@@ -167,8 +167,8 @@ public class RobotContainer {
     DoubleSupplier driverRightStickX = driverController::getRightX;
     DoubleSupplier driverLeftStick[] =
         new DoubleSupplier[] {
-          () -> JoystickUtil.modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0],
-          () -> JoystickUtil.modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
+          () -> JoystickUtil.modifyAxisPolar(driverLeftStickX, driverLeftStickY, 3)[0],
+          () -> JoystickUtil.modifyAxisPolar(driverLeftStickX, driverLeftStickY, 3)[1]
         };
 
     DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
@@ -217,7 +217,7 @@ public class RobotContainer {
             visionSubsystem,
             driverLeftStick[1],
             driverLeftStick[0],
-            () -> JoystickUtil.modifyAxisCubed(driverRightStickX),
+            () -> JoystickUtil.modifyAxis(driverRightStickX, 3),
             () -> !driverRightBumper.getAsBoolean(),
             () -> driverLeftBumper.getAsBoolean());
     swerveDrive.setDefaultCommand(driveCommand);
