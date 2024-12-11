@@ -79,19 +79,19 @@ public class RobotContainer {
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                45,
+                58,
                 DriveConstants.TRACK_WIDTH,
-                DriveConstants.WHEEL_BASE,
                 DriveConstants.TRACK_WIDTH + .2,
-                DriveConstants.WHEEL_BASE + .2,
+                2,
+                2,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getFalcon500(1),
+                    DCMotor.getKrakenX60(1),
                     DCMotor.getFalcon500(1),
                     60,
                     WHEEL_GRIP.TIRE_WHEEL,
                     ModuleConstants.DRIVE_GEAR_RATIO),
                 gyroSimulation,
-                new Pose2d(3, 3, new Rotation2d()));
+                new Pose2d());
         SimulatedField.getInstance().addDriveTrainSimulation(swerveDriveSimulation);
         swerveDrive =
             new SwerveDrive(
@@ -140,9 +140,8 @@ public class RobotContainer {
       SimulatedField.getInstance().resetFieldForAuto();
       updateFieldSimAndDisplay();
     }
-
-    swerveDrive.periodic();
-    swerveDrive.setPose(startingPose);
+    // swerveDrive.periodic();
+    swerveDrive.resetPosition(startingPose);
   }
 
   public void teleopInit() {
@@ -153,10 +152,6 @@ public class RobotContainer {
   //   if (hasNote) {
   //     driverController.setRumble(RumbleType.kBothRumble, 0.1);
   //     operatorController.setRumble(RumbleType.kBothRumble, 1);
-  //   } else {
-  //     driverController.setRumble(RumbleType.kBothRumble, 0);
-  //     operatorController.setRumble(RumbleType.kBothRumble, 0);
-  //   }
   // }
   private void configureButtonBindings() {
     DoubleSupplier driverLeftStickX = driverController::getLeftX;
@@ -243,11 +238,17 @@ public class RobotContainer {
     driverRightDirectionPad.onTrue(
         new InstantCommand(
             () ->
-                swerveDrive.setPose(
+                swerveDrive.resetPosition(
                     new Pose2d(
                         swerveDrive.getPose().getX(),
                         swerveDrive.getPose().getY(),
                         Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
+    driverController
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    swerveDrive.resetPosition(swerveDriveSimulation.getSimulatedDriveTrainPose())));
     // // // Reset robot odometry based on vision pose measurement from april tags
     // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
     // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));
@@ -299,7 +300,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    swerveDrive.setPose(
+    swerveDrive.resetPosition(
         new Pose2d(
             swerveDrive.getPose().getX(),
             swerveDrive.getPose().getY(),

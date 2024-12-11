@@ -9,7 +9,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Swerve setpoint generatoR that has been passed around so many times its hard to keep track, just
@@ -110,12 +109,12 @@ public class SwerveSetpointGenerator {
             - prevSetpoint.chassisSpeeds().omegaRadiansPerSecond;
     vars.minS = 1.0;
 
-    Logger.recordOutput("beginningVars", vars);
+    // Logger.recordOutput("beginningVars", vars);
 
     checkNeedToSteer(vars);
-    Logger.recordOutput("postCheckNeedToSteer", vars);
+    // Logger.recordOutput("postCheckNeedToSteer", vars);
     makeVectors(vars);
-    Logger.recordOutput("pastMakeVectors", vars);
+    // Logger.recordOutput("pastMakeVectors", vars);
 
     // if (vars.allModulesShouldFlip
     //         && !epsilonEquals(prevSetpoint.chassisSpeeds(), ZERO_SPEEDS)
@@ -127,10 +126,10 @@ public class SwerveSetpointGenerator {
     // }
 
     solveSteering(vars);
-    Logger.recordOutput("postSolveSteering", vars);
+    // Logger.recordOutput("postSolveSteering", vars);
 
     solveDriving(vars);
-    Logger.recordOutput("postSolveDriving", vars);
+    // Logger.recordOutput("postSolveDriving", vars);
 
     ChassisSpeeds retSpeeds =
         new ChassisSpeeds(
@@ -162,7 +161,7 @@ public class SwerveSetpointGenerator {
               accelStates[m].speedMetersPerSecond);
     }
 
-    Logger.recordOutput("finalVars", vars);
+    // Logger.recordOutput("finalVars", vars);
 
     return new SwerveSetpoint( // Logger.recordOutput("output",
         retSpeeds, outputStates);

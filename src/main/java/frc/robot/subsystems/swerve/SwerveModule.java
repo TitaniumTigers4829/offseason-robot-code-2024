@@ -7,11 +7,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import frc.robot.subsystems.swerve.SwerveConstants.SimulationConstants;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInputsAutoLogged;
 import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
 import org.littletonrobotics.junction.Logger;
@@ -20,8 +18,6 @@ public class SwerveModule extends SubsystemBase {
   private final ModuleInterface io;
   private final String name;
   private final ModuleInputsAutoLogged inputs = new ModuleInputsAutoLogged();
-
-  private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   private final Alert hardwareFaultAlert;
 
@@ -44,25 +40,25 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateOdometryPositions();
+    // updateOdometryPositions();
   }
 
-  private void updateOdometryPositions() {
-    odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
-    for (int i = 0; i < odometryPositions.length; i++) {
-      double positionMeters = inputs.odometryDriveWheelRevolutions[i];
-      Rotation2d angle = inputs.odometrySteerPositions[i];
-      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+  // private void updateOdometryPositions() {
+  //   odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
+  //   for (int i = 0; i < odometryPositions.length; i++) {
+  //     double positionMeters = inputs.odometryDriveWheelRevolutions[i];
+  //     Rotation2d angle = inputs.odometrySteerPositions[i];
+  //     odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
 
-      SmartDashboard.putNumber("updated drive position", positionMeters);
-      SmartDashboard.putNumber("updated angle", angle.getDegrees());
-    }
-  }
+  //     SmartDashboard.putNumber("updated drive position", positionMeters);
+  //     SmartDashboard.putNumber("updated angle", angle.getDegrees());
+  //   }
+  // }
 
-  private double driveRevolutionsToMeters(double driveWheelRevolutions) {
-    return Rotations.of(driveWheelRevolutions).in(Radians)
-        * SimulationConstants.WHEEL_RADIUS_METERS;
-  }
+  // private double driveRevolutionsToMeters(double driveWheelRevolutions) {
+  //   return Rotations.of(driveWheelRevolutions).in(Radians)
+  //       * SimulationConstants.WHEEL_RADIUS_METERS;
+  // }
 
   public void setVoltage(Voltage volts) {
     io.setDriveVoltage(volts);
@@ -77,8 +73,12 @@ public class SwerveModule extends SubsystemBase {
     return inputs.driveVelocity;
   }
 
-  /** Runs the module with the specified setpoint state. Returns the optimized state. */
+  /** Runs the module with the specified setpoint state. Returns optimized setpoint */
   public void runSetPoint(SwerveModuleState state) {
+    // state.optimize(getTurnRotation());
+    // if (state.speedMetersPerSecond < 0.01) {
+    //   io.stopModule();
+    // }
     io.setDesiredState(state);
   }
 
@@ -93,22 +93,17 @@ public class SwerveModule extends SubsystemBase {
 
   /** Returns the current drive position of the module in meters. */
   public double getDrivePositionMeters() {
-    return ModuleConstants.DRIVE_TO_METERS * inputs.drivePosition;
+    return ModuleConstants.WHEEL_CIRCUMFERENCE_METERS * inputs.drivePosition;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getDriveVelocityMetersPerSec() {
-    return ModuleConstants.DRIVE_TO_METERS_PER_SECOND * inputs.driveVelocity;
+    return ModuleConstants.WHEEL_CIRCUMFERENCE_METERS * inputs.driveVelocity;
   }
 
   /** Returns the module state (turn angle and drive velocity). */
   public SwerveModuleState getMeasuredState() {
     return new SwerveModuleState(getDriveVelocityMetersPerSec(), getTurnRotation());
-  }
-
-  /** Returns the module positions received this cycle. */
-  public SwerveModulePosition[] getOdometryPositions() {
-    return odometryPositions;
   }
 
   /**
@@ -118,8 +113,6 @@ public class SwerveModule extends SubsystemBase {
    * @return a SwerveModulePosition object containing position and rotation
    */
   public SwerveModulePosition getPosition() {
-    double position = ModuleConstants.DRIVE_TO_METERS * getDrivePositionMeters();
-    Rotation2d rotation = getTurnRotation();
-    return new SwerveModulePosition(position, rotation);
+    return new SwerveModulePosition(getDrivePositionMeters(), getTurnRotation());
   }
 }
