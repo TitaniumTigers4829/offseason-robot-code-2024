@@ -50,8 +50,6 @@ public class Flywheel extends SubsystemBase {
     io.setRollerSpeed(speed);
     Logger.recordOutput("Roller/DutyCycleOut", speed);
   }
-
-  /** updates and logs inputs periodically */
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
