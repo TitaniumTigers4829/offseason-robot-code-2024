@@ -97,8 +97,7 @@ public class FlywheelIOTalonFX
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
     inputs.positionRotations =
-        leaderPosition.getValueAsDouble()
-            / FlywheelConstants.GEAR_RATIO; // converted to radians to gear ratio math
+        leaderPosition.getValueAsDouble();//gear ratio is one
     inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * FlywheelConstants.RPM_RPS_CONVERSION_FACTOR) / FlywheelConstants.GEAR_RATIO;
     inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
