@@ -23,7 +23,7 @@ public class AutoAlignWithAmp extends Command {
 
   private final ProfiledPIDController turnController =
       new ProfiledPIDController(
-          FlywheelConstants.AUTO_LINEUP_ROTATION_P,
+          ShooterConstants.AUTO_LINEUP_ROTATION_P,
           FlywheelConstants.AUTO_LINEUP_ROTATION_I,
           FlywheelConstants.AUTO_LINEUP_ROTATION_D,
           FlywheelConstants.AUTO_LINEUP_ROTATION_CONSTRAINTS);

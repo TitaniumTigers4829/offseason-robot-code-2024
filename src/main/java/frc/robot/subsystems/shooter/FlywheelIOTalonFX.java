@@ -41,7 +41,7 @@ public class FlywheelIOTalonFX
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
     flywheelConfig.CurrentLimits.SupplyCurrentLimit =
         FlywheelConstants
-            .FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in CONSTANTS file
+            .FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in FlywheelConstants file
     flywheelConfig.CurrentLimits.StatorCurrentLimit = FlywheelConstants.FLYWHEEL_STATOR_LIMIT;
     flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable =
         FlywheelConstants.FLYWHEEL_SUPPLY_ENABLE;
@@ -99,7 +99,7 @@ public class FlywheelIOTalonFX
     inputs.positionRotations =
         leaderPosition.getValueAsDouble()
             / FlywheelConstants.GEAR_RATIO; // converted to radians to gear ratio math
-    inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * 60.0) / FlywheelConstants.GEAR_RATIO;
+    inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * FlywheelConstants.RPM_RPS_CONVERSION_FACTOR) / FlywheelConstants.GEAR_RATIO;
     inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
         new double[] {

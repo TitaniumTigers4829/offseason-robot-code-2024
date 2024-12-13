@@ -109,5 +109,6 @@ public class FlywheelConstants {
   public static final boolean FLYWHEEL_STATOR_ENABLE = true;
 
   public static final double LOW_VOLTAGE_BOUNDARY = 12.0;
+  public static final double RPM_RPS_CONVERSION_FACTOR = 60.0;
   public static final double HIGH_VOLTAGE_BOUNDARY = -12.0;
 }
