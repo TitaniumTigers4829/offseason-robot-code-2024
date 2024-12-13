@@ -7,7 +7,7 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
-  /** Constructor that creates initiates IO */
+  /** Constructor that uses IO. IO methods can be used in subsystem. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
   }
