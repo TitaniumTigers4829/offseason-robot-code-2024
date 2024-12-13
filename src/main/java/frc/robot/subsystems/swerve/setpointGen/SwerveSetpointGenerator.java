@@ -2,6 +2,8 @@ package frc.robot.subsystems.swerve.setpointGen;
 
 import static frc.robot.subsystems.swerve.setpointGen.SPGCalcs.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -161,7 +163,7 @@ public class SwerveSetpointGenerator {
               accelStates[m].speedMetersPerSecond);
     }
 
-    // Logger.recordOutput("finalVars", vars);
+    Logger.recordOutput("finalVars", vars);
 
     return new SwerveSetpoint( // Logger.recordOutput("output",
         retSpeeds, outputStates);
