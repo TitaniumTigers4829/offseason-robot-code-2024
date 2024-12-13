@@ -15,16 +15,16 @@ public class FlywheelConstants {
   /** ID of the roller motor */
   public static final int ROLLER_MOTOR_ID = 2;
 
-  /** Sets the limit for the shooter supply voltage */
+  /** Sets the limit for the shooter supply voltage*/
   public static final double SHOOTER_SUPPLY_LIMIT = 60;
 
-  /** Sets the limit for the shooter stator voltage */
+  /** Sets the current limit for the motor stator*/
   public static final double SHOOTER_STATOR_LIMIT = 60;
 
   /** Enables the limit for stator */
   public static final boolean SHOOTER_STATOR_ENABLE = true;
 
-  /** Enables the limit for supply */
+  /** Enables the limit for current to motor*/
   public static final boolean SHOOTER_SUPPLY_ENABLE = true;
 
   /** Sets the speed of the roller motor for neutral mode */
