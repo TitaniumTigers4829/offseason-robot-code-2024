@@ -20,7 +20,7 @@ public class IntakeIOSim implements IntakeIO {
           DCMotor.getFalcon500(2), IntakeConstants.INTAKE_PIVOT_GEAR_RATIO, 0.01, 1, Rotations.of(0).in(Radians), Rotations.of(1).in(Radians), false, 0.0);
   private final Constraints pivotConstraints = new Constraints(5, 5);
   private final ProfiledPIDController pivotController =
-      new ProfiledPIDController(5, 0, 0, pivotConstraints);
+      new ProfiledPIDController(20, 0, 0, pivotConstraints);
 
   private final ArmFeedforward pivotFF = new ArmFeedforward(0.1, 0, 0, 0);
 

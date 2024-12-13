@@ -28,7 +28,7 @@ public class PivotIOSim implements PivotIO {
   private final Constraints pivotConstraints = new Constraints(0, 0);
   private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
   private final ProfiledPIDController pivotController =
-      new ProfiledPIDController(10, 0, 0, pivotConstraints);
+      new ProfiledPIDController(50, 0, 0, pivotConstraints);
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
   public void setShooterPivotPosition(double position) {
@@ -77,6 +77,6 @@ public class PivotIOSim implements PivotIO {
   public void setPivotAngle(double angleRots) {
     double currentPivotAngleRots = Units.radiansToRotations(pivotSim.getAngleRads());
     double armFF = armFeedforward.calculate(angleRots, pivotController.getSetpoint().velocity);
-    setVoltage(pivotController.calculate(angleRots, currentPivotAngleRots) + armFF);
+    setVoltage(pivotController.calculate(currentPivotAngleRots, angleRots) + armFF);
   }
 }

@@ -117,6 +117,7 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[2]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
         pivot = new Pivot(new PivotIOSim());
+       
 
         // TODO: add sim impl
         visionSubsystem = new Vision(new VisionIO() {});
