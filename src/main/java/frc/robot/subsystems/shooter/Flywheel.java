@@ -35,7 +35,7 @@ public class Flywheel extends SubsystemBase {
   /**
    * Returns whether or not a note is detected
    *
-   * @return whether a note was detected or not
+   * @return False if not detected, True if detected
    */
   public boolean hasNote() {
     return inputs.isNoteDetected;
