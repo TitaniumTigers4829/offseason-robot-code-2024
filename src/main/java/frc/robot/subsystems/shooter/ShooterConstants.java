@@ -24,8 +24,9 @@ public class ShooterConstants {
   public static final double SHOOT_SPEAKER_VERY_FAR_RPM = 5500;
 
   public static final int SHOOTER_ACCEPTABLE_RPM_ERROR = 25;
-
+ /**Porportional value which  */
   public static final double SHOOT_P = 0.522;
+  /* */
   public static final double SHOOT_I = 0.00;
   public static final double SHOOT_D = 0.001;
   public static final double SHOOT_S = 0.319692618511411;
@@ -79,7 +80,9 @@ public class ShooterConstants {
 
   public static final double FLYWHEEL_SUPPLY_LIMIT = 60.0;
   public static final boolean FLYWHEEL_SUPPLY_ENABLE = true;
+  /**The stator limit limits the current sent to the stator in the motor https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html */
   public static final double FLYWHEEL_STATOR_LIMIT = 60.0;
+  /**Enables the stator limit which limits current to the stator in the motor https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html */
   public static final boolean FLYWHEEL_STATOR_ENABLE = true;
 
   public static final double LOW_VOLTAGE_BOUNDARY = 12.0;
