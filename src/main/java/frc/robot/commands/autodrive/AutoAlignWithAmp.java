@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.FlywheelConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
 import java.util.Optional;
@@ -24,23 +24,23 @@ public class AutoAlignWithAmp extends Command {
   private final ProfiledPIDController turnController =
       new ProfiledPIDController(
           ShooterConstants.AUTO_LINEUP_ROTATION_P,
-          ShooterConstants.AUTO_LINEUP_ROTATION_I,
-          ShooterConstants.AUTO_LINEUP_ROTATION_D,
-          ShooterConstants.AUTO_LINEUP_ROTATION_CONSTRAINTS);
+          FlywheelConstants.AUTO_LINEUP_ROTATION_I,
+          FlywheelConstants.AUTO_LINEUP_ROTATION_D,
+          FlywheelConstants.AUTO_LINEUP_ROTATION_CONSTRAINTS);
 
   private final ProfiledPIDController xTranslationController =
       new ProfiledPIDController(
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_P,
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_I,
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_D,
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_CONSTRAINTS);
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_P,
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_I,
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_D,
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_CONSTRAINTS);
 
   private final ProfiledPIDController yTranslationController =
       new ProfiledPIDController(
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_P,
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_I,
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_D,
-          ShooterConstants.AUTO_LINEUP_TRANSLATION_CONSTRAINTS);
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_P,
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_I,
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_D,
+          FlywheelConstants.AUTO_LINEUP_TRANSLATION_CONSTRAINTS);
 
   /** Creates a new AutoAlignWithAmp. */
   public AutoAlignWithAmp(SwerveDrive swerveDrive, Vision vision) {

@@ -18,12 +18,12 @@ import frc.robot.Constants.HardwareConstants;
 public class FlywheelIOTalonFX
     implements FlywheelIO { // FlywheelIOTalonFX makes Advantagekit log physical hardware movement
   private final TalonFX leftFlywheelMotor =
-      new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_ID); // Leader=left motor
+      new TalonFX(FlywheelConstants.LEFT_FLYWHEEL_MOTOR_ID); // Leader=left motor
   private final TalonFX rightFlywheelMotor =
-      new TalonFX(ShooterConstants.RIGHT_FLYWHEEL_MOTOR_ID); // follower = right motor
+      new TalonFX(FlywheelConstants.RIGHT_FLYWHEEL_MOTOR_ID); // follower = right motor
   private final DigitalInput noteSensor =
-      new DigitalInput(ShooterConstants.NOTE_SENSOR_ID); // Note sensor
-  private final TalonFX rollerMotor = new TalonFX(ShooterConstants.ROLLER_MOTOR_ID);
+      new DigitalInput(FlywheelConstants.NOTE_SENSOR_ID); // Note sensor
+  private final TalonFX rollerMotor = new TalonFX(FlywheelConstants.ROLLER_MOTOR_ID);
   // gives values for each thing that is set.
   private final VelocityVoltage velocityRequest;
   private final VoltageOut voltageRequest;
@@ -40,23 +40,25 @@ public class FlywheelIOTalonFX
   public FlywheelIOTalonFX() { // Object to set different flywheel configs
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
     flywheelConfig.CurrentLimits.SupplyCurrentLimit =
-        ShooterConstants
-            .FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in CONSTANTS file
-    flywheelConfig.CurrentLimits.StatorCurrentLimit = ShooterConstants.FLYWHEEL_STATOR_LIMIT;
-    flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = ShooterConstants.FLYWHEEL_SUPPLY_ENABLE;
-    flywheelConfig.CurrentLimits.StatorCurrentLimitEnable = ShooterConstants.FLYWHEEL_STATOR_ENABLE;
+        FlywheelConstants
+            .FLYWHEEL_SUPPLY_LIMIT; // Talonfx configuration software limits found in FlywheelConstants file
+    flywheelConfig.CurrentLimits.StatorCurrentLimit = FlywheelConstants.FLYWHEEL_STATOR_LIMIT;
+    flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable =
+        FlywheelConstants.FLYWHEEL_SUPPLY_ENABLE;
+    flywheelConfig.CurrentLimits.StatorCurrentLimitEnable =
+        FlywheelConstants.FLYWHEEL_STATOR_ENABLE;
     flywheelConfig.MotorOutput.NeutralMode =
         NeutralModeValue
             .Coast; // This is used to ensure maximum power efficiency, to ensure flywheels keep
     // spinning after power off.
 
     flywheelConfig.Slot0.kP =
-        ShooterConstants.FLYWHEEL_P; // everything tuned in Flywheel Constants file
-    flywheelConfig.Slot0.kI = ShooterConstants.FLYWHEEL_I;
-    flywheelConfig.Slot0.kP = ShooterConstants.FLYWHEEL_D;
-    flywheelConfig.Slot0.kS = ShooterConstants.FLYWHEEL_S;
-    flywheelConfig.Slot0.kV = ShooterConstants.FLYWHEEL_V;
-    flywheelConfig.Slot0.kA = ShooterConstants.FLYWHEEL_A;
+        FlywheelConstants.FLYWHEEL_P; // everything tuned in Flywheel Constants file
+    flywheelConfig.Slot0.kI = FlywheelConstants.FLYWHEEL_I;
+    flywheelConfig.Slot0.kP = FlywheelConstants.FLYWHEEL_D;
+    flywheelConfig.Slot0.kS = FlywheelConstants.FLYWHEEL_S;
+    flywheelConfig.Slot0.kV = FlywheelConstants.FLYWHEEL_V;
+    flywheelConfig.Slot0.kA = FlywheelConstants.FLYWHEEL_A;
 
     leftFlywheelMotor
         .getConfigurator()
@@ -89,16 +91,14 @@ public class FlywheelIOTalonFX
     voltageRequest = new VoltageOut(0.0);
   }
 
-
   @Override
   public void updateInputs(
       FlywheelIOInputs inputs) { // gets current values for motors and puts them into a log
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
     inputs.positionRotations =
-        leaderPosition.getValueAsDouble()
-            / ShooterConstants.GEAR_RATIO; // converted to radians to gear ratio math
-    inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * 60.0) / ShooterConstants.GEAR_RATIO;
+        leaderPosition.getValueAsDouble();//gear ratio is one
+    inputs.velocityRPM = (leaderVelocity.getValueAsDouble() * FlywheelConstants.RPM_RPS_CONVERSION_FACTOR) / FlywheelConstants.GEAR_RATIO;
     inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
         new double[] {
@@ -112,22 +112,19 @@ public class FlywheelIOTalonFX
     leftFlywheelMotor.setControl(voltageRequest.withOutput(volts));
   }
 
-
   @Override
   public void setVelocity(double velocityRPM) {
     leftFlywheelMotor.setControl(velocityRequest.withVelocity(velocityRPM / 60.0));
   }
 
   @Override
-
   public void stop() { // stops the motor
     leftFlywheelMotor.stopMotor();
   }
-  
+
   public void setRollerSpeed(double speed) {
     rollerMotor.set(speed);
   }
-
 
   public boolean hasNote() {
     return !noteSensor.get();

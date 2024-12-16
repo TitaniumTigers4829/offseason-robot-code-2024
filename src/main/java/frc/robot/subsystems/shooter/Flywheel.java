@@ -7,8 +7,7 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
-  // private final SimpleMotorFeedforward ffModel;
-  /** Constructor that creates initiates IO */
+  /** Constructor that uses IO. IO methods can be used in subsystem. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
   }
@@ -16,10 +15,10 @@ public class Flywheel extends SubsystemBase {
   /**
    * Sets the flywheel voltage
    *
-   * @param desiredVoltage
+   * @param desiredVoltage Desired Voltage in double
    */
   public void setFlywheelVoltage(double desiredVoltage) {
-    io.setVoltage(desiredVoltage); // /io calls the functions
+    io.setVoltage(desiredVoltage); // /IO calls the functions
     Logger.recordOutput("Flywheel/voltage", desiredVoltage);
   }
 
@@ -36,7 +35,7 @@ public class Flywheel extends SubsystemBase {
   /**
    * Returns whether or not a note is detected
    *
-   * @return whether a note was detected or not
+   * @return False if not detected, True if detected
    */
   public boolean hasNote() {
     return inputs.isNoteDetected;
@@ -52,16 +51,14 @@ public class Flywheel extends SubsystemBase {
     Logger.recordOutput("Roller/DutyCycleOut", speed);
   }
 
-  /** updates and logs inputs periodically */
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     io.updateInputs(inputs);
-    Logger.processInputs("FlywheelSubsystem", inputs);
+    Logger.processInputs("Flywheel", inputs);
   }
 
-  /**
-   * @return periodic but for the simulation
+  
    */
   @Override
   public void simulationPeriodic() {
