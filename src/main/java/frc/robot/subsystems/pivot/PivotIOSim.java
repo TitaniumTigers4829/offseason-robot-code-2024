@@ -23,18 +23,14 @@ public class PivotIOSim implements PivotIO {
 
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
-          DCMotor.getKrakenX60(2), pivotGearing, 0.01, 3, 0, 1, true, 0);
+          DCMotor.getKrakenX60(2), pivotGearing, 0.01, 1, Rotations.of(0).in(Radians), Rotations.of(1).in(Radians), false, 0);
 
-  private final Constraints pivotConstraints = new Constraints(0, 0);
+  private final Constraints pivotConstraints = new Constraints(10, 10);
   private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
   private final ProfiledPIDController pivotController =
-      new ProfiledPIDController(50, 0, 0, pivotConstraints);
+      new ProfiledPIDController(15, 0, 0, pivotConstraints);
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
-  public void setShooterPivotPosition(double position) {
-    pivotSim.setInputVoltage(
-        pivotController.calculate(Radians.of(pivotSim.getAngleRads()).in(Rotations), position));
-  }
 
   /**
    * Updates inputs for logging w/ advantage kit
@@ -77,6 +73,6 @@ public class PivotIOSim implements PivotIO {
   public void setPivotAngle(double angleRots) {
     double currentPivotAngleRots = Units.radiansToRotations(pivotSim.getAngleRads());
     double armFF = armFeedforward.calculate(angleRots, pivotController.getSetpoint().velocity);
-    setVoltage(pivotController.calculate(currentPivotAngleRots, angleRots) + armFF);
+    setVoltage(pivotController.calculate(currentPivotAngleRots, angleRots));
   }
 }

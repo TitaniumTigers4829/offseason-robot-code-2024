@@ -238,7 +238,7 @@ public class RobotContainer {
     // Trigger driverAButton = new Trigger(driverController::getAButton);
     // lol whatever
     // // intake
-    driverController.a().whileTrue(new SetPivotPos(pivot));
+    driverController.a().whileTrue(new SetIntakePos(intake));
     // Trigger operatorLeftTrigger = new Trigger(()->operatorController.getLeftTriggerAxis() > 0.2);
     // Trigger operatorLeftBumper = new Trigger(operatorController::getLeftBumper);
     // // amp and speaker
