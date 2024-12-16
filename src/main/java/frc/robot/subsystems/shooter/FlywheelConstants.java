@@ -15,16 +15,16 @@ public class FlywheelConstants {
   /** ID of the roller motor */
   public static final int ROLLER_MOTOR_ID = 2;
 
-  /** Sets the limit for the shooter supply voltage*/
+  /** Sets the limit for the shooter supply voltage */
   public static final double SHOOTER_SUPPLY_LIMIT = 60;
 
-  /** Sets the current limit for the motor stator*/
+  /** Sets the current limit for the motor stator */
   public static final double SHOOTER_STATOR_LIMIT = 60;
 
   /** Enables the limit for stator */
   public static final boolean SHOOTER_STATOR_ENABLE = true;
 
-  /** Enables the limit for current to motor*/
+  /** Enables the limit for current to motor */
   public static final boolean SHOOTER_SUPPLY_ENABLE = true;
 
   /** Sets the speed of the roller motor for neutral mode */
@@ -105,9 +105,17 @@ public class FlywheelConstants {
 
   public static final double FLYWHEEL_SUPPLY_LIMIT = 60.0;
   public static final boolean FLYWHEEL_SUPPLY_ENABLE = true;
-  /**The stator limit limits the current sent to the stator in the motor https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html */
+
+  /**
+   * The stator limit limits the current sent to the stator in the motor
+   * https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html
+   */
   public static final double FLYWHEEL_STATOR_LIMIT = 60.0;
-  /**Enables the stator limit which limits current to the stator in the motor https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html */
+
+  /**
+   * Enables the stator limit which limits current to the stator in the motor
+   * https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html
+   */
   public static final boolean FLYWHEEL_STATOR_ENABLE = true;
 
   public static final double LOW_VOLTAGE_BOUNDARY = 12.0;
