@@ -30,6 +30,7 @@ public class Pivot extends SubsystemBase {
    */
   public void setPivotAngle(double angle) {
     io.setPivotAngle(angle);
+    Logger.recordOutput("Pivot/desired shooter pivot angle", angle);
   }
 
   /**

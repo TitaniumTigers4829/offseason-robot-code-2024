@@ -46,6 +46,5 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("OTBIntake", inputs);
 
-    Logger.recordOutput("pivot pos", getPivotPosition());
   }
 }
