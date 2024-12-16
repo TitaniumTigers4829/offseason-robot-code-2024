@@ -4,8 +4,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface FlywheelIO {
   @AutoLog
-  public static class FlywheelIOInputs { // variables that we want to log
-    public double positionRotations = 0.0; // positions in radians | convert to rpms
+  /** Creates new variables necessary for logging */
+  public static class FlywheelIOInputs { // Variables that we want to log
+    public double positionRotations = 0.0; // Positions in radians | convert to rpms
     public double velocityRPM = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
@@ -21,13 +22,17 @@ public interface FlywheelIO {
   /**
    * Run closed loop at the specified velocity.
    *
-   * @param velocityRPM Recieve desired input in rounds per minute, and the method will convert to
-   *     RPS to match requirements for VelocityVoltage
+   * @param velocityRPM Recieve desired input in rotations per minute
    */
   public default void setVelocity(double velocityRPM) {}
 
   /** Stop in open loop. */
   public default void stop() {}
 
+  /**
+   * Sets speed of the roller
+   *
+   * @param speed Range is -1 to 1
+   */
   default void setRollerSpeed(double speed) {}
 }

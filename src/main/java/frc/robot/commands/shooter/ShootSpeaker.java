@@ -15,7 +15,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.shooter.Flywheel;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.FlywheelConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
 import java.util.Optional;
@@ -36,10 +36,10 @@ public class ShootSpeaker extends Command {
 
   private final ProfiledPIDController turnController =
       new ProfiledPIDController(
-          ShooterConstants.AUTO_SHOOT_P,
-          ShooterConstants.AUTO_SHOOT_I,
-          ShooterConstants.AUTO_SHOOT_D,
-          ShooterConstants.AUTO_SHOOT_CONSTRAINTS);
+          FlywheelConstants.AUTO_SHOOT_P,
+          FlywheelConstants.AUTO_SHOOT_I,
+          FlywheelConstants.AUTO_SHOOT_D,
+          FlywheelConstants.AUTO_SHOOT_CONSTRAINTS);
 
   private boolean isRed = false;
   private double desiredHeading = 0;
@@ -108,12 +108,12 @@ public class ShootSpeaker extends Command {
         !isFieldRelative.getAsBoolean());
 
     // Sets flywheel speed based on distance
-    // if (distance > ShooterConstants.SHOOTER_FAR_DISTANCE) {
-    //   flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_FAR_RPM);
-    // } else if (distance > ShooterConstants.SHOOTER_DISTANCE) {
-    //   flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_MEDIUM_RPM);
+    // if (distance > FlywheelConstants.SHOOTER_FAR_DISTANCE) {
+    //   flywheel.setFlywheelVelocity(FlywheelConstants.SHOOT_SPEAKER_FAR_RPM);
+    // } else if (distance > FlywheelConstants.SHOOTER_DISTANCE) {
+    //   flywheel.setFlywheelVelocity(FlywheelConstants.SHOOT_SPEAKER_MEDIUM_RPM);
     // } else {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOT_SPEAKER_RPM);
+    flywheel.setFlywheelVelocity(FlywheelConstants.SHOOT_SPEAKER_RPM);
     // }
 
     // Sets Pivot and Elevator
@@ -122,7 +122,7 @@ public class ShootSpeaker extends Command {
 
     if (isReadyToShoot()) {
       // Pushes note to flywheels once robot is ready
-      flywheel.setRollerSpeed(ShooterConstants.ROLLER_SHOOT_SPEED);
+      flywheel.setRollerSpeed(FlywheelConstants.ROLLER_SHOOT_SPEED);
     } else {
       // Don't shoot
     }
@@ -131,8 +131,8 @@ public class ShootSpeaker extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    flywheel.setFlywheelVelocity(ShooterConstants.SHOOTER_NEUTRAL_SPEED);
-    flywheel.setRollerSpeed(ShooterConstants.ROLLER_NEUTRAL_SPEED);
+    flywheel.setFlywheelVelocity(FlywheelConstants.SHOOTER_NEUTRAL_SPEED);
+    flywheel.setRollerSpeed(FlywheelConstants.ROLLER_NEUTRAL_SPEED);
     pivot.setPivotAngle(PivotConstants.PIVOT_INTAKE_ANGLE);
     elevator.setElevatorPosition(ElevatorConstants.INTAKE_POSITION);
   }
