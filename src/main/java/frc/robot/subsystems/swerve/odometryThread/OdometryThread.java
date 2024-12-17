@@ -48,7 +48,7 @@ public interface OdometryThread {
   }
 
   static OdometryThread createInstance(DeviceCANBus canBus) {
-    return switch (Constants.currentMode) {
+    return switch (Constants.CURRENT_MODE) {
       case REAL ->
           new OdometryThreadReal(
               canBus,

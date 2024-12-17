@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.SimulationConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
@@ -19,15 +20,16 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
-import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
-import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
-import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
-import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
-import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
+import frc.robot.subsystems.swerve.gyro.GyroInterface;
+import frc.robot.subsystems.swerve.gyro.PhysicalGyro;
+import frc.robot.subsystems.swerve.gyro.SimulatedGyro;
+import frc.robot.subsystems.swerve.module.ModuleInterface;
+import frc.robot.subsystems.swerve.module.PhysicalModule;
+import frc.robot.subsystems.swerve.module.SimulatedModule;
+import frc.robot.subsystems.vision.PhysicalVision;
+import frc.robot.subsystems.vision.SimulatedVision;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOReal;
+import frc.robot.subsystems.vision.VisionInterface;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -51,7 +53,7 @@ public class RobotContainer {
   // private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    switch (Constants.CURRENT_MODE) {
       case REAL -> {
         /* Real robot, instantiate hardware IO implementations */
 
@@ -67,7 +69,7 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[1]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
-        visionSubsystem = new Vision(new VisionIOReal());
+        visionSubsystem = new Vision(new PhysicalVision());
       }
 
       case SIM -> {
@@ -79,7 +81,7 @@ public class RobotContainer {
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                45,
+                SimulationConstants.ROBOT_MASS_KG,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 DriveConstants.TRACK_WIDTH + .2,
@@ -105,8 +107,9 @@ public class RobotContainer {
                 new SimulatedModule(swerveDriveSimulation.getModules()[2]),
                 new SimulatedModule(swerveDriveSimulation.getModules()[3]));
 
-        // TODO: add sim impl
-        visionSubsystem = new Vision(new VisionIO() {});
+        visionSubsystem =
+            new Vision(
+                new SimulatedVision(() -> swerveDriveSimulation.getSimulatedDriveTrainPose()));
 
         SimulatedField.getInstance().resetFieldForAuto();
         resetFieldAndOdometryForAuto(
@@ -114,7 +117,7 @@ public class RobotContainer {
       }
 
       default -> {
-        visionSubsystem = new Vision(new VisionIO() {});
+        visionSubsystem = new Vision(new VisionInterface() {});
         /* Replayed robot, disable IO implementations */
 
         /* physics simulations are also not needed */
@@ -141,8 +144,8 @@ public class RobotContainer {
       updateFieldSimAndDisplay();
     }
 
-    swerveDrive.periodic();
-    swerveDrive.setPose(startingPose);
+    // swerveDrive.periodic();
+    swerveDrive.resetPosition(startingPose);
   }
 
   public void teleopInit() {
@@ -164,8 +167,8 @@ public class RobotContainer {
     DoubleSupplier driverRightStickX = driverController::getRightX;
     DoubleSupplier driverLeftStick[] =
         new DoubleSupplier[] {
-          () -> JoystickUtil.modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[0],
-          () -> JoystickUtil.modifyAxisCubedPolar(driverLeftStickX, driverLeftStickY)[1]
+          () -> JoystickUtil.modifyAxisPolar(driverLeftStickX, driverLeftStickY, 3)[0],
+          () -> JoystickUtil.modifyAxisPolar(driverLeftStickX, driverLeftStickY, 3)[1]
         };
 
     DoubleSupplier operatorLeftStickX = operatorController::getLeftX;
@@ -214,7 +217,7 @@ public class RobotContainer {
             visionSubsystem,
             driverLeftStick[1],
             driverLeftStick[0],
-            () -> JoystickUtil.modifyAxisCubed(driverRightStickX),
+            () -> JoystickUtil.modifyAxis(driverRightStickX, 3),
             () -> !driverRightBumper.getAsBoolean(),
             () -> driverLeftBumper.getAsBoolean());
     swerveDrive.setDefaultCommand(driveCommand);
@@ -243,14 +246,20 @@ public class RobotContainer {
     driverRightDirectionPad.onTrue(
         new InstantCommand(
             () ->
-                swerveDrive.setPose(
+                swerveDrive.resetPosition(
                     new Pose2d(
                         swerveDrive.getPose().getX(),
                         swerveDrive.getPose().getY(),
                         Rotation2d.fromDegrees(swerveDrive.getAllianceAngleOffset())))));
+    driverController
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    swerveDrive.resetPosition(swerveDriveSimulation.getSimulatedDriveTrainPose())));
     // // // Reset robot odometry based on vision pose measurement from april tags
-    // driverLeftDirectionPad.onTrue(new InstantCommand(() ->
-    // swerveDrive.resetOdometry(visionSubsystem.getLastSeenPose())));
+    driverLeftDirectionPad.onTrue(
+        new InstantCommand(() -> swerveDrive.resetPosition(visionSubsystem.getLastSeenPose())));
     // // driverLeftDpad.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry(new
     // Pose2d(15.251774787902832, 5.573054313659668, Rotation2d.fromRadians(3.14159265)))));
     // // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,
@@ -299,7 +308,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    swerveDrive.setPose(
+    swerveDrive.resetPosition(
         new Pose2d(
             swerveDrive.getPose().getX(),
             swerveDrive.getPose().getY(),
