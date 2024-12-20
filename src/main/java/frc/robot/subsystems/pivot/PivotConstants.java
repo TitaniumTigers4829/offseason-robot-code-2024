@@ -3,8 +3,8 @@ package frc.robot.subsystems.pivot;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class PivotConstants {
-  public static final double PIVOT_MASS = 0 - 9;
-  public static final double PIVOT_LENGTH = 0 - 9;
+  public static final double PIVOT_MASS = 5;
+  public static final double PIVOT_LENGTH = 5;
 
   public static final double PIVOT_GEAR_RATIO = 8.0;
 

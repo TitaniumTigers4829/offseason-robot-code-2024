@@ -9,12 +9,16 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.drive.DriveCommand;
+import frc.robot.commands.pivot.ManualPivot;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveDriveSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WHEEL_GRIP;
 import frc.robot.extras.util.JoystickUtil;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotIOSim;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
@@ -36,9 +40,10 @@ public class RobotContainer {
   private final Vision visionSubsystem;
   private final SwerveDrive swerveDrive;
   private final CommandXboxController operatorController = new CommandXboxController(1);
+  // private final Pivot pivot;
   // private final Indexer indexer = new Indexer(new IndexerIOTalonFX());
   // private final Intake intake = new Intake(new IntakeIOTalonFX());
-  // private final Pivot pivot = new Pivot(new PivotIOTalonFX());
+  private final Pivot pivot;
   // private final Flywheel flywheel = new Flywheel(new FlywheelIOTalonFX());
   private final CommandXboxController driverController = new CommandXboxController(0);
 
@@ -51,7 +56,7 @@ public class RobotContainer {
   // private final XboxController driverController = new XboxController(0);
 
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    switch (Constants.CURRENT_MODE) {
       case REAL -> {
         /* Real robot, instantiate hardware IO implementations */
 
@@ -68,12 +73,14 @@ public class RobotContainer {
                 new PhysicalModule(SwerveConstants.moduleConfigs[2]),
                 new PhysicalModule(SwerveConstants.moduleConfigs[3]));
         visionSubsystem = new Vision(new VisionIOReal());
+        pivot = new Pivot(new PivotIOTalonFX());
       }
 
       case SIM -> {
         /* Sim robot, instantiate physics sim IO implementations */
 
         /* create simulations */
+        pivot = new Pivot(new PivotIOSim());
         /* create simulation for pigeon2 IMU (different IMUs have different measurement erros) */
         this.gyroSimulation = GyroSimulation.createNavX2();
         /* create a swerve drive simulation */
@@ -128,6 +135,7 @@ public class RobotContainer {
                 new ModuleInterface() {},
                 new ModuleInterface() {},
                 new ModuleInterface() {});
+        pivot = null;
       }
     }
   }
@@ -190,7 +198,7 @@ public class RobotContainer {
     // Trigger driverRightTrigger = new Trigger(()->driverController.getRightTriggerAxis() > 0.2);
 
     // // manual pivot and intake rollers
-    // Trigger operatorAButton = new Trigger(operatorController::getAButton);
+    Trigger operatorAButton = new Trigger(operatorController.a());
     // Trigger operatorXButton = new Trigger(operatorController::getXButton);
     // Trigger operatorYButton = new Trigger(operatorController::getYButton);
     // DoubleSupplier operatorRightStickY = operatorController::getRightY;
@@ -202,7 +210,7 @@ public class RobotContainer {
     Trigger driverLeftBumper = new Trigger(driverController.leftBumper());
     // Trigger driverBButton = new Trigger(driverController::getBButton);
     // Trigger driverYButton = new Trigger(driverController::getYButton);
-    // DoubleSupplier operatorLeftStickY = operatorController::getLeftY;
+    DoubleSupplier operatorLeftStickY = operatorController::getLeftY;
 
     // //DRIVER BUTTONS
 
@@ -285,8 +293,8 @@ public class RobotContainer {
     // operatorLeftBumper.whileTrue(new TowerIntake(intakeSubsystem, pivotSubsystem,
     // shooterSubsystem, true, ledSubsystem, this::intakeCallback));
     // // manual pivot (possible climb, unlikely)
-    // operatorAButton.whileTrue(new ManualPivot(pivotSubsystem,
-    // ()->modifyAxisCubed(operatorRightStickY)));
+    operatorAButton.whileTrue(
+        new ManualPivot(pivot, () -> JoystickUtil.modifyAxisCubed(operatorLeftStickY)));
     // operatorDownDirectionPad.whileTrue(new ManualPivot(pivotSubsystem, ()->-0.2));
     // // manual rollers
     // operatorYButton.whileTrue(new ManualIntake(intakeSubsystem, true));

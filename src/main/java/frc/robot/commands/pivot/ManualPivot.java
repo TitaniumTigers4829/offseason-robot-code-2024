@@ -4,6 +4,7 @@
 
 package frc.robot.commands.pivot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.pivot.*;
 import java.util.function.DoubleSupplier;
@@ -29,6 +30,7 @@ public class ManualPivot extends Command {
   @Override
   public void execute() {
     pivot.setPivotSpeed(speed.getAsDouble());
+    SmartDashboard.putNumber("command speed for pivot", speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

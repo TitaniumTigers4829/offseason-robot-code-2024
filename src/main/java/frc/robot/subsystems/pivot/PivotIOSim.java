@@ -4,12 +4,16 @@
 
 package frc.robot.subsystems.pivot;
 
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.HardwareConstants;
 
 public class PivotIOSim implements PivotIO {
@@ -22,9 +26,16 @@ public class PivotIOSim implements PivotIO {
 
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
-          DCMotor.getKrakenX60(2), pivotGearing, pivotMass, pivotLength, 0, 0, true, 0);
+          DCMotor.getKrakenX60(2),
+          pivotGearing,
+          0.01,
+          pivotLength,
+          Rotations.of(0).in(Radians),
+          Rotations.of(1).in(Radians),
+          true,
+          Rotations.of(0).in(Radians));
 
-  private final Constraints pivotConstraints = new Constraints(0, 0);
+  private final Constraints pivotConstraints = new Constraints(0.8, 0.8);
   private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
   private final ProfiledPIDController pivotController =
       new ProfiledPIDController(0, 0, 0, pivotConstraints);
@@ -49,6 +60,8 @@ public class PivotIOSim implements PivotIO {
     inputs.followerVelocity = Units.radiansToRotations(pivotSim.getVelocityRadPerSec());
     inputs.followerAppliedVolts = followerAppliedVolts;
     inputs.followerSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
+    SmartDashboard.putNumber("Pivot Angle Rads", pivotSim.getAngleRads());
+    SmartDashboard.putNumber("Pivot Speed Rads Per Sec", pivotSim.getVelocityRadPerSec());
   }
 
   /**
@@ -72,6 +85,11 @@ public class PivotIOSim implements PivotIO {
   public void setPivotAngle(double angleRots) {
     double currentPivotAngleRots = Units.radiansToRotations(pivotSim.getAngleRads());
     double armFF = armFeedforward.calculate(angleRots, pivotController.getSetpoint().velocity);
-    setVoltage(pivotController.calculate(angleRots, currentPivotAngleRots) + armFF);
+    setVoltage(pivotController.calculate(currentPivotAngleRots, angleRots) + armFF);
+  }
+
+  @Override
+  public void setPivotSpeed(double output) {
+    pivotSim.setInput(output);
   }
 }
