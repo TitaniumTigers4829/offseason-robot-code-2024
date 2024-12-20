@@ -23,7 +23,7 @@ public class PivotIOSim implements PivotIO {
   private final double armkS = 0.0;
   private final double armkG = PivotConstants.PIVOT_G;
   private final double armkV = 0.0;
-
+  private double desiredAngle = 0.0;
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(2),
@@ -31,14 +31,14 @@ public class PivotIOSim implements PivotIO {
           0.01,
           pivotLength,
           Rotations.of(0).in(Radians),
-          Rotations.of(1).in(Radians),
+          Rotations.of(0.75).in(Radians),
           true,
           Rotations.of(0).in(Radians));
 
-  private final Constraints pivotConstraints = new Constraints(0.8, 0.8);
+  private final Constraints pivotConstraints = new Constraints(PivotConstants.MAX_VELOCITY_ROTATIONS_PER_SECOND, PivotConstants.MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
   private final ArmFeedforward armFeedforward = new ArmFeedforward(armkS, armkG, armkV);
   private final ProfiledPIDController pivotController =
-      new ProfiledPIDController(0, 0, 0, pivotConstraints);
+      new ProfiledPIDController(100, 0, 0, pivotConstraints);
   private double leaderAppliedVolts = 0.0;
   private double followerAppliedVolts = 0.0;
 
@@ -62,6 +62,7 @@ public class PivotIOSim implements PivotIO {
     inputs.followerSupplyCurrentAmps = pivotSim.getCurrentDrawAmps();
     SmartDashboard.putNumber("Pivot Angle Rads", pivotSim.getAngleRads());
     SmartDashboard.putNumber("Pivot Speed Rads Per Sec", pivotSim.getVelocityRadPerSec());
+    SmartDashboard.putNumber("Error", desiredAngle-Units.radiansToRotations(pivotSim.getAngleRads()));
   }
 
   /**
@@ -83,9 +84,10 @@ public class PivotIOSim implements PivotIO {
    */
   @Override
   public void setPivotAngle(double angleRots) {
+    desiredAngle = angleRots;
     double currentPivotAngleRots = Units.radiansToRotations(pivotSim.getAngleRads());
-    double armFF = armFeedforward.calculate(angleRots, pivotController.getSetpoint().velocity);
-    setVoltage(pivotController.calculate(currentPivotAngleRots, angleRots) + armFF);
+    // double armFF = armFeedforward.calculate(angleRots, pivotController.getSetpoint().velocity);
+    setVoltage(pivotController.calculate(currentPivotAngleRots, angleRots));
   }
 
   @Override
