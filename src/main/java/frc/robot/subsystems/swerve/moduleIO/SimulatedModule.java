@@ -13,11 +13,12 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} */
-public class SimulatedModule implements ModuleInterface {
+public class SimulatedModule extends PhysicalModule {
   private final SwerveModuleSimulation moduleSimulation;
 
   private final PIDController drivePID = new PIDController(.07, 0, 0);
@@ -31,7 +32,8 @@ public class SimulatedModule implements ModuleInterface {
       new ProfiledPIDController(Radians.of(3.5).in(Rotations), 0, 0, turnConstraints);
   private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0.77, 0.75, 0);
 
-  public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
+  public SimulatedModule(ModuleConfig config, SwerveModuleSimulation moduleSimulation) {
+    super(config);
     this.moduleSimulation = moduleSimulation;
     turnPID.enableContinuousInput(-Math.PI, Math.PI);
   }
