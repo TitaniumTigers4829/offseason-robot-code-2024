@@ -108,13 +108,13 @@ public class SimulatedModule implements ModuleInterface {
                     RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
                         .in(RotationsPerSecond),
                     desiredDriveRPS))
-            .plus(driveFF.calculate(RotationsPerSecond.of(desiredDriveRPS))));
+            .plus(Volts.of(driveFF.calculate((desiredDriveRPS)))));
     moduleSimulation.requestTurnVoltageOut(
         Volts.of(
                 turnPID.calculate(
                     moduleSimulation.getTurnAbsolutePosition().getRotations(),
                     desiredState.angle.getRotations()))
-            .plus(turnFF.calculate(RotationsPerSecond.of(turnPID.getSetpoint().velocity))));
+            .plus(Volts.of(turnFF.calculate(turnPID.getSetpoint().velocity))));
   }
 
   @Override
