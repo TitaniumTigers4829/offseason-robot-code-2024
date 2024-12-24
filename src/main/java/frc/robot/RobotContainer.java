@@ -19,12 +19,12 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.gyroIO.GyroInterface;
-import frc.robot.subsystems.swerve.gyroIO.PhysicalGyro;
-import frc.robot.subsystems.swerve.gyroIO.SimulatedGyro;
-import frc.robot.subsystems.swerve.moduleIO.ModuleInterface;
-import frc.robot.subsystems.swerve.moduleIO.PhysicalModule;
-import frc.robot.subsystems.swerve.moduleIO.SimulatedModule;
+import frc.robot.subsystems.swerve.gyro.GyroInterface;
+import frc.robot.subsystems.swerve.gyro.PhysicalGyro;
+import frc.robot.subsystems.swerve.gyro.SimulatedGyro;
+import frc.robot.subsystems.swerve.module.ModuleInterface;
+import frc.robot.subsystems.swerve.module.PhysicalModule;
+import frc.robot.subsystems.swerve.module.SimulatedModule;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOReal;
@@ -79,7 +79,7 @@ public class RobotContainer {
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                45,
+                60,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 DriveConstants.TRACK_WIDTH + .2,

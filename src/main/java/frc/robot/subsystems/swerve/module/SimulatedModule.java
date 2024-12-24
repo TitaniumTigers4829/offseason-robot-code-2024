@@ -1,72 +1,58 @@
-package frc.robot.subsystems.swerve.moduleIO;
+package frc.robot.subsystems.swerve.module;
 
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.extras.simulation.OdometryTimestampsSim;
 import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation;
 import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
-import java.util.Arrays;
 
 /** Wrapper class around {@link SwerveModuleSimulation} */
 public class SimulatedModule implements ModuleInterface {
   private final SwerveModuleSimulation moduleSimulation;
 
-  private final PIDController drivePID = new PIDController(.07, 0, 0);
-  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.0, .0, 0.0);
+  private final PIDController drivePID = new PIDController(.27, 0, 0);
+  private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(1, 1.5);
 
   private final Constraints turnConstraints =
       new Constraints(
-          RadiansPerSecond.of(2 * Math.PI).in(RotationsPerSecond),
-          RadiansPerSecondPerSecond.of(4 * Math.PI).in(RotationsPerSecondPerSecond));
+          ModuleConstants.MAX_ANGULAR_SPEED_ROTATIONS_PER_SECOND,
+          ModuleConstants.MAX_ANGULAR_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED);
   private final ProfiledPIDController turnPID =
-      new ProfiledPIDController(Radians.of(3.5).in(Rotations), 0, 0, turnConstraints);
-  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(0.77, 0.75, 0);
+      new ProfiledPIDController(3.5, 0, 0, turnConstraints);
+  private final SimpleMotorFeedforward turnFF = new SimpleMotorFeedforward(4, 10, 0);
 
   public SimulatedModule(SwerveModuleSimulation moduleSimulation) {
     this.moduleSimulation = moduleSimulation;
-    turnPID.enableContinuousInput(-Math.PI, Math.PI);
+    // turnPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
   public void updateInputs(ModuleInputs inputs) {
     inputs.drivePosition =
-        Units.radiansToRotations(moduleSimulation.getDriveEncoderFinalPositionRad());
+        Radians.of(moduleSimulation.getDriveEncoderFinalPositionRad()).in(Rotations);
     inputs.driveVelocity =
-        Units.radiansToRotations(moduleSimulation.getDriveWheelFinalSpeedRadPerSec());
+        RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
+            .in(RotationsPerSecond);
     inputs.driveAppliedVolts = moduleSimulation.getDriveMotorAppliedVolts();
     inputs.driveCurrentAmps = moduleSimulation.getDriveMotorSupplyCurrentAmps();
 
     inputs.turnAbsolutePosition = moduleSimulation.getTurnAbsolutePosition();
-    inputs.turnVelocity = moduleSimulation.getTurnAbsoluteEncoderSpeedRadPerSec();
+    inputs.turnVelocity =
+        Radians.of(moduleSimulation.getTurnAbsoluteEncoderSpeedRadPerSec()).in(Rotations);
     inputs.turnAppliedVolts = moduleSimulation.getTurnMotorAppliedVolts();
     inputs.turnCurrentAmps = moduleSimulation.getTurnMotorSupplyCurrentAmps();
-
-    inputs.odometryDriveWheelRevolutions =
-        Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositionsRad())
-            .map(Units::radiansToRotations)
-            .toArray();
 
     inputs.odometrySteerPositions = moduleSimulation.getCachedTurnAbsolutePositions();
 
     inputs.odometryTimestamps = OdometryTimestampsSim.getTimestamps();
 
     inputs.isConnected = true;
-
-    SmartDashboard.putNumber(
-        "turn absolute position", moduleSimulation.getTurnAbsolutePosition().getDegrees());
-    SmartDashboard.putNumber(
-        "drive pos",
-        Radians.of(moduleSimulation.getDriveEncoderFinalPositionRad()).in(Rotations)
-            * ModuleConstants.DRIVE_TO_METERS);
   }
 
   @Override
@@ -81,34 +67,20 @@ public class SimulatedModule implements ModuleInterface {
 
   @Override
   public void setDesiredState(SwerveModuleState desiredState) {
-    double turnRotations = getTurnRotations();
-    // setpoint.cosineScale(Rotation2d.fromRotations(turnRotations));
-    desiredState.optimize(Rotation2d.fromRotations(turnRotations));
-
-    if (Math.abs(desiredState.speedMetersPerSecond) < 0.01) {
-      stopModule();
-      return;
-    }
-
     // Converts meters per second to rotations per second
     double desiredDriveRPS =
         desiredState.speedMetersPerSecond
             * ModuleConstants.DRIVE_GEAR_RATIO
             / ModuleConstants.WHEEL_CIRCUMFERENCE_METERS;
-    SmartDashboard.putNumber("desired drive RPS", desiredDriveRPS);
-    SmartDashboard.putNumber(
-        "current drive RPS",
-        RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
-            .in(RotationsPerSecond));
-    SmartDashboard.putNumber("desired angle", desiredState.angle.getDegrees());
 
     moduleSimulation.requestDriveVoltageOut(
         Volts.of(
                 drivePID.calculate(
                     RadiansPerSecond.of(moduleSimulation.getDriveWheelFinalSpeedRadPerSec())
-                        .in(RotationsPerSecond),
+                            .in(RotationsPerSecond)
+                        * ModuleConstants.WHEEL_CIRCUMFERENCE_METERS,
                     desiredDriveRPS))
-            .plus(Volts.of(driveFF.calculate((desiredDriveRPS)))));
+            .plus(Volts.of(driveFF.calculate(desiredDriveRPS))));
     moduleSimulation.requestTurnVoltageOut(
         Volts.of(
                 turnPID.calculate(
