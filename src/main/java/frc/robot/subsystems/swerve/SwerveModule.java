@@ -43,23 +43,6 @@ public class SwerveModule extends SubsystemBase {
     // updateOdometryPositions();
   }
 
-  // private void updateOdometryPositions() {
-  //   odometryPositions = new SwerveModulePosition[inputs.odometryDriveWheelRevolutions.length];
-  //   for (int i = 0; i < odometryPositions.length; i++) {
-  //     double positionMeters = inputs.odometryDriveWheelRevolutions[i];
-  //     Rotation2d angle = inputs.odometrySteerPositions[i];
-  //     odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
-
-  //     SmartDashboard.putNumber("updated drive position", positionMeters);
-  //     SmartDashboard.putNumber("updated angle", angle.getDegrees());
-  //   }
-  // }
-
-  // private double driveRevolutionsToMeters(double driveWheelRevolutions) {
-  //   return Rotations.of(driveWheelRevolutions).in(Radians)
-  //       * SimulationConstants.WHEEL_RADIUS_METERS;
-  // }
-
   public void setVoltage(Voltage volts) {
     io.setDriveVoltage(volts);
     io.setTurnVoltage(Volts.zero());
@@ -75,10 +58,10 @@ public class SwerveModule extends SubsystemBase {
 
   /** Runs the module with the specified setpoint state. Returns optimized setpoint */
   public void runSetPoint(SwerveModuleState state) {
-    // state.optimize(getTurnRotation());
-    // if (state.speedMetersPerSecond < 0.01) {
-    //   io.stopModule();
-    // }
+    state.optimize(getTurnRotation());
+    if (state.speedMetersPerSecond < 0.01) {
+      io.stopModule();
+    }
     io.setDesiredState(state);
   }
 

@@ -45,7 +45,7 @@ public class SwerveDrive extends SubsystemBase {
       new SwerveSetpointGenerator(
           DriveConstants.MODULE_TRANSLATIONS,
           DCMotor.getKrakenX60(1).withReduction(ModuleConstants.DRIVE_GEAR_RATIO),
-          DCMotor.getFalcon500(1).withReduction(11),
+          DCMotor.getFalcon500(1).withReduction(1),
           60,
           58,
           7,
@@ -214,7 +214,7 @@ public class SwerveDrive extends SubsystemBase {
    * @return Value is Counter-clockwise positive.
    */
   public double getHeading() {
-    return -gyroInputs.yawDegrees;
+    return gyroInputs.yawDegrees;
   }
 
   /**
