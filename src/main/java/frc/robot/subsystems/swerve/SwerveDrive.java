@@ -8,20 +8,24 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.extras.simulation.mechanismSim.swerve.SwerveModuleSimulation.WHEEL_GRIP;
 import frc.robot.extras.util.DeviceCANBus;
 import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveConstants.DriveConstants;
+import frc.robot.subsystems.swerve.SwerveConstants.ModuleConstants;
 import frc.robot.subsystems.swerve.gyro.GyroInputsAutoLogged;
 import frc.robot.subsystems.swerve.gyro.GyroInterface;
 import frc.robot.subsystems.swerve.module.ModuleInterface;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThread;
 import frc.robot.subsystems.swerve.odometryThread.OdometryThreadInputsAutoLogged;
+import frc.robot.subsystems.swerve.setpointGen.SwerveSetpoint;
+import frc.robot.subsystems.swerve.setpointGen.SwerveSetpointGenerator;
 import frc.robot.subsystems.vision.VisionConstants;
 import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -36,6 +40,19 @@ public class SwerveDrive extends SubsystemBase {
   private Rotation2d rawGyroRotation;
   private final SwerveModulePosition[] lastModulePositions;
   private final SwerveDrivePoseEstimator odometry;
+
+  private final SwerveSetpointGenerator setpointGenerator =
+      new SwerveSetpointGenerator(
+          DriveConstants.MODULE_TRANSLATIONS,
+          DCMotor.getKrakenX60(1).withReduction(ModuleConstants.DRIVE_GEAR_RATIO),
+          DCMotor.getFalcon500(1).withReduction(1),
+          60,
+          58,
+          7,
+          ModuleConstants.WHEEL_DIAMETER_METERS,
+          WHEEL_GRIP.TIRE_WHEEL.cof,
+          0.0);
+  private SwerveSetpoint setpoint = SwerveSetpoint.zeroed();
 
   private final OdometryThread odometryThread;
 
@@ -89,7 +106,7 @@ public class SwerveDrive extends SubsystemBase {
     gyroDisconnectedAlert.set(false);
   }
 
-  // // /** Updates the pose estimator with the pose calculated from the swerve modules. */
+  /** Updates the pose estimator with the pose calculated from the swerve modules. */
   // public void addPoseEstimatorSwerveMeasurement() {
   //   for (int timestampIndex = 0;
   //       timestampIndex < odometryThreadInputs.measurementTimeStamps.length;
@@ -180,24 +197,16 @@ public class SwerveDrive extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
-    ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
-    if (fieldRelative) {
-      speeds.toRobotRelativeSpeeds(getOdometryAllianceRelativeRotation2d());
-    }
-    // ChassisSpeeds discreteSpeeds =
-    //     // ChassisSpeeds.discretize(
-    //     fieldRelative
-    //         ? ChassisSpeeds.fromFieldRelativeSpeeds(
-    //             xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
-    //         : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
-    // // , 0.02);
-    SwerveModuleState[] swerveModuleStates =
-        DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
+    ChassisSpeeds desiredSpeeds =
+        fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeed, ySpeed, rotationSpeed, getOdometryAllianceRelativeRotation2d())
+            : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
 
-    setModuleStates(swerveModuleStates);
-    Logger.recordOutput("SwerveStates/DesiredStates", swerveModuleStates);
+    setpoint = setpointGenerator.generateSetpoint(setpoint, desiredSpeeds, 0.02);
+
+    setModuleStates(setpoint.moduleStates());
+    Logger.recordOutput("SwerveStates/DesiredStates", setpoint.moduleStates());
   }
 
   /**
@@ -272,7 +281,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     for (int i = 0; i < 4; i++) {
-      swerveModules[i].runSetPoint(desiredStates[i]);
+      swerveModules[i].runSetPoint((desiredStates[i]));
     }
   }
 
@@ -281,6 +290,23 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @param timestampIndex index of the timestamp to sample the pose at
    */
+  // private void addPoseEstimatorSwerveMeasurement(int timestampIndex) {
+  //   final SwerveModulePosition[] modulePositions = getModulePositions(),
+  //       moduleDeltas = getModulesDelta(modulePositions);
+
+  //   if (gyroInputs.isConnected) {
+  //     rawGyroRotation = gyroInputs.odometryYawPositions[timestampIndex];
+  //   } else {
+  //     Twist2d twist = DriveConstants.DRIVE_KINEMATICS.toTwist2d(moduleDeltas);
+  //     rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+  //   }
+
+  //   poseEstimator.updateWithTime(
+  //       odometryThreadInputs.measurementTimeStamps[timestampIndex],
+  //       rawGyroRotation,
+  //       modulePositions);
+  // }
+
   public void addPoseEstimatorSwerveMeasurement() { // int timestampIndex
     final SwerveModulePosition[] modulePositions = getModulePositions(),
         moduleDeltas = getModulesDelta(modulePositions);
@@ -297,6 +323,22 @@ public class SwerveDrive extends SubsystemBase {
         // odometryThreadInputs.measurementTimeStamps[timestampIndex],
         Logger.getTimestamp(), rawGyroRotation, modulePositions);
   }
+
+  /**
+   * Gets the modules positions, sampled at the indexed timestamp.
+   *
+   * @param timestampIndex the timestamp index to sample.
+   * @return a list of SwerveModulePosition, containing relative drive position and absolute turn
+   *     rotation at the sampled timestamp.
+   */
+  // private SwerveModulePosition[] getModulesPosition(int timestampIndex) {
+  //   SwerveModulePosition[] swerveModulePositions = new
+  // SwerveModulePosition[swerveModules.length];
+  //   for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++)
+  //     swerveModulePositions[moduleIndex] =
+  //         swerveModules[moduleIndex].getOdometryPositions()[timestampIndex];
+  //   return swerveModulePositions;
+  // }
 
   private SwerveModulePosition[] getModulesDelta(SwerveModulePosition[] freshModulesPosition) {
     SwerveModulePosition[] deltas = new SwerveModulePosition[swerveModules.length];

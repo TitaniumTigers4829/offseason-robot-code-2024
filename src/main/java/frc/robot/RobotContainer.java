@@ -81,7 +81,7 @@ public class RobotContainer {
         /* create a swerve drive simulation */
         this.swerveDriveSimulation =
             new SwerveDriveSimulation(
-                SimulationConstants.ROBOT_MASS_KG,
+                60,
                 DriveConstants.TRACK_WIDTH,
                 DriveConstants.WHEEL_BASE,
                 DriveConstants.TRACK_WIDTH + .2,

@@ -295,8 +295,7 @@ public class SwerveModuleSimulation {
    * @return the final position of the drive encoder (wheel rotations), in radians
    */
   public double getDriveEncoderFinalPositionRad() {
-    return getDriveEncoderUnGearedPositionRad();
-    //  / DRIVE_GEAR_RATIO;
+    return getDriveEncoderUnGearedPositionRad() / DRIVE_GEAR_RATIO;
   }
 
   /**
@@ -323,8 +322,7 @@ public class SwerveModuleSimulation {
    * @return the final speed of the drive wheel, in radians per second
    */
   public double getDriveWheelFinalSpeedRadPerSec() {
-    return getDriveEncoderUnGearedSpeedRadPerSec();
-    // / DRIVE_GEAR_RATIO;
+    return getDriveEncoderUnGearedSpeedRadPerSec() / DRIVE_GEAR_RATIO;
   }
 
   /**
