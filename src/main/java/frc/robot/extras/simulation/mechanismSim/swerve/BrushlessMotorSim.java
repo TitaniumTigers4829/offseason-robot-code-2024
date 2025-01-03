@@ -359,14 +359,20 @@ public class BrushlessMotorSim {
             Voltage voltage =
                 Volts.of(poseVoltController.calculate(getPosition().in(Radians), output));
             Voltage feedforwardVoltage =
-                feedforward.calculate(getVelocity(), velocityForVolts(voltage));
+                Volts.of(
+                    feedforward.calculate(
+                        getVelocity().in(RadiansPerSecond),
+                        velocityForVolts(voltage).in(RadiansPerSecond)));
             driveAtVoltage(feedforwardVoltage.plus(voltage));
           }
           case VELOCITY -> {
             Voltage voltage =
                 Volts.of(veloVoltController.calculate(getVelocity().in(RadiansPerSecond), output));
             Voltage feedforwardVoltage =
-                feedforward.calculate(getVelocity(), RadiansPerSecond.of(output));
+                Volts.of(
+                    feedforward.calculate(
+                        getVelocity().in(RadiansPerSecond),
+                        RadiansPerSecond.of(output).in(RadiansPerSecond)));
             driveAtVoltage(voltage.plus(feedforwardVoltage));
           }
         }
@@ -381,14 +387,20 @@ public class BrushlessMotorSim {
                 Amps.of(poseCurrentController.calculate(getPosition().in(Radians), output));
             Voltage voltage = voltsForAmps(current, getVelocity());
             Voltage feedforwardVoltage =
-                feedforward.calculate(getVelocity(), velocityForVolts(voltage));
+                Volts.of(
+                    feedforward.calculate(
+                        getVelocity().in(RadiansPerSecond),
+                        velocityForVolts(voltage).in(RadiansPerSecond)));
             driveAtVoltage(feedforwardVoltage.plus(voltage));
           }
           case VELOCITY -> {
             Current current =
                 Amps.of(veloCurrentController.calculate(getPosition().in(Radians), output));
             Voltage feedforwardVoltage =
-                feedforward.calculate(getVelocity(), RadiansPerSecond.of(output));
+                Volts.of(
+                    feedforward.calculate(
+                        getVelocity().in(RadiansPerSecond),
+                        RadiansPerSecond.of(output).in(RadiansPerSecond)));
             Voltage voltage = voltsForAmps(current, getVelocity()).plus(feedforwardVoltage);
             driveAtVoltage(voltage);
           }
