@@ -61,6 +61,8 @@ public class PhysicalVision implements VisionInterface {
         inputs.limelightCalculatedPose[limelight.getId()] = getPoseFromAprilTags(limelight);
         inputs.limelightTimestamp[limelight.getId()] = getTimeStampSeconds(limelight);
         inputs.limelightLastSeenPose = getLastSeenPose();
+        inputs.limelightAprilTagDistance[limelight.getId()] =
+            getLimelightAprilTagDistance(limelight);
 
         latestInputs.set(inputs);
         limelightThreads.get(limelight).set(latestInputs.get());

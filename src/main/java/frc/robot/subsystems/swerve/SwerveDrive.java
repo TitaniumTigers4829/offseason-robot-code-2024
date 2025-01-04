@@ -39,7 +39,7 @@ public class SwerveDrive extends SubsystemBase {
 
   private Rotation2d rawGyroRotation;
   private final SwerveModulePosition[] lastModulePositions;
-  private final SwerveDrivePoseEstimator odometry;
+  private final SwerveDrivePoseEstimator poseEstimator;
 
   private final SwerveSetpointGenerator setpointGenerator =
       new SwerveSetpointGenerator(
@@ -86,10 +86,10 @@ public class SwerveDrive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
         };
-    this.odometry =
+    this.poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.DRIVE_KINEMATICS,
-            getGyroRotation2d(),
+            rawGyroRotation,
             lastModulePositions,
             new Pose2d(),
             VecBuilder.fill(
@@ -99,7 +99,7 @@ public class SwerveDrive extends SubsystemBase {
                 VisionConstants.VISION_Y_POS_TRUST,
                 VisionConstants.VISION_ANGLE_TRUST));
 
-    this.odometryThread = OdometryThread.createInstance(DeviceCANBus.CANIVORE);
+    this.odometryThread = OdometryThread.createInstance(DeviceCANBus.RIO);
     this.odometryThreadInputs = new OdometryThreadInputsAutoLogged();
     this.odometryThread.start();
 
@@ -123,7 +123,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void addPoseEstimatorVisionMeasurement(
       Pose2d visionMeasurement, double currentTimeStampSeconds) {
-    odometry.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
+    poseEstimator.addVisionMeasurement(visionMeasurement, currentTimeStampSeconds);
   }
 
   /**
@@ -136,7 +136,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void setPoseEstimatorVisionConfidence(
       double xStandardDeviation, double yStandardDeviation, double thetaStandardDeviation) {
-    odometry.setVisionMeasurementStdDevs(
+    poseEstimator.setVisionMeasurementStdDevs(
         VecBuilder.fill(xStandardDeviation, yStandardDeviation, thetaStandardDeviation));
   }
 
@@ -160,7 +160,6 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /** Returns the average drive velocity in rotations/sec. */
-  // TODO: fix method
   public double getCharacterizationVelocity() {
     double velocity = 0.0;
     for (SwerveModule module : swerveModules) {
@@ -256,7 +255,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   @AutoLogOutput(key = "Odometry/Odometry")
   public Pose2d getPose() {
-    return odometry.getEstimatedPosition();
+    return poseEstimator.getEstimatedPosition();
   }
 
   /** Returns a Rotation2d for the heading of the robot */
@@ -319,7 +318,7 @@ public class SwerveDrive extends SubsystemBase {
       rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
     }
 
-    odometry.updateWithTime(
+    poseEstimator.updateWithTime(
         // odometryThreadInputs.measurementTimeStamps[timestampIndex],
         Logger.getTimestamp(), rawGyroRotation, modulePositions);
   }
@@ -373,7 +372,7 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @param pose pose to set
    */
-  public void resetPosition(Pose2d pose) {
-    odometry.resetPosition(getGyroRotation2d(), getModulePositions(), pose);
+  public void setPose(Pose2d pose) {
+    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 }

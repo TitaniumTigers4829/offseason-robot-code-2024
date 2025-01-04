@@ -46,8 +46,8 @@ public class SimulatedVision extends PhysicalVision {
     // Create simulated camera properties. These can be set to mimic your actual
     // camera.
     var cameraProperties = new SimCameraProperties();
-    // cameraProperties.setCalibration(kResWidth, kResHeight, Rotation2d.fromDegrees(97.7));
-    // cameraProperties.setCalibError(0.35, 0.10);
+    cameraProperties.setCalibration(kResWidth, kResHeight, Rotation2d.fromDegrees(97.7));
+    cameraProperties.setCalibError(0.35, 0.10);
     cameraProperties.setFPS(15);
     cameraProperties.setAvgLatencyMs(20);
     cameraProperties.setLatencyStdDevMs(5);
@@ -63,23 +63,23 @@ public class SimulatedVision extends PhysicalVision {
     frontRightCameraSim =
         new PhotonCameraSim(getSimulationCamera(Limelight.FRONT_RIGHT), cameraProperties);
 
-    visionSim.addCamera(shooterCameraSim, VisionConstants.SHOOTER_TRANSFORM);
-    visionSim.addCamera(frontLeftCameraSim, VisionConstants.FRONT_LEFT_TRANSFORM);
-    visionSim.addCamera(frontRightCameraSim, VisionConstants.FRONT_RIGHT_TRANSFORM);
+    visionSim.addCamera(shooterCameraSim, VisionConstants.SHOOTER_TRANSFORM.inverse());
+    visionSim.addCamera(frontLeftCameraSim, VisionConstants.FRONT_LEFT_TRANSFORM.inverse());
+    visionSim.addCamera(frontRightCameraSim, VisionConstants.FRONT_RIGHT_TRANSFORM.inverse());
 
     // Enable the raw and processed streams. (http://localhost:1181 / 1182)
-    shooterCameraSim.enableRawStream(true);
-    shooterCameraSim.enableProcessedStream(true);
-    frontLeftCameraSim.enableRawStream(true);
-    frontLeftCameraSim.enableProcessedStream(true);
-    frontRightCameraSim.enableRawStream(true);
-    frontRightCameraSim.enableProcessedStream(true);
+    // shooterCameraSim.enableRawStream(true);
+    // shooterCameraSim.enableProcessedStream(true);
+    // frontLeftCameraSim.enableRawStream(true);
+    // frontLeftCameraSim.enableProcessedStream(true);
+    // frontRightCameraSim.enableRawStream(true);
+    // frontRightCameraSim.enableProcessedStream(true);
 
-    // Enable drawing a wireframe visualization of the field to the camera streams.
-    // This is extremely resource-intensive and is disabled by default.
-    shooterCameraSim.enableDrawWireframe(true);
-    frontLeftCameraSim.enableDrawWireframe(true);
-    frontRightCameraSim.enableDrawWireframe(true);
+    // // Enable drawing a wireframe visualization of the field to the camera streams.
+    // // This is extremely resource-intensive and is disabled by default.
+    // shooterCameraSim.enableDrawWireframe(true);
+    // frontLeftCameraSim.enableDrawWireframe(true);
+    // frontRightCameraSim.enableDrawWireframe(true);
   }
 
   @Override
@@ -97,8 +97,9 @@ public class SimulatedVision extends PhysicalVision {
           getSimulationCamera(limelight).getAllUnreadResults(),
           getLimelightTable(limelight),
           limelight);
-      inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
-      inputs.limelightAprilTagDistance[limelight.getId()] = getLimelightAprilTagDistance(limelight);
+      // inputs.limelightTargets[limelight.getId()] = getNumberOfAprilTags(limelight);
+      // inputs.limelightAprilTagDistance[limelight.getId()] =
+      // getLimelightAprilTagDistance(limelight);
     }
     super.updateInputs(inputs);
   }
@@ -145,7 +146,13 @@ public class SimulatedVision extends PhysicalVision {
             .setDoubleArray(pose_data.stream().mapToDouble(Double::doubleValue).toArray());
         tagCount[limelight.getId()] = result.getMultiTagResult().get().fiducialIDsUsed.size();
         apriltagDist[limelight.getId()] =
-            result.getMultiTagResult().get().estimatedPose.best.getX();
+            result
+                .getMultiTagResult()
+                .get()
+                .estimatedPose
+                .best
+                .getTranslation()
+                .getDistance(result.getBestTarget().bestCameraToTarget.getTranslation());
       }
 
       table.getEntry("tv").setInteger(result.hasTargets() ? 1 : 0);

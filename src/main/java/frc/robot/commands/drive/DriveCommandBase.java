@@ -4,6 +4,7 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.extras.interpolators.MultiLinearInterpolator;
+import frc.robot.extras.util.TimeUtil;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -70,7 +71,7 @@ public abstract class DriveCommandBase extends Command {
 
       swerveDrive.addPoseEstimatorVisionMeasurement(
           vision.getPoseFromAprilTags(limelight),
-          Logger.getTimestamp() - vision.getLatencySeconds(limelight));
+          TimeUtil.getLogTimeSeconds() - vision.getLatencySeconds(limelight));
     }
 
     Logger.recordOutput(

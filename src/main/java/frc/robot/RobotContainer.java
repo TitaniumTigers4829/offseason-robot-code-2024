@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.SimulationConstants;
 import frc.robot.commands.drive.DriveCommand;
 import frc.robot.extras.simulation.field.SimulatedField;
 import frc.robot.extras.simulation.mechanismSim.swerve.GyroSimulation;
@@ -87,8 +86,8 @@ public class RobotContainer {
                 DriveConstants.TRACK_WIDTH + .2,
                 DriveConstants.WHEEL_BASE + .2,
                 SwerveModuleSimulation.getModule(
-                    DCMotor.getFalcon500(1),
-                    DCMotor.getFalcon500(1),
+                    DCMotor.getKrakenX60(1).withReduction(ModuleConstants.DRIVE_GEAR_RATIO),
+                    DCMotor.getFalcon500(1).withReduction(11),
                     60,
                     WHEEL_GRIP.TIRE_WHEEL,
                     ModuleConstants.DRIVE_GEAR_RATIO),
@@ -145,7 +144,7 @@ public class RobotContainer {
     }
 
     // swerveDrive.periodic();
-    swerveDrive.resetPosition(startingPose);
+    swerveDrive.setPose(startingPose);
   }
 
   public void teleopInit() {
@@ -246,7 +245,7 @@ public class RobotContainer {
     driverRightDirectionPad.onTrue(
         new InstantCommand(
             () ->
-                swerveDrive.resetPosition(
+                swerveDrive.setPose(
                     new Pose2d(
                         swerveDrive.getPose().getX(),
                         swerveDrive.getPose().getY(),
@@ -255,11 +254,10 @@ public class RobotContainer {
         .x()
         .onTrue(
             new InstantCommand(
-                () ->
-                    swerveDrive.resetPosition(swerveDriveSimulation.getSimulatedDriveTrainPose())));
+                () -> swerveDrive.setPose(swerveDriveSimulation.getSimulatedDriveTrainPose())));
     // // // Reset robot odometry based on vision pose measurement from april tags
     driverLeftDirectionPad.onTrue(
-        new InstantCommand(() -> swerveDrive.resetPosition(visionSubsystem.getLastSeenPose())));
+        new InstantCommand(() -> swerveDrive.setPose(visionSubsystem.getLastSeenPose())));
     // // driverLeftDpad.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry(new
     // Pose2d(15.251774787902832, 5.573054313659668, Rotation2d.fromRadians(3.14159265)))));
     // // driverBButton.whileTrue(new ShootPass(swerveDrive, shooterSubsystem, pivotSubsystem,
@@ -308,7 +306,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Resets the pose factoring in the robot side
     // This is just a failsafe, pose should be reset at the beginning of auto
-    swerveDrive.resetPosition(
+    swerveDrive.setPose(
         new Pose2d(
             swerveDrive.getPose().getX(),
             swerveDrive.getPose().getY(),
